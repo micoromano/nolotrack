@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/mcame/**)",
+      "Bash(npx create-next-app@latest project-nolotrack --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --no-turbopack)"
+    ]
+  }
+}
