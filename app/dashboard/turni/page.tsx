@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -22,33 +21,50 @@ export default async function TurniPage() {
     .limit(30);
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Turni</h1>
-        <Link href="/dashboard/turni/nuovo" className={cn(buttonVariants())}>
+    <div>
+      {/* Command bar */}
+      <div className="border-b border-border px-6 py-3 flex items-center justify-between bg-card">
+        <div>
+          <h1 className="text-sm font-semibold text-foreground">Turni</h1>
+          <p className="text-xs text-muted-foreground">Ultimi 30 turni registrati</p>
+        </div>
+        <Link href="/dashboard/turni/nuovo" className={cn(buttonVariants({ size: "sm" }), "text-xs")}>
           + Nuovo turno
         </Link>
       </div>
 
-      <div className="space-y-2">
-        {turni?.length === 0 && (
-          <p className="text-muted-foreground text-sm">Nessun turno registrato.</p>
-        )}
-        {turni?.map((t) => (
-          <Card key={t.id}>
-            <CardContent className="py-3 flex items-center justify-between">
-              <div>
-                <p className="font-medium">
+      {/* Table */}
+      <div className="p-6">
+        <div className="bg-card border border-border rounded overflow-hidden">
+          {/* Header */}
+          <div className="grid grid-cols-4 px-4 py-2 border-b border-border bg-muted/30">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Data</span>
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Inizio</span>
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Fine</span>
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider text-right">Ore</span>
+          </div>
+
+          {!turni?.length && (
+            <p className="px-4 py-6 text-sm text-muted-foreground text-center">
+              Nessun turno registrato.
+            </p>
+          )}
+
+          <div className="divide-y divide-border">
+            {turni?.map((t) => (
+              <div key={t.id} className="grid grid-cols-4 px-4 py-3 hover:bg-muted/20 transition-colors">
+                <span className="text-sm capitalize">
                   {new Date(t.data).toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" })}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {t.ora_inizio} – {t.ora_fine}
-                </p>
+                </span>
+                <span className="font-mono text-sm">{t.ora_inizio.slice(0, 5)}</span>
+                <span className="font-mono text-sm">{t.ora_fine.slice(0, 5)}</span>
+                <span className="font-mono text-sm font-medium text-primary text-right">
+                  {formatOre(t.ore_lavorate)}
+                </span>
               </div>
-              <p className="font-bold text-lg">{formatOre(t.ore_lavorate)}</p>
-            </CardContent>
-          </Card>
-        ))}
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

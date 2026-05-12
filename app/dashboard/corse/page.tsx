@@ -1,19 +1,25 @@
 import { createClient } from "@/lib/supabase/server";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-const colori: Record<string, string> = {
-  cash: "bg-green-100 text-green-800",
-  carta: "bg-blue-100 text-blue-800",
-  uber: "bg-black text-white",
-};
-
 function formatEuro(n: number) {
   return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(n);
 }
+
+const pagamentoBadgeStyle: Record<string, string> = {
+  cash: "bg-amber-400/10 text-amber-400",
+  carta: "bg-blue-400/10 text-blue-400",
+  uber: "bg-muted text-muted-foreground",
+  noninc: "bg-purple-400/10 text-purple-400",
+};
+
+const pagamentoLabel: Record<string, string> = {
+  cash: "Cash",
+  carta: "Carta",
+  uber: "Uber",
+  noninc: "No Inc",
+};
 
 export default async function CorsePage() {
   const supabase = await createClient();
@@ -28,36 +34,74 @@ export default async function CorsePage() {
     .limit(50);
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Corse</h1>
-        <Link href="/dashboard/corse/nuova" className={cn(buttonVariants())}>
+    <div>
+      {/* Command bar */}
+      <div className="border-b border-border px-6 py-3 flex items-center justify-between bg-card">
+        <div>
+          <h1 className="text-sm font-semibold text-foreground">Corse</h1>
+          <p className="text-xs text-muted-foreground">Ultime 50 corse registrate</p>
+        </div>
+        <Link href="/dashboard/corse/nuova" className={cn(buttonVariants({ size: "sm" }), "text-xs")}>
           + Nuova corsa
         </Link>
       </div>
 
-      <div className="space-y-2">
-        {corse?.length === 0 && (
-          <p className="text-muted-foreground text-sm">Nessuna corsa registrata.</p>
-        )}
-        {corse?.map((c) => (
-          <Card key={c.id}>
-            <CardContent className="py-3 flex items-center justify-between gap-4">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="text-xs text-muted-foreground">
-                    {new Date(c.data).toLocaleDateString("it-IT", { day: "numeric", month: "short" })} · {c.ora_partenza.slice(0,5)}
-                  </p>
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${colori[c.tipo_pagamento]}`}>
-                    {c.tipo_pagamento}
+      {/* Table */}
+      <div className="p-6">
+        <div className="bg-card border border-border rounded overflow-hidden">
+          {/* Header */}
+          <div className="hidden sm:grid grid-cols-5 px-4 py-2 border-b border-border bg-muted/30">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Data / Ora</span>
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Tipo</span>
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Partenza</span>
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Destinazione</span>
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider text-right">Importo</span>
+          </div>
+
+          {!corse?.length && (
+            <p className="px-4 py-6 text-sm text-muted-foreground text-center">
+              Nessuna corsa registrata.
+            </p>
+          )}
+
+          <div className="divide-y divide-border">
+            {corse?.map((c) => (
+              <div key={c.id} className="hover:bg-muted/20 transition-colors">
+                {/* Desktop row */}
+                <div className="hidden sm:grid grid-cols-5 px-4 py-3 items-center gap-2">
+                  <div>
+                    <p className="font-mono text-xs text-muted-foreground">
+                      {new Date(c.data).toLocaleDateString("it-IT", { day: "2-digit", month: "short" })}
+                    </p>
+                    <p className="font-mono text-xs">{c.ora_partenza.slice(0, 5)}</p>
+                  </div>
+                  <span className={cn("text-xs px-1.5 py-0.5 rounded font-medium w-fit", pagamentoBadgeStyle[c.tipo_pagamento])}>
+                    {pagamentoLabel[c.tipo_pagamento] ?? c.tipo_pagamento}
                   </span>
+                  <span className="text-sm truncate">{c.origine}</span>
+                  <span className="text-sm truncate">{c.destinazione}</span>
+                  <span className="font-mono text-sm font-medium text-right">{formatEuro(c.importo)}</span>
                 </div>
-                <p className="font-medium truncate">{c.origine} → {c.destinazione}</p>
+
+                {/* Mobile row */}
+                <div className="sm:hidden px-4 py-3 flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-mono text-xs text-muted-foreground">
+                        {new Date(c.data).toLocaleDateString("it-IT", { day: "numeric", month: "short" })} · {c.ora_partenza.slice(0, 5)}
+                      </span>
+                      <span className={cn("text-xs px-1.5 py-0.5 rounded font-medium", pagamentoBadgeStyle[c.tipo_pagamento])}>
+                        {pagamentoLabel[c.tipo_pagamento] ?? c.tipo_pagamento}
+                      </span>
+                    </div>
+                    <p className="text-sm truncate">{c.origine} → {c.destinazione}</p>
+                  </div>
+                  <span className="font-mono text-sm font-medium shrink-0">{formatEuro(c.importo)}</span>
+                </div>
               </div>
-              <p className="font-bold text-lg shrink-0">{formatEuro(c.importo)}</p>
-            </CardContent>
-          </Card>
-        ))}
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

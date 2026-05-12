@@ -1,8 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import {
+  ChartLineUp, CurrencyEur, CreditCard, Car, Tag, Clock, ArrowRight, Plus,
+} from "@phosphor-icons/react/dist/ssr";
 
 function formatOre(ore: number) {
   const h = Math.floor(ore);
@@ -21,85 +23,203 @@ export default async function DashboardPage() {
   const oggi = new Date().toISOString().split("T")[0];
 
   const [{ data: turnoOggi }, { data: corseOggi }] = await Promise.all([
-    supabase
-      .from("turni")
-      .select("*")
-      .eq("autista_id", user!.id)
-      .eq("data", oggi)
-      .maybeSingle(),
-    supabase
-      .from("corse")
-      .select("*")
-      .eq("autista_id", user!.id)
-      .eq("data", oggi),
+    supabase.from("turni").select("*").eq("autista_id", user!.id).eq("data", oggi).maybeSingle(),
+    supabase.from("corse").select("*").eq("autista_id", user!.id).eq("data", oggi),
   ]);
 
   const totCash = corseOggi?.filter((c) => c.tipo_pagamento === "cash").reduce((s, c) => s + c.importo, 0) ?? 0;
   const totCarta = corseOggi?.filter((c) => c.tipo_pagamento === "carta").reduce((s, c) => s + c.importo, 0) ?? 0;
   const totUber = corseOggi?.filter((c) => c.tipo_pagamento === "uber").reduce((s, c) => s + c.importo, 0) ?? 0;
+  const totNonInc = corseOggi?.filter((c) => c.tipo_pagamento === "noninc").reduce((s, c) => s + c.importo, 0) ?? 0;
   const totale = totCash + totCarta + totUber;
 
+  const dataOggi = new Date().toLocaleDateString("it-IT", {
+    weekday: "long", day: "numeric", month: "long", year: "numeric",
+  });
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Oggi</h1>
-        <span className="text-muted-foreground text-sm">
-          {new Date().toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })}
-        </span>
+    <div>
+      {/* Command bar */}
+      <div className="border-b border-border px-6 py-3 flex items-center justify-between bg-card">
+        <div>
+          <h1 className="text-sm font-semibold text-foreground">Dashboard</h1>
+          <p className="text-xs text-muted-foreground capitalize">{dataOggi}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/dashboard/turni/nuovo"
+            className={cn(buttonVariants({ variant: "outline", size: "sm" }), "text-xs gap-1")}
+          >
+            <Plus size={12} weight="bold" />
+            Turno
+          </Link>
+          <Link
+            href="/dashboard/corse/nuova"
+            className={cn(buttonVariants({ size: "sm" }), "text-xs gap-1")}
+          >
+            <Plus size={12} weight="bold" />
+            Corsa
+          </Link>
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-1">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Ore lavorate</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{turnoOggi ? formatOre(turnoOggi.ore_lavorate) : "—"}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-1">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Cash</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{formatEuro(totCash)}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-1">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Carta</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{formatEuro(totCarta)}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-1">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Uber</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{formatEuro(totUber)}</p>
-          </CardContent>
-        </Card>
-      </div>
+      <div className="p-6 space-y-6">
+        {/* Metric tiles */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <MetricTile
+            label="Incassato oggi"
+            value={formatEuro(totale)}
+            icon={ChartLineUp}
+            iconClass="bg-primary/15 text-primary"
+            valueClass="text-primary"
+          />
+          <MetricTile
+            label="Cash"
+            value={formatEuro(totCash)}
+            icon={CurrencyEur}
+            iconClass="bg-amber-400/15 text-amber-400"
+            valueClass="text-amber-400"
+          />
+          <MetricTile
+            label="Carta"
+            value={formatEuro(totCarta)}
+            icon={CreditCard}
+            iconClass="bg-blue-400/15 text-blue-400"
+            valueClass="text-blue-400"
+          />
+          <MetricTile
+            label="Uber"
+            value={formatEuro(totUber)}
+            icon={Car}
+            iconClass="bg-slate-400/15 text-slate-300"
+            valueClass="text-foreground"
+          />
+        </div>
 
-      <Card>
-        <CardContent className="pt-6 flex items-center justify-between">
-          <div>
-            <p className="text-sm text-muted-foreground">Totale incassato oggi</p>
-            <p className="text-3xl font-bold">{formatEuro(totale)}</p>
-            <p className="text-sm text-muted-foreground mt-1">{corseOggi?.length ?? 0} corse</p>
+        {totNonInc > 0 && (
+          <div className="flex items-center gap-3 bg-card border border-purple-400/20 px-4 py-3 rounded-lg text-sm">
+            <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-purple-400/15">
+              <Tag size={14} weight="fill" className="text-purple-400" />
+            </span>
+            <span className="text-muted-foreground">Non incassato:</span>
+            <span className="font-mono font-semibold text-purple-400">{formatEuro(totNonInc)}</span>
           </div>
-          <div className="flex flex-col gap-2">
-            <Link href="/dashboard/corse/nuova" className={cn(buttonVariants())}>
-              + Corsa
-            </Link>
-            <Link href="/dashboard/turni/nuovo" className={cn(buttonVariants({ variant: "outline" }))}>
-              {turnoOggi ? "Modifica turno" : "+ Turno"}
+        )}
+
+        {/* Turno */}
+        <section>
+          <h2 className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-3">
+            <Clock size={12} weight="bold" />
+            Turno di oggi
+          </h2>
+          <div className="bg-card border border-border rounded-lg">
+            {turnoOggi ? (
+              <div className="px-4 py-3 flex items-center justify-between">
+                <div className="flex items-center gap-6">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Inizio</p>
+                    <p className="font-mono text-sm font-medium">{turnoOggi.ora_inizio.slice(0, 5)}</p>
+                  </div>
+                  <ArrowRight size={14} className="text-muted-foreground" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">Fine</p>
+                    <p className="font-mono text-sm font-medium">{turnoOggi.ora_fine.slice(0, 5)}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Durata</p>
+                    <p className="font-mono text-sm font-semibold text-primary">{formatOre(turnoOggi.ore_lavorate)}</p>
+                  </div>
+                </div>
+                <Link
+                  href="/dashboard/turni/nuovo"
+                  className={cn(buttonVariants({ variant: "outline", size: "sm" }), "text-xs")}
+                >
+                  Modifica
+                </Link>
+              </div>
+            ) : (
+              <div className="px-4 py-3 flex items-center justify-between">
+                <p className="text-sm text-muted-foreground">Nessun turno registrato per oggi.</p>
+                <Link
+                  href="/dashboard/turni/nuovo"
+                  className={cn(buttonVariants({ size: "sm" }), "text-xs gap-1")}
+                >
+                  <Plus size={12} weight="bold" />
+                  Registra
+                </Link>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Corse */}
+        <section>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+              <Car size={12} weight="bold" />
+              Corse di oggi ({corseOggi?.length ?? 0})
+            </h2>
+            <Link href="/dashboard/corse" className="flex items-center gap-1 text-xs text-primary hover:underline">
+              Vedi tutte <ArrowRight size={11} weight="bold" />
             </Link>
           </div>
-        </CardContent>
-      </Card>
+          <div className="bg-card border border-border rounded-lg divide-y divide-border">
+            {!corseOggi?.length && (
+              <p className="px-4 py-6 text-sm text-muted-foreground text-center">Nessuna corsa registrata oggi.</p>
+            )}
+            {corseOggi?.map((c) => (
+              <div key={c.id} className="px-4 py-3 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="font-mono text-xs text-muted-foreground shrink-0">
+                    {c.ora_partenza.slice(0, 5)}
+                  </span>
+                  <PagamentoBadge tipo={c.tipo_pagamento} />
+                  <span className="text-sm truncate">{c.origine} → {c.destinazione}</span>
+                </div>
+                <span className="font-mono text-sm font-medium shrink-0">{formatEuro(c.importo)}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
     </div>
+  );
+}
+
+function MetricTile({ label, value, icon: Icon, iconClass, valueClass }: {
+  label: string;
+  value: string;
+  icon: React.ElementType;
+  iconClass: string;
+  valueClass?: string;
+}) {
+  return (
+    <div className="bg-card border border-border rounded-lg p-4 relative overflow-hidden">
+      <div className={cn("absolute top-3 right-3 w-9 h-9 rounded-xl flex items-center justify-center", iconClass)}>
+        <Icon size={18} weight="fill" />
+      </div>
+      <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1 pr-10">{label}</p>
+      <p className={cn("font-mono text-xl font-semibold mt-1", valueClass ?? "text-foreground")}>
+        {value}
+      </p>
+    </div>
+  );
+}
+
+const pagamentoBadgeConfig: Record<string, { label: string; style: string; iconStyle: string; icon: React.ElementType }> = {
+  cash:   { label: "Cash",   style: "bg-amber-400/10 text-amber-400",   iconStyle: "text-amber-400",  icon: CurrencyEur },
+  carta:  { label: "Carta",  style: "bg-blue-400/10 text-blue-400",     iconStyle: "text-blue-400",   icon: CreditCard },
+  uber:   { label: "Uber",   style: "bg-muted text-muted-foreground",   iconStyle: "",                icon: Car },
+  noninc: { label: "No Inc", style: "bg-purple-400/10 text-purple-400", iconStyle: "text-purple-400", icon: Tag },
+};
+
+function PagamentoBadge({ tipo }: { tipo: string }) {
+  const cfg = pagamentoBadgeConfig[tipo] ?? pagamentoBadgeConfig.uber;
+  const { icon: Icon } = cfg;
+  return (
+    <span className={cn("inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-semibold shrink-0", cfg.style)}>
+      <Icon size={10} weight="fill" />
+      {cfg.label}
+    </span>
   );
 }

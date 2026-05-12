@@ -1,4 +1,4 @@
-export type TipoPagamento = "cash" | "carta" | "uber";
+export type TipoPagamento = "cash" | "carta" | "uber" | "noninc";
 
 export interface Corsa {
   id: string;
@@ -31,6 +31,15 @@ export interface ConfigurazioneSalario {
   percentuale_carta: number;
   percentuale_uber: number;
   aggiornato_il: string;
+}
+
+export interface Spesa {
+  id: string;
+  autista_id: string;
+  data: string;
+  descrizione: string;
+  importo: number;
+  created_at: string;
 }
 
 export interface ReportGiornaliero {
