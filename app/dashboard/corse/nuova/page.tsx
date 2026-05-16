@@ -9,6 +9,7 @@ import {
   CurrencyEur, CreditCard, Car, Tag, MapPin, Clock, CalendarBlank, ArrowLeft, CheckCircle,
 } from "@phosphor-icons/react";
 import PlaceAutocomplete from "@/components/place-autocomplete";
+import { sendPush } from "@/lib/push";
 
 const pagamentoPills: {
   value: TipoPagamento;
@@ -94,6 +95,13 @@ export default function NuovaCorsaPage() {
       setCaricamento(false);
       return;
     }
+    const importoFmt = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(parseFloat(importo) || 0);
+    await sendPush({
+      title: "Corsa salvata",
+      body: `${origine} → ${destinazione} · ${importoFmt}`,
+      url: "/dashboard/corse",
+      tag: "corsa-salvata",
+    });
     router.push("/dashboard/corse");
     router.refresh();
   }

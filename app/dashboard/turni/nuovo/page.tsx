@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { sendPush } from "@/lib/push";
 
 export default function NuovoTurnoPage() {
   const oggi = new Date().toISOString().split("T")[0];
@@ -37,6 +38,13 @@ export default function NuovoTurnoPage() {
       setCaricamento(false);
       return;
     }
+    const dataFmt = new Date(data + "T12:00:00").toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" });
+    await sendPush({
+      title: "Turno registrato",
+      body: `${dataFmt} · ${oraInizio}–${oraFine}`,
+      url: "/dashboard/turni",
+      tag: "turno-salvato",
+    });
     router.push("/dashboard/turni");
     router.refresh();
   }

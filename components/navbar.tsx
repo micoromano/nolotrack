@@ -9,6 +9,7 @@ import {
 } from "@phosphor-icons/react";
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import type { Permessi } from "@/lib/permessi";
+import PushSubscribe from "@/components/push-subscribe";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 
@@ -104,6 +105,7 @@ export default function NavBar({ userEmail, permessi }: { userEmail: string; per
             </select>
           </div>
           <p className="text-xs text-muted-foreground px-1 truncate">{userEmail}</p>
+          <PushSubscribe />
           <button
             onClick={esci}
             className="flex items-center gap-2 w-full px-1 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors rounded"
