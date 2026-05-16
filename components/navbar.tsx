@@ -8,6 +8,7 @@ import {
   GasPump, Money, PaperPlaneTilt,
 } from "@phosphor-icons/react";
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
+import PushSubscribe from "@/components/push-subscribe";
 import { cn } from "@/lib/utils";
 
 const vociDesktop: { href: string; label: string; icon: PhosphorIcon; color: string }[] = [
@@ -84,6 +85,7 @@ export default function NavBar({ userEmail }: { userEmail: string }) {
 
         <div className="border-t border-sidebar-border p-3 shrink-0 space-y-1">
           <p className="text-xs text-muted-foreground px-1 truncate">{userEmail}</p>
+          <PushSubscribe />
           <button
             onClick={esci}
             className="flex items-center gap-2 w-full px-1 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors rounded"
