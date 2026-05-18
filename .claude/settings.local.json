@@ -4,7 +4,9 @@
       "Read(//c/Users/mcame/**)",
       "Bash(npx create-next-app@latest project-nolotrack --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --no-turbopack)",
       "mcp__f9372d73-49dd-43e5-8075-e61a7fce814f__list_deployments",
-      "mcp__f9372d73-49dd-43e5-8075-e61a7fce814f__get_project"
+      "mcp__f9372d73-49dd-43e5-8075-e61a7fce814f__get_project",
+      "mcp__d0026ea2-b3d4-45c3-9671-8e25dbe3f13a__list_projects",
+      "mcp__d0026ea2-b3d4-45c3-9671-8e25dbe3f13a__execute_sql"
     ]
   }
 }
