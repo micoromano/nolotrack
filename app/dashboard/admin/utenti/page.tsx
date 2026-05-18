@@ -39,7 +39,7 @@ export default async function AdminUtentiPage() {
                 <span className="text-sm font-medium">{a.nome}</span>
                 <span className="text-sm text-muted-foreground">{a.email}</span>
                 <span className="text-xs bg-muted px-2 py-0.5 rounded w-fit">
-                  {(a.ruoli as { nome: string } | null)?.nome ?? "autista"}
+                  {(Array.isArray(a.ruoli) ? (a.ruoli as { nome: string }[])[0]?.nome : (a.ruoli as unknown as { nome: string } | null)?.nome) ?? "autista"}
                 </span>
               </div>
             ))}
