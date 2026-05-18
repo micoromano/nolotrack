@@ -681,14 +681,30 @@ export async function generaPDFCarburante(
 
   const rifornimenti: Array<{
     data: string;
+    targa: string;
+    km?: number | null;
     litri?: number | null;
+    prezzo_litro?: number | null;
     importo: number;
     note?: string | null;
   }> = data ?? [];
 
   const totCosto = rifornimenti.reduce((s, r) => s + r.importo, 0);
   const totLitri = rifornimenti.reduce((s, r) => s + (r.litri ?? 0), 0);
+  const mediaPrezzo = totLitri > 0 ? totCosto / totLitri : null;
   const periodoFmt = `${dataitIT(dataInizio)} – ${dataitIT(dataFine)}`;
+
+  // Per-targa summary
+  const perTarga = new Map<string, { litri: number; importo: number; n: number }>();
+  for (const r of rifornimenti) {
+    const t = r.targa ?? "—";
+    if (!perTarga.has(t)) perTarga.set(t, { litri: 0, importo: 0, n: 0 });
+    const e = perTarga.get(t)!;
+    e.litri += r.litri ?? 0;
+    e.importo += r.importo;
+    e.n++;
+  }
+  const targhe = [...perTarga.entries()].sort((a, b) => a[0].localeCompare(b[0]));
 
   const doc = (
     <Document>
@@ -702,26 +718,53 @@ export async function generaPDFCarburante(
           <Text style={{ fontSize: 9, color: "#666" }}>{periodoFmt}</Text>
         </View>
 
-        {/* Riepilogo */}
+        {/* Riepilogo globale */}
         <View style={carbStyles.section}>
-          <Text style={carbStyles.sectionTitle}>Riepilogo</Text>
+          <Text style={carbStyles.sectionTitle}>Riepilogo periodo</Text>
           <View style={carbStyles.row}>
             <Text style={carbStyles.label}>Rifornimenti</Text>
             <Text style={carbStyles.value}>{rifornimenti.length}</Text>
           </View>
-          {totLitri > 0 && (
+          <View style={carbStyles.row}>
+            <Text style={carbStyles.label}>Litri totali</Text>
+            <Text style={carbStyles.value}>{totLitri.toFixed(2)} L</Text>
+          </View>
+          {mediaPrezzo !== null && (
             <View style={carbStyles.row}>
-              <Text style={carbStyles.label}>Litri totali</Text>
-              <Text style={carbStyles.value}>{totLitri.toFixed(2)} L</Text>
+              <Text style={carbStyles.label}>Prezzo medio</Text>
+              <Text style={carbStyles.value}>{mediaPrezzo.toFixed(3)} €/L</Text>
             </View>
           )}
-          <View style={carbStyles.row}>
-            <Text style={carbStyles.label}>Costo totale</Text>
-            <Text style={carbStyles.valueAccent}>{euro(totCosto)}</Text>
+          <View style={carbStyles.accentBox}>
+            <Text style={{ fontFamily: "Helvetica-Bold", color: "#0078d4" }}>Costo totale carburante</Text>
+            <Text style={{ fontSize: 13, fontFamily: "Helvetica-Bold", color: "#0078d4" }}>{euro(totCosto)}</Text>
           </View>
         </View>
 
-        {/* Tabella rifornimenti */}
+        {/* Riepilogo per targa */}
+        {targhe.length > 1 && (
+          <View style={carbStyles.section}>
+            <Text style={carbStyles.sectionTitle}>Per veicolo</Text>
+            <View style={carbStyles.table}>
+              <View style={carbStyles.tableHeader}>
+                <Text style={[{ width: "30%" }, carbStyles.th]}>Targa</Text>
+                <Text style={[{ width: "15%", textAlign: "right" }, carbStyles.th]}>Rif.</Text>
+                <Text style={[{ width: "25%", textAlign: "right" }, carbStyles.th]}>Litri</Text>
+                <Text style={[{ width: "30%", textAlign: "right" }, carbStyles.th]}>Importo</Text>
+              </View>
+              {targhe.map(([targa, stat], i) => (
+                <View key={targa} style={i < targhe.length - 1 ? carbStyles.tableRow : carbStyles.tableRowLast}>
+                  <Text style={{ width: "30%", fontFamily: "Helvetica-Bold" }}>{targa}</Text>
+                  <Text style={{ width: "15%", textAlign: "right" }}>{stat.n}</Text>
+                  <Text style={{ width: "25%", textAlign: "right" }}>{stat.litri.toFixed(2)} L</Text>
+                  <Text style={{ width: "30%", textAlign: "right", fontFamily: "Helvetica-Bold" }}>{euro(stat.importo)}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
+
+        {/* Tabella dettaglio */}
         <View style={carbStyles.section}>
           <Text style={carbStyles.sectionTitle}>Dettaglio rifornimenti</Text>
           {rifornimenti.length === 0 ? (
@@ -729,42 +772,41 @@ export async function generaPDFCarburante(
           ) : (
             <View style={carbStyles.table}>
               <View style={carbStyles.tableHeader}>
-                <Text style={[{ width: "22%" }, carbStyles.th]}>Data</Text>
-                <Text style={[{ width: "20%", textAlign: "right" }, carbStyles.th]}>Litri</Text>
-                <Text style={[{ width: "22%", textAlign: "right" }, carbStyles.th]}>Importo</Text>
-                <Text style={[{ flex: 1 }, carbStyles.th]}>Note</Text>
+                <Text style={[{ width: "18%" }, carbStyles.th]}>Data</Text>
+                <Text style={[{ width: "18%" }, carbStyles.th]}>Targa</Text>
+                <Text style={[{ width: "18%", textAlign: "right" }, carbStyles.th]}>Litri</Text>
+                <Text style={[{ width: "18%", textAlign: "right" }, carbStyles.th]}>€/L</Text>
+                <Text style={[{ width: "18%", textAlign: "right" }, carbStyles.th]}>Importo</Text>
+                <Text style={[{ flex: 1 }, carbStyles.th]}>Km</Text>
               </View>
               {rifornimenti.map((r, i) => (
-                <View
-                  key={i}
-                  style={i < rifornimenti.length - 1 ? carbStyles.tableRow : carbStyles.tableRowLast}
-                >
-                  <Text style={{ width: "22%" }}>{dataitIT(r.data)}</Text>
-                  <Text style={{ width: "20%", textAlign: "right" }}>
-                    {r.litri != null ? `${r.litri.toFixed(2)} L` : "—"}
+                <View key={i} style={i < rifornimenti.length - 1 ? carbStyles.tableRow : carbStyles.tableRowLast}>
+                  <Text style={{ width: "18%" }}>{dataitIT(r.data)}</Text>
+                  <Text style={{ width: "18%", fontFamily: "Helvetica-Bold" }}>{r.targa ?? "—"}</Text>
+                  <Text style={{ width: "18%", textAlign: "right" }}>
+                    {r.litri != null ? `${r.litri.toFixed(2)}` : "—"}
                   </Text>
-                  <Text style={{ width: "22%", textAlign: "right", fontFamily: "Helvetica-Bold" }}>
+                  <Text style={{ width: "18%", textAlign: "right" }}>
+                    {r.prezzo_litro != null ? r.prezzo_litro.toFixed(3) : "—"}
+                  </Text>
+                  <Text style={{ width: "18%", textAlign: "right", fontFamily: "Helvetica-Bold" }}>
                     {euro(r.importo)}
                   </Text>
-                  <Text style={{ flex: 1 }}>{r.note ?? ""}</Text>
+                  <Text style={{ flex: 1, textAlign: "right" }}>
+                    {r.km != null ? new Intl.NumberFormat("it-IT").format(r.km) : "—"}
+                  </Text>
                 </View>
               ))}
               <View style={carbStyles.totaleRow}>
-                <Text style={{ fontFamily: "Helvetica-Bold", flex: 1 }}>Totale</Text>
-                {totLitri > 0 && (
-                  <Text style={{ width: "20%", textAlign: "right", fontFamily: "Helvetica-Bold" }}>
-                    {totLitri.toFixed(2)} L
-                  </Text>
-                )}
-                {totLitri === 0 && <Text style={{ width: "20%" }} />}
-                <Text
-                  style={{
-                    width: "22%",
-                    textAlign: "right",
-                    fontFamily: "Helvetica-Bold",
-                    color: "#0078d4",
-                  }}
-                >
+                <Text style={{ fontFamily: "Helvetica-Bold", width: "18%" }}>Totale</Text>
+                <Text style={{ width: "18%" }} />
+                <Text style={{ width: "18%", textAlign: "right", fontFamily: "Helvetica-Bold" }}>
+                  {totLitri.toFixed(2)} L
+                </Text>
+                <Text style={{ width: "18%", textAlign: "right" }}>
+                  {mediaPrezzo != null ? `⌀ ${mediaPrezzo.toFixed(3)}` : ""}
+                </Text>
+                <Text style={{ width: "18%", textAlign: "right", fontFamily: "Helvetica-Bold", color: "#0078d4" }}>
                   {euro(totCosto)}
                 </Text>
                 <Text style={{ flex: 1 }} />

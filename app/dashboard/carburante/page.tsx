@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+
+const CarburantePDFButton = dynamic(() => import("./pdf-button"), { ssr: false });
 import { cn } from "@/lib/utils";
 import {
   GasPump,
@@ -234,6 +237,7 @@ export default function CarburantePage() {
               <option key={m} value={m}>{labelMese(m)}</option>
             ))}
           </select>
+          <CarburantePDFButton mese={mese} />
         </div>
       </div>
 
