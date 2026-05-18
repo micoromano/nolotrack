@@ -50,8 +50,9 @@ export default async function CorsePage() {
       <div className="p-6">
         <div className="bg-card border border-border rounded overflow-hidden">
           {/* Header */}
-          <div className="hidden sm:grid grid-cols-5 px-4 py-2 border-b border-border bg-muted/30">
+          <div className="hidden sm:grid grid-cols-[120px_160px_80px_1fr_1fr_90px] px-4 py-2 border-b border-border bg-muted/30">
             <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Data / Ora</span>
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Cliente</span>
             <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Tipo</span>
             <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Partenza</span>
             <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Destinazione</span>
@@ -68,12 +69,18 @@ export default async function CorsePage() {
             {corse?.map((c) => (
               <div key={c.id} className="hover:bg-muted/20 transition-colors">
                 {/* Desktop row */}
-                <div className="hidden sm:grid grid-cols-5 px-4 py-3 items-center gap-2">
+                <div className="hidden sm:grid grid-cols-[120px_160px_80px_1fr_1fr_90px] px-4 py-3 items-center gap-2">
                   <div>
                     <p className="font-mono text-xs text-muted-foreground">
                       {new Date(c.data).toLocaleDateString("it-IT", { day: "2-digit", month: "short" })}
                     </p>
                     <p className="font-mono text-xs">{c.ora_partenza.slice(0, 5)}</p>
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm truncate">{c.cliente_nome ?? <span className="text-muted-foreground/40 italic text-xs">—</span>}</p>
+                    {c.n_pax && c.n_pax > 1 && (
+                      <p className="text-xs text-muted-foreground">{c.n_pax} pax</p>
+                    )}
                   </div>
                   <span className={cn("text-xs px-1.5 py-0.5 rounded font-medium w-fit", pagamentoBadgeStyle[c.tipo_pagamento])}>
                     {pagamentoLabel[c.tipo_pagamento] ?? c.tipo_pagamento}
