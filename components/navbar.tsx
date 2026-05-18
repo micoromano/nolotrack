@@ -9,6 +9,7 @@ import {
 } from "@phosphor-icons/react";
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 const vociDesktop: { href: string; label: string; icon: PhosphorIcon; color: string }[] = [
   { href: "/dashboard",            label: "Home",      icon: House,           color: "text-primary" },
@@ -35,6 +36,7 @@ export default function NavBar({ userEmail }: { userEmail: string }) {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
+  const { theme, setTheme } = useTheme();
 
   async function esci() {
     await supabase.auth.signOut();
@@ -83,6 +85,17 @@ export default function NavBar({ userEmail }: { userEmail: string }) {
         </nav>
 
         <div className="border-t border-sidebar-border p-3 shrink-0 space-y-1">
+          <div className="px-0 pb-2">
+            <select
+              value={theme ?? "dark"}
+              onChange={(e) => setTheme(e.target.value)}
+              className="w-full bg-sidebar-accent border border-sidebar-border text-xs text-muted-foreground px-2 py-1.5 rounded focus:outline-none focus:ring-1 focus:ring-primary"
+            >
+              <option value="dark">🌙 Scuro</option>
+              <option value="light">☀️ Chiaro</option>
+              <option value="system">💻 Sistema</option>
+            </select>
+          </div>
           <p className="text-xs text-muted-foreground px-1 truncate">{userEmail}</p>
           <button
             onClick={esci}
@@ -97,9 +110,20 @@ export default function NavBar({ userEmail }: { userEmail: string }) {
       {/* Mobile top bar */}
       <header className="sm:hidden fixed top-0 left-0 right-0 z-40 h-12 bg-sidebar border-b border-sidebar-border flex items-center justify-between px-4">
         <span className="font-heading italic text-primary text-lg">NoloTrack</span>
-        <button onClick={esci} className="text-muted-foreground p-1">
-          <SignOut size={18} weight="bold" />
-        </button>
+        <div className="flex items-center gap-2">
+          <select
+            value={theme ?? "dark"}
+            onChange={(e) => setTheme(e.target.value)}
+            className="bg-transparent text-muted-foreground text-xs border-none focus:outline-none"
+          >
+            <option value="dark">🌙</option>
+            <option value="light">☀️</option>
+            <option value="system">💻</option>
+          </select>
+          <button onClick={esci} className="text-muted-foreground p-1">
+            <SignOut size={18} weight="bold" />
+          </button>
+        </div>
       </header>
 
       {/* Mobile bottom tabs */}
