@@ -67,7 +67,7 @@ export default async function CorsePage() {
 
           <div className="divide-y divide-border">
             {corse?.map((c) => (
-              <div key={c.id} className="hover:bg-muted/20 transition-colors">
+              <Link key={c.id} href={`/dashboard/corse/${c.id}`} className="block hover:bg-muted/20 transition-colors cursor-pointer">
                 {/* Desktop row */}
                 <div className="hidden sm:grid grid-cols-[120px_160px_80px_1fr_1fr_90px] px-4 py-3 items-center gap-2">
                   <div>
@@ -105,7 +105,7 @@ export default async function CorsePage() {
                   </div>
                   <span className="font-mono text-sm font-medium shrink-0">{formatEuro(c.importo)}</span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

@@ -52,7 +52,8 @@ export default async function TurniPage() {
 
           <div className="divide-y divide-border">
             {turni?.map((t) => (
-              <div key={t.id} className="grid grid-cols-4 px-4 py-3 hover:bg-muted/20 transition-colors">
+              <Link key={t.id} href={`/dashboard/turni/${t.id}`}
+                className="grid grid-cols-4 px-4 py-3 hover:bg-muted/20 transition-colors cursor-pointer">
                 <span className="text-sm capitalize">
                   {new Date(t.data).toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" })}
                 </span>
@@ -61,7 +62,7 @@ export default async function TurniPage() {
                 <span className="font-mono text-sm font-medium text-primary text-right">
                   {formatOre(t.ore_lavorate)}
                 </span>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

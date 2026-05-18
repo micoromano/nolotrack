@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
-import { Receipt, Plus, Trash, CalendarBlank, Tag } from "@phosphor-icons/react";
+import { Receipt, Plus, Trash, CalendarBlank, Tag, PencilSimple } from "@phosphor-icons/react";
 
 function euro(n: number) {
   return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(n);
@@ -77,6 +78,7 @@ export default function SpesePage() {
   }
 
   async function elimina(id: string) {
+    if (!confirm("Eliminare questa spesa?")) return;
     const { error } = await supabase.from("spese").delete().eq("id", id);
     if (!error) setSpese(prev => prev.filter(s => s.id !== id));
   }
@@ -195,7 +197,14 @@ export default function SpesePage() {
                   </span>
                   <span className="text-sm text-foreground">{s.descrizione}</span>
                   <span className="font-mono text-sm text-destructive text-right">− {euro(s.importo)}</span>
-                  <div className="flex justify-end">
+                  <div className="flex justify-end gap-1">
+                    <Link
+                      href={`/dashboard/spese/${s.id}`}
+                      className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors px-2 py-1 rounded hover:bg-primary/10"
+                    >
+                      <PencilSimple size={13} weight="bold" />
+                      Modifica
+                    </Link>
                     <button
                       onClick={() => elimina(s.id)}
                       className="flex items-center gap-1 text-xs text-muted-foreground hover:text-rose-400 transition-colors px-2 py-1 rounded hover:bg-rose-400/10"
@@ -214,8 +223,11 @@ export default function SpesePage() {
                       {new Date(s.data + "T00:00:00").toLocaleDateString("it-IT", { day: "numeric", month: "short", year: "numeric" })}
                     </p>
                   </div>
-                  <div className="flex items-center gap-3 shrink-0">
+                  <div className="flex items-center gap-2 shrink-0">
                     <span className="font-mono text-sm text-destructive">− {euro(s.importo)}</span>
+                    <Link href={`/dashboard/spese/${s.id}`} className="text-muted-foreground hover:text-primary transition-colors p-1">
+                      <PencilSimple size={15} weight="bold" />
+                    </Link>
                     <button
                       onClick={() => elimina(s.id)}
                       className="text-muted-foreground hover:text-rose-400 transition-colors p-1"

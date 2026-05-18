@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import {
@@ -13,6 +14,7 @@ import {
   CalendarBlank,
   CaretDown,
   CaretUp,
+  PencilSimple,
 } from "@phosphor-icons/react";
 
 function euro(n: number) {
@@ -176,6 +178,7 @@ export default function CarburantePage() {
   }
 
   async function elimina(id: string) {
+    if (!confirm("Eliminare questo rifornimento?")) return;
     const { error } = await supabase.from("carburante").delete().eq("id", id);
     if (!error) setRifornimenti(prev => prev.filter(r => r.id !== id));
   }
@@ -483,7 +486,14 @@ export default function CarburantePage() {
                       : "—"}
                   </span>
                   <span className="font-mono text-sm text-amber-400 text-right">{euro(r.importo)}</span>
-                  <div className="flex justify-end">
+                  <div className="flex justify-end gap-1">
+                    <Link
+                      href={`/dashboard/carburante/${r.id}`}
+                      className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors px-2 py-1 rounded hover:bg-primary/10"
+                    >
+                      <PencilSimple size={13} weight="bold" />
+                      Modifica
+                    </Link>
                     <button
                       onClick={() => elimina(r.id)}
                       className="flex items-center gap-1 text-xs text-muted-foreground hover:text-rose-400 transition-colors px-2 py-1 rounded hover:bg-rose-400/10"
@@ -503,12 +513,17 @@ export default function CarburantePage() {
                         {new Date(r.data + "T00:00:00").toLocaleDateString("it-IT", { day: "numeric", month: "short", year: "numeric" })}
                       </span>
                     </div>
-                    <button
-                      onClick={() => elimina(r.id)}
-                      className="text-muted-foreground hover:text-rose-400 transition-colors p-1"
-                    >
-                      <Trash size={15} weight="bold" />
-                    </button>
+                    <div className="flex items-center gap-1">
+                      <Link href={`/dashboard/carburante/${r.id}`} className="text-muted-foreground hover:text-primary transition-colors p-1">
+                        <PencilSimple size={15} weight="bold" />
+                      </Link>
+                      <button
+                        onClick={() => elimina(r.id)}
+                        className="text-muted-foreground hover:text-rose-400 transition-colors p-1"
+                      >
+                        <Trash size={15} weight="bold" />
+                      </button>
+                    </div>
                   </div>
                   <div className="flex items-center gap-3 text-xs font-mono flex-wrap">
                     <span className="text-emerald-400">
