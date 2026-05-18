@@ -24,10 +24,7 @@ interface GiornoLedger {
 export default function CassaPage() {
   const [ledger, setLedger] = useState<GiornoLedger[]>([]);
   const [caricamento, setCaricamento] = useState(true);
-  const [mese, setMese] = useState(() => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-  });
+  const [mese, setMese] = useState("");
   const supabase = createClient();
 
   useEffect(() => {

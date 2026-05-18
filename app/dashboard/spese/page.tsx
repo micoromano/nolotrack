@@ -20,10 +20,7 @@ interface Spesa {
 export default function SpesePage() {
   const [spese, setSpese] = useState<Spesa[]>([]);
   const [caricamento, setCaricamento] = useState(true);
-  const [mese, setMese] = useState(() => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-  });
+  const [mese, setMese] = useState("");
 
   const [form, setForm] = useState({
     data: new Date().toISOString().slice(0, 10),
