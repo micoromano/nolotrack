@@ -12,7 +12,8 @@ export async function POST(req: NextRequest) {
   ]);
 
   const autista = autistaRes.status === "fulfilled" ? autistaRes.value.data : null;
-  const ruolo = (autista?.ruoli as { nome: string } | null)?.nome;
+  const ruoliRaw = autista?.ruoli as unknown;
+  const ruolo = (Array.isArray(ruoliRaw) ? (ruoliRaw[0] as { nome: string } | undefined)?.nome : (ruoliRaw as { nome: string } | null)?.nome);
   if (ruolo !== "admin") {
     return NextResponse.json({ error: "Non autorizzato" }, { status: 403 });
   }
