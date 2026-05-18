@@ -9,8 +9,18 @@ export interface Corsa {
   destinazione: string;
   tipo_pagamento: TipoPagamento;
   importo: number;
-  note?: string;
+  note?: string | null;
   created_at: string;
+  // Campi ordine servizio (SP1)
+  n_ordine?: number | null;
+  anno_ordine?: number | null;
+  rif_agenzia?: string | null;
+  agenzia?: string | null;
+  cliente_nome?: string | null;
+  cliente_tel?: string | null;
+  n_pax?: number;
+  ora_fine?: string | null;
+  tipo_servizio?: string | null;
 }
 
 export interface Turno {
