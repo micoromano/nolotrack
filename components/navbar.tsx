@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import {
   House, Clock, Car, Wallet, Receipt, FileText, SignOut,
-  GasPump, Money, PaperPlaneTilt,
+  GasPump, Money, PaperPlaneTilt, CalendarBlank,
 } from "@phosphor-icons/react";
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
@@ -17,6 +17,7 @@ const vociDesktop: { href: string; label: string; icon: PhosphorIcon; color: str
   { href: "/dashboard/corse",      label: "Corse",     icon: Car,             color: "text-emerald-400" },
   { href: "/dashboard/cassa",      label: "Cassa",     icon: Wallet,          color: "text-amber-400" },
   { href: "/dashboard/spese",      label: "Spese",     icon: Receipt,         color: "text-rose-400" },
+  { href: "/dashboard/agenda",     label: "Agenda",    icon: CalendarBlank,   color: "text-indigo-400" },
   { href: "/dashboard/carburante", label: "Carburante",icon: GasPump,         color: "text-orange-400" },
   { href: "/dashboard/stipendio",  label: "Stipendio", icon: Money,           color: "text-green-400" },
   { href: "/dashboard/report",     label: "Report",    icon: FileText,        color: "text-violet-400" },
@@ -28,8 +29,8 @@ const vociMobile = [
   vociDesktop[0], // Home
   vociDesktop[2], // Corse
   vociDesktop[3], // Cassa
-  vociDesktop[6], // Stipendio
-  vociDesktop[8], // Invia
+  vociDesktop[7], // Stipendio
+  vociDesktop[9], // Invia
 ];
 
 export default function NavBar({ userEmail }: { userEmail: string }) {
