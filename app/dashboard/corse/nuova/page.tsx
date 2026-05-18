@@ -55,6 +55,13 @@ export default function NuovaCorsaPage() {
   const [tipoPagamento, setTipoPagamento] = useState<TipoPagamento>("cash");
   const [importo, setImporto] = useState("");
   const [note, setNote] = useState("");
+  const [agenzia, setAgenzia] = useState("");
+  const [rifAgenzia, setRifAgenzia] = useState("");
+  const [clienteNome, setClienteNome] = useState("");
+  const [clienteTel, setClienteTel] = useState("");
+  const [nPax, setNPax] = useState(1);
+  const [oraFine, setOraFine] = useState("");
+  const [tipoServizio, setTipoServizio] = useState("");
   const [errore, setErrore] = useState("");
   const [caricamento, setCaricamento] = useState(false);
   const router = useRouter();
@@ -74,6 +81,13 @@ export default function NuovaCorsaPage() {
       tipo_pagamento: tipoPagamento,
       importo: parseFloat(importo) || 0,
       note: note || null,
+      agenzia:       agenzia || null,
+      rif_agenzia:   rifAgenzia || null,
+      cliente_nome:  clienteNome || null,
+      cliente_tel:   clienteTel || null,
+      n_pax:         nPax,
+      ora_fine:      oraFine || null,
+      tipo_servizio: tipoServizio || null,
     });
     if (error) {
       setErrore("Errore: " + error.message);
@@ -185,6 +199,94 @@ export default function NuovaCorsaPage() {
                 />
               </div>
             </Field>
+
+            {/* Sezione dettaglio ordine */}
+            <div className="border-t border-border pt-5 space-y-4">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Dettaglio ordine
+              </p>
+
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="Agenzia">
+                  <input
+                    type="text"
+                    value={agenzia}
+                    onChange={(e) => setAgenzia(e.target.value)}
+                    placeholder="es. Tika"
+                    className={inputClass}
+                  />
+                </Field>
+                <Field label="Rif. agenzia">
+                  <input
+                    type="text"
+                    value={rifAgenzia}
+                    onChange={(e) => setRifAgenzia(e.target.value)}
+                    placeholder="es. 329/2026"
+                    className={inputClass}
+                  />
+                </Field>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="Cliente">
+                  <input
+                    type="text"
+                    value={clienteNome}
+                    onChange={(e) => setClienteNome(e.target.value)}
+                    placeholder="Nome passeggero"
+                    className={inputClass}
+                  />
+                </Field>
+                <Field label="Tel. cliente">
+                  <input
+                    type="tel"
+                    value={clienteTel}
+                    onChange={(e) => setClienteTel(e.target.value)}
+                    placeholder="+39…"
+                    className={inputClass}
+                  />
+                </Field>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <Field label="Pax">
+                  <input
+                    type="number"
+                    min="1"
+                    max="99"
+                    value={nPax}
+                    onChange={(e) => setNPax(parseInt(e.target.value) || 1)}
+                    className={cn(inputClass, "font-mono")}
+                  />
+                </Field>
+                <Field label="Ora fine">
+                  <input
+                    type="time"
+                    value={oraFine}
+                    onChange={(e) => setOraFine(e.target.value)}
+                    className={cn(inputClass, "font-mono")}
+                  />
+                </Field>
+                <Field label="Tipo servizio">
+                  <input
+                    type="text"
+                    list="tipi-servizio"
+                    value={tipoServizio}
+                    onChange={(e) => setTipoServizio(e.target.value)}
+                    placeholder="Transfer…"
+                    className={inputClass}
+                  />
+                  <datalist id="tipi-servizio">
+                    <option value="Transfer FCO" />
+                    <option value="Transfer CIA" />
+                    <option value="Transfer stazione" />
+                    <option value="Transfer indirizzo" />
+                    <option value="Escursione" />
+                    <option value="Full day" />
+                  </datalist>
+                </Field>
+              </div>
+            </div>
 
             {/* Note */}
             <Field label="Note (opzionale)">
