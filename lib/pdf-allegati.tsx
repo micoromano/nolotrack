@@ -324,32 +324,77 @@ export async function generaPDFRapportino(
           {g.corse.length === 0 ? (
             <Text style={styles.label}>Nessuna corsa registrata</Text>
           ) : (
-            <View style={styles.table}>
-              <View style={styles.tableHeader}>
-                <Text style={[{ width: "10%" }, styles.th]}>Ora</Text>
-                <Text style={[{ width: "25%" }, styles.th]}>Tipo</Text>
-                <Text style={[{ flex: 1 }, styles.th]}>Tratta</Text>
-                <Text style={[{ width: "12.5%", textAlign: "right" }, styles.th]}>Cash</Text>
-                <Text style={[{ width: "12.5%", textAlign: "right" }, styles.th]}>Carte</Text>
-              </View>
+            <View>
               {g.corse.map((c, i) => (
-                <View key={i} style={i < g.corse.length - 1 ? styles.tableRow : styles.tableRowLast}>
-                  <Text style={{ width: "10%" }}>{c.ora_partenza.slice(0, 5)}</Text>
-                  <Text style={{ width: "25%" }}>{c.tipo_pagamento}</Text>
-                  <Text style={{ flex: 1 }}>{c.origine} → {c.destinazione}</Text>
-                  <Text style={{ width: "12.5%", textAlign: "right" }}>
-                    {c.tipo_pagamento === "cash" ? euro(c.importo) : ""}
-                  </Text>
-                  <Text style={{ width: "12.5%", textAlign: "right" }}>
-                    {c.tipo_pagamento === "carta" ? euro(c.importo) : ""}
-                  </Text>
+                <View key={i} style={{
+                  borderWidth: 1, borderColor: "#e0e0e0", borderRadius: 3, marginBottom: 4,
+                }}>
+                  {/* Card header: ora + badge + importo */}
+                  <View style={{
+                    flexDirection: "row", justifyContent: "space-between", alignItems: "center",
+                    backgroundColor: "#f5f5f5", paddingHorizontal: 6, paddingVertical: 4,
+                    borderBottomWidth: 1, borderBottomColor: "#e0e0e0",
+                  }}>
+                    <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 10 }}>
+                      {c.ora_partenza.slice(0, 5)}
+                    </Text>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                      <Text style={{
+                        fontSize: 7, paddingHorizontal: 4, paddingVertical: 1, borderRadius: 3,
+                        ...(c.tipo_pagamento === "cash"
+                          ? { backgroundColor: "#fef3c7", color: "#92400e" }
+                          : c.tipo_pagamento === "carta"
+                          ? { backgroundColor: "#dbeafe", color: "#1e40af" }
+                          : c.tipo_pagamento === "uber"
+                          ? { backgroundColor: "#f3f4f6", color: "#374151" }
+                          : { backgroundColor: "#ede9fe", color: "#6d28d9" }),
+                      }}>
+                        {c.tipo_pagamento === "cash" ? "Cash"
+                          : c.tipo_pagamento === "carta" ? "Carta"
+                          : c.tipo_pagamento === "uber" ? "Uber"
+                          : "No Inc"}
+                      </Text>
+                      {c.importo > 0 && (
+                        <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 9, color: "#0078d4" }}>
+                          {euro(c.importo)}
+                        </Text>
+                      )}
+                    </View>
+                  </View>
+                  {/* Card body: Da / A / Note */}
+                  <View style={{ paddingHorizontal: 6, paddingVertical: 4 }}>
+                    <View style={{ flexDirection: "row", marginBottom: 2 }}>
+                      <Text style={{ width: 22, fontFamily: "Helvetica-Bold", color: "#0078d4", fontSize: 8 }}>Da</Text>
+                      <Text style={{ flex: 1, fontSize: 8 }}>{c.origine}</Text>
+                    </View>
+                    <View style={{ flexDirection: "row", marginBottom: c.note ? 2 : 0 }}>
+                      <Text style={{ width: 22, fontFamily: "Helvetica-Bold", color: "#0078d4", fontSize: 8 }}>A</Text>
+                      <Text style={{ flex: 1, fontSize: 8 }}>{c.destinazione}</Text>
+                    </View>
+                    {c.note && (
+                      <View style={{ flexDirection: "row" }}>
+                        <Text style={{ width: 22, fontFamily: "Helvetica-Bold", color: "#888", fontSize: 8 }}>N</Text>
+                        <Text style={{ flex: 1, fontSize: 7.5, color: "#666" }}>{c.note}</Text>
+                      </View>
+                    )}
+                  </View>
                 </View>
               ))}
-              <View style={styles.totaleRow}>
-                <Text style={{ fontFamily: "Helvetica-Bold", flex: 1 }}>Totali</Text>
-                <Text style={{ width: "12.5%", textAlign: "right", fontFamily: "Helvetica-Bold" }}>{euro(totCash)}</Text>
-                <Text style={{ width: "12.5%", textAlign: "right", fontFamily: "Helvetica-Bold" }}>{euro(totCarte)}</Text>
-              </View>
+              {(totCash > 0 || totCarte > 0) && (
+                <View style={styles.totaleRow}>
+                  <Text style={{ fontFamily: "Helvetica-Bold", flex: 1 }}>Totali incassati</Text>
+                  {totCash > 0 && (
+                    <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 8, color: "#92400e", marginRight: 8 }}>
+                      Cash {euro(totCash)}
+                    </Text>
+                  )}
+                  {totCarte > 0 && (
+                    <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 8, color: "#1e40af" }}>
+                      Carte {euro(totCarte)}
+                    </Text>
+                  )}
+                </View>
+              )}
             </View>
           )}
         </View>

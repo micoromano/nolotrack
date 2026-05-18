@@ -76,6 +76,41 @@ const styles = StyleSheet.create({
   badgeCarta: { backgroundColor: "#dbeafe", color: "#1e40af" },
   badgeUber: { backgroundColor: "#f3f4f6", color: "#374151" },
   badgeNoInc: { backgroundColor: "#ede9fe", color: "#6d28d9" },
+  corsaCard: {
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+    borderRadius: 3,
+    marginBottom: 4,
+  },
+  corsaHead: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
+    paddingHorizontal: 6,
+    paddingVertical: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e0e0e0",
+  },
+  corsaBody: {
+    paddingHorizontal: 6,
+    paddingVertical: 4,
+  },
+  corsaLine: {
+    flexDirection: "row",
+    marginBottom: 2,
+  },
+  corsaLineLabel: {
+    width: 22,
+    fontFamily: "Helvetica-Bold",
+    color: "#0078d4",
+    fontSize: 8,
+  },
+  corsaLineValue: {
+    flex: 1,
+    fontSize: 8,
+    color: "#1a1a1a",
+  },
   totaleRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -274,32 +309,59 @@ export function RapportinoDoc({
           {corse.length === 0 ? (
             <Text style={styles.label}>Nessuna corsa registrata</Text>
           ) : (
-            <View style={styles.table}>
-              <View style={styles.tableHeader}>
-                <Text style={[styles.colOra, styles.th]}>Ora</Text>
-                <Text style={[styles.colCliente, styles.th]}>Servizio</Text>
-                <Text style={[{ flex: 1 }, styles.th]}>Tratta</Text>
-                <Text style={[styles.colImporto, styles.th]}>Cash</Text>
-                <Text style={[styles.colImporto, styles.th]}>Carte</Text>
-              </View>
+            <View>
               {corse.map((c, i) => (
-                <View key={i} style={i < corse.length - 1 ? styles.tableRow : styles.tableRowLast}>
-                  <Text style={styles.colOra}>{c.ora_partenza.slice(0, 5)}</Text>
-                  <Text style={styles.colCliente}>{badgeLabel(c.tipo_pagamento)}</Text>
-                  <Text style={{ flex: 1 }}>{c.origine} → {c.destinazione}</Text>
-                  <Text style={styles.colImporto}>
-                    {c.tipo_pagamento === "cash" ? euro(c.importo) : ""}
-                  </Text>
-                  <Text style={styles.colImporto}>
-                    {c.tipo_pagamento === "carta" ? euro(c.importo) : ""}
-                  </Text>
+                <View key={i} style={styles.corsaCard}>
+                  <View style={styles.corsaHead}>
+                    <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 10 }}>
+                      {c.ora_partenza.slice(0, 5)}
+                    </Text>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                      <Text style={[styles.badge, badgeStyle(c.tipo_pagamento)]}>
+                        {badgeLabel(c.tipo_pagamento)}
+                      </Text>
+                      {c.importo > 0 && (
+                        <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 9, color: "#0078d4" }}>
+                          {euro(c.importo)}
+                        </Text>
+                      )}
+                    </View>
+                  </View>
+                  <View style={styles.corsaBody}>
+                    <View style={styles.corsaLine}>
+                      <Text style={styles.corsaLineLabel}>Da</Text>
+                      <Text style={styles.corsaLineValue}>{c.origine}</Text>
+                    </View>
+                    <View style={[styles.corsaLine, { marginBottom: c.note ? 2 : 0 }]}>
+                      <Text style={styles.corsaLineLabel}>A</Text>
+                      <Text style={styles.corsaLineValue}>{c.destinazione}</Text>
+                    </View>
+                    {c.note && (
+                      <View style={[styles.corsaLine, { marginBottom: 0 }]}>
+                        <Text style={[styles.corsaLineLabel, { color: "#888" }]}>N</Text>
+                        <Text style={[styles.corsaLineValue, { color: "#666", fontSize: 7.5 }]}>
+                          {c.note}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
                 </View>
               ))}
-              <View style={styles.totaleRow}>
-                <Text style={{ fontFamily: "Helvetica-Bold" }}>Totali</Text>
-                <Text style={[styles.colImporto, { fontFamily: "Helvetica-Bold" }]}>{euro(totCash)}</Text>
-                <Text style={[styles.colImporto, { fontFamily: "Helvetica-Bold" }]}>{euro(totCarte)}</Text>
-              </View>
+              {(totCash > 0 || totCarte > 0) && (
+                <View style={styles.totaleRow}>
+                  <Text style={{ fontFamily: "Helvetica-Bold", flex: 1 }}>Totali incassati</Text>
+                  {totCash > 0 && (
+                    <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 8, color: "#92400e", marginRight: 8 }}>
+                      Cash {euro(totCash)}
+                    </Text>
+                  )}
+                  {totCarte > 0 && (
+                    <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 8, color: "#1e40af" }}>
+                      Carte {euro(totCarte)}
+                    </Text>
+                  )}
+                </View>
+              )}
             </View>
           )}
         </View>
