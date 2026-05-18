@@ -49,6 +49,7 @@ interface Rapportino {
   totSpese: number;
   saldoPrev: number;
   saldoOggi: number;
+  ultimoGiornoLavorativo: string | null;
 }
 
 export default function ReportPage() {
@@ -65,12 +66,13 @@ export default function ReportPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const [turnoRes, corseRes, speseGiornoRes, cashPrecRes, spesePrecRes] = await Promise.allSettled([
+    const [turnoRes, corseRes, speseGiornoRes, cashPrecRes, spesePrecRes, ultimoGiornoRes] = await Promise.allSettled([
       supabase.from("turni").select("*").eq("autista_id", user.id).eq("data", dataSelezionata).maybeSingle(),
       supabase.from("corse").select("*").eq("autista_id", user.id).eq("data", dataSelezionata).order("ora_partenza"),
       supabase.from("spese").select("*").eq("autista_id", user.id).eq("data", dataSelezionata).order("created_at"),
       supabase.from("corse").select("importo, tipo_pagamento").eq("autista_id", user.id).eq("tipo_pagamento", "cash").lt("data", dataSelezionata),
       supabase.from("spese").select("importo").eq("autista_id", user.id).lt("data", dataSelezionata),
+      supabase.from("corse").select("data").eq("autista_id", user.id).lt("data", dataSelezionata).order("data", { ascending: false }).limit(1).maybeSingle(),
     ]);
 
     const turno = turnoRes.status === "fulfilled" ? turnoRes.value.data : null;
@@ -78,6 +80,7 @@ export default function ReportPage() {
     const speseGiorno = speseGiornoRes.status === "fulfilled" ? speseGiornoRes.value.data : null;
     const cashPrec = cashPrecRes.status === "fulfilled" ? cashPrecRes.value.data : null;
     const spesePrec = spesePrecRes.status === "fulfilled" ? spesePrecRes.value.data : null;
+    const ultimoGiorno = ultimoGiornoRes.status === "fulfilled" ? ultimoGiornoRes.value.data?.data ?? null : null;
 
     const corseList: Corsa[] = corse ?? [];
     const speseList: SpesaItem[] = (speseGiorno as SpesaItem[] | null) ?? [];
@@ -99,6 +102,7 @@ export default function ReportPage() {
       spese: speseList,
       totCash, totCarte, totUber, totNonInc, totSpese,
       saldoPrev, saldoOggi,
+      ultimoGiornoLavorativo: ultimoGiorno,
     });
     setCaricamento(false);
   }, [supabase]);
@@ -127,7 +131,7 @@ export default function ReportPage() {
     await caricaRapportino(data);
   }
 
-  const dataPrev = prevDay(data);
+  const dataPrev = rapportino?.ultimoGiornoLavorativo ?? prevDay(data);
   const dataFmt = new Date(data + "T00:00:00").toLocaleDateString("it-IT", {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
   });
