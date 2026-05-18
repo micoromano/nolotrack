@@ -5,35 +5,38 @@ import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import {
   House, Clock, Car, Wallet, Receipt, FileText, SignOut,
-  GasPump, Money, PaperPlaneTilt, CalendarBlank,
+  GasPump, Money, PaperPlaneTilt, CalendarBlank, Users,
 } from "@phosphor-icons/react";
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
+import type { Permessi } from "@/lib/permessi";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 
-const vociDesktop: { href: string; label: string; icon: PhosphorIcon; color: string }[] = [
-  { href: "/dashboard",            label: "Home",      icon: House,           color: "text-primary" },
-  { href: "/dashboard/turni",      label: "Turni",     icon: Clock,           color: "text-sky-400" },
-  { href: "/dashboard/corse",      label: "Corse",     icon: Car,             color: "text-emerald-400" },
-  { href: "/dashboard/cassa",      label: "Cassa",     icon: Wallet,          color: "text-amber-400" },
-  { href: "/dashboard/spese",      label: "Spese",     icon: Receipt,         color: "text-rose-400" },
-  { href: "/dashboard/agenda",     label: "Agenda",    icon: CalendarBlank,   color: "text-indigo-400" },
-  { href: "/dashboard/carburante", label: "Carburante",icon: GasPump,         color: "text-orange-400" },
-  { href: "/dashboard/stipendio",  label: "Stipendio", icon: Money,           color: "text-green-400" },
-  { href: "/dashboard/report",     label: "Report",    icon: FileText,        color: "text-violet-400" },
-  { href: "/dashboard/invia",      label: "Invia",     icon: PaperPlaneTilt,  color: "text-cyan-400" },
+interface VoceNav {
+  href: string;
+  label: string;
+  icon: PhosphorIcon;
+  color: string;
+  sezione: string;
+}
+
+const vociDesktop: VoceNav[] = [
+  { href: "/dashboard",            label: "Home",       icon: House,          color: "text-primary",     sezione: "home" },
+  { href: "/dashboard/turni",      label: "Turni",      icon: Clock,          color: "text-sky-400",     sezione: "turni" },
+  { href: "/dashboard/corse",      label: "Corse",      icon: Car,            color: "text-emerald-400", sezione: "corse" },
+  { href: "/dashboard/cassa",      label: "Cassa",      icon: Wallet,         color: "text-amber-400",   sezione: "cassa" },
+  { href: "/dashboard/spese",      label: "Spese",      icon: Receipt,        color: "text-rose-400",    sezione: "spese" },
+  { href: "/dashboard/agenda",     label: "Agenda",     icon: CalendarBlank,  color: "text-indigo-400",  sezione: "agenda" },
+  { href: "/dashboard/carburante", label: "Carburante", icon: GasPump,        color: "text-orange-400",  sezione: "carburante" },
+  { href: "/dashboard/stipendio",  label: "Stipendio",  icon: Money,          color: "text-green-400",   sezione: "stipendio" },
+  { href: "/dashboard/report",     label: "Report",     icon: FileText,       color: "text-violet-400",  sezione: "report" },
+  { href: "/dashboard/invia",      label: "Invia",      icon: PaperPlaneTilt, color: "text-cyan-400",    sezione: "invia" },
+  { href: "/dashboard/admin",      label: "Admin",      icon: Users,          color: "text-slate-400",   sezione: "admin" },
 ];
 
-// Mobile: le 5 voci più usate quotidianamente
-const vociMobile = [
-  vociDesktop[0], // Home
-  vociDesktop[2], // Corse
-  vociDesktop[3], // Cassa
-  vociDesktop[7], // Stipendio
-  vociDesktop[9], // Invia
-];
+const sezioniMobile = ["home", "corse", "cassa", "stipendio", "invia"];
 
-export default function NavBar({ userEmail }: { userEmail: string }) {
+export default function NavBar({ userEmail, permessi }: { userEmail: string; permessi: Permessi }) {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
@@ -48,6 +51,9 @@ export default function NavBar({ userEmail }: { userEmail: string }) {
   const isActive = (href: string) =>
     href === "/dashboard" ? pathname === href : pathname.startsWith(href);
 
+  const vociVisibili = vociDesktop.filter(v => permessi[v.sezione]?.can_view !== false);
+  const vociMobile = vociDesktop.filter(v => sezioniMobile.includes(v.sezione) && permessi[v.sezione]?.can_view !== false);
+
   return (
     <>
       {/* Desktop sidebar */}
@@ -57,7 +63,7 @@ export default function NavBar({ userEmail }: { userEmail: string }) {
         </div>
 
         <nav className="flex-1 py-3 overflow-y-auto">
-          {vociDesktop.map(({ href, label, icon: Icon, color }) => {
+          {vociVisibili.map(({ href, label, icon: Icon, color }) => {
             const active = isActive(href);
             return (
               <Link
@@ -129,7 +135,7 @@ export default function NavBar({ userEmail }: { userEmail: string }) {
 
       {/* Mobile bottom tabs */}
       <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-sidebar border-t border-sidebar-border safe-area-bottom">
-        <div className="grid grid-cols-5 h-16">
+        <div className="grid h-16" style={{ gridTemplateColumns: `repeat(${vociMobile.length}, minmax(0, 1fr))` }}>
           {vociMobile.map(({ href, label, icon: Icon, color }) => {
             const active = isActive(href);
             return (
