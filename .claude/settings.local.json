@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Read(//c/Users/mcame/**)",
-      "Bash(npx create-next-app@latest project-nolotrack --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --no-turbopack)"
+      "Bash(npx create-next-app@latest project-nolotrack --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --no-turbopack)",
+      "mcp__f9372d73-49dd-43e5-8075-e61a7fce814f__list_teams",
+      "mcp__f9372d73-49dd-43e5-8075-e61a7fce814f__list_deployments"
     ]
   }
 }
