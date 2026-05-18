@@ -34,7 +34,7 @@ const vociDesktop: VoceNav[] = [
   { href: "/dashboard/admin",      label: "Admin",      icon: Users,          color: "text-slate-400",   sezione: "admin" },
 ];
 
-const sezioniMobile = ["home", "corse", "cassa", "stipendio", "invia"];
+const sezioniMobile = ["home", "turni", "corse", "cassa", "spese", "agenda", "carburante", "stipendio", "report", "invia", "admin"];
 
 export default function NavBar({ userEmail, permessi }: { userEmail: string; permessi: Permessi }) {
   const pathname = usePathname();
@@ -135,7 +135,7 @@ export default function NavBar({ userEmail, permessi }: { userEmail: string; per
 
       {/* Mobile bottom tabs */}
       <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-sidebar border-t border-sidebar-border safe-area-bottom">
-        <div className="grid h-16" style={{ gridTemplateColumns: `repeat(${vociMobile.length}, minmax(0, 1fr))` }}>
+        <div className="flex h-16 overflow-x-auto scrollbar-none">
           {vociMobile.map(({ href, label, icon: Icon, color }) => {
             const active = isActive(href);
             return (
@@ -143,7 +143,7 @@ export default function NavBar({ userEmail, permessi }: { userEmail: string; per
                 key={href}
                 href={href}
                 className={cn(
-                  "flex flex-col items-center justify-center gap-1 transition-all relative pt-1",
+                  "flex flex-col items-center justify-center gap-1 transition-all relative pt-1 shrink-0 w-16",
                   active ? "text-foreground" : "text-muted-foreground"
                 )}
               >
