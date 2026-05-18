@@ -10,10 +10,13 @@ export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
   if (!code) return NextResponse.redirect(new URL("/dashboard/agenda?errore=no_code", req.url));
 
+  const origin = new URL(req.url).origin;
+  const redirectUri = `${origin}/api/google-calendar/callback`;
+
   const oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
-    process.env.GOOGLE_REDIRECT_URI,
+    redirectUri,
   );
 
   const { tokens } = await oauth2Client.getToken(code);
