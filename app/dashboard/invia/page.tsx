@@ -231,16 +231,16 @@ export default function InviaPage() {
 
   return (
     <div>
-      {/* Command bar */}
-      <div className="border-b border-border px-6 py-3 flex items-center justify-between bg-card">
+      {/* Header */}
+      <header className="sticky top-0 z-30 bg-surface/80 backdrop-blur-xl border-b border-border-subtle h-16 flex items-center justify-between px-4 md:px-10">
         <div>
-          <h1 className="text-sm font-semibold text-foreground">Invia documenti</h1>
-          <p className="text-xs text-muted-foreground">Componi e invia rapporti via email</p>
+          <h1 className="font-heading text-lg font-bold text-primary">Invia documenti</h1>
+          <p className="text-xs text-on-surface-variant">Componi e invia rapporti via email</p>
         </div>
-        <EnvelopeSimple size={18} className="text-muted-foreground" />
-      </div>
+        <EnvelopeSimple size={18} className="text-on-surface-variant" />
+      </header>
 
-      <div className="p-6 space-y-5 max-w-3xl">
+      <div className="px-4 md:px-10 py-8 max-w-3xl space-y-6">
         {/* Banner Gmail non configurato */}
         {gmailConfigurato === false && (
           <div className="flex items-start gap-3 bg-amber-400/10 border border-amber-400/30 rounded-lg px-4 py-3">

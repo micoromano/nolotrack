@@ -38,8 +38,38 @@
   --color-success: var(--success);
   --color-tertiary: var(--tertiary);
   --color-outline: var(--outline);
+  /* Precision Mobility extended tokens */
+  --color-surface: var(--surface);
+  --color-surface-dim: var(--surface-dim);
+  --color-surface-bright: var(--surface-bright);
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-container-highest: var(--surface-container-highest);
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-on-primary: var(--on-primary);
+  --color-on-primary-container: var(--on-primary-container);
+  --color-primary-container: var(--primary-container);
+  --color-secondary-container: var(--secondary-container);
+  --color-on-secondary-container: var(--on-secondary-container);
+  --color-on-background: var(--on-background);
+  --color-border-subtle: var(--border-subtle);
+  --color-outline-variant: var(--outline-variant);
+  --color-surface-variant: var(--surface-variant);
+  --color-surface-tint: var(--surface-tint);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-error: var(--error);
+  --color-on-error: var(--on-error);
+  --color-error-container: var(--error-container);
+  --color-success-emerald: var(--success-emerald);
+  --color-tertiary-container: var(--tertiary-container);
+  --color-on-tertiary: var(--on-tertiary);
   --shadow-glow: 0 4px 14px rgba(173, 198, 255, 0.2);
   --shadow-glow-lg: 0 8px 32px rgba(173, 198, 255, 0.3);
+  --shadow-primary-sm: 0 4px 14px rgba(173, 198, 255, 0.15);
+  --shadow-primary-lg: 0 8px 32px rgba(173, 198, 255, 0.2);
   --radius-sm: calc(var(--radius) * 0.5);
   --radius-md: calc(var(--radius) * 0.75);
   --radius-lg: var(--radius);
@@ -81,6 +111,32 @@
   --outline: #8c909f;
   --surface-elevated: #1a1a1a;
   --border-subtle: #27272a;
+  /* Precision Mobility extended */
+  --surface: #131313;
+  --surface-dim: #131313;
+  --surface-bright: #3a3939;
+  --surface-container-lowest: #0e0e0e;
+  --surface-container-low: #1c1b1b;
+  --surface-container: #201f1f;
+  --surface-container-high: #2a2a2a;
+  --surface-container-highest: #353534;
+  --on-surface: #e5e2e1;
+  --on-surface-variant: #c2c6d6;
+  --on-primary: #002e6a;
+  --on-primary-container: #00285d;
+  --primary-container: #4d8eff;
+  --secondary-container: #45464e;
+  --on-secondary-container: #b4b4bd;
+  --on-background: #e5e2e1;
+  --outline-variant: #424754;
+  --surface-variant: #353534;
+  --surface-tint: #adc6ff;
+  --error: #ffb4ab;
+  --on-error: #690005;
+  --error-container: #93000a;
+  --success-emerald: #10b981;
+  --tertiary-container: #df7412;
+  --on-tertiary: #502400;
 }
 
 .dark {
@@ -116,6 +172,31 @@
   --outline: #8c909f;
   --surface-elevated: #1a1a1a;
   --border-subtle: #27272a;
+  --surface: #131313;
+  --surface-dim: #131313;
+  --surface-bright: #3a3939;
+  --surface-container-lowest: #0e0e0e;
+  --surface-container-low: #1c1b1b;
+  --surface-container: #201f1f;
+  --surface-container-high: #2a2a2a;
+  --surface-container-highest: #353534;
+  --on-surface: #e5e2e1;
+  --on-surface-variant: #c2c6d6;
+  --on-primary: #002e6a;
+  --on-primary-container: #00285d;
+  --primary-container: #4d8eff;
+  --secondary-container: #45464e;
+  --on-secondary-container: #b4b4bd;
+  --on-background: #e5e2e1;
+  --outline-variant: #424754;
+  --surface-variant: #353534;
+  --surface-tint: #adc6ff;
+  --error: #ffb4ab;
+  --on-error: #690005;
+  --error-container: #93000a;
+  --success-emerald: #10b981;
+  --tertiary-container: #df7412;
+  --on-tertiary: #502400;
 }
 
 .light {
@@ -145,6 +226,34 @@
   --sidebar-accent-foreground: oklch(0.13 0 0);
   --sidebar-border: oklch(0.85 0 0);
   --sidebar-ring: oklch(0.63 0.19 248);
+  /* Light mode surface tokens */
+  --surface: oklch(0.97 0 0);
+  --surface-dim: oklch(0.91 0 0);
+  --surface-bright: oklch(1 0 0);
+  --surface-container-lowest: oklch(1 0 0);
+  --surface-container-low: oklch(0.95 0 0);
+  --surface-container: oklch(0.93 0 0);
+  --surface-container-high: oklch(0.9 0 0);
+  --surface-container-highest: oklch(0.87 0 0);
+  --on-surface: oklch(0.13 0 0);
+  --on-surface-variant: oklch(0.35 0.02 248);
+  --on-primary: oklch(0.99 0 0);
+  --on-primary-container: oklch(0.12 0.08 248);
+  --primary-container: oklch(0.82 0.1 248);
+  --secondary-container: oklch(0.87 0.03 248);
+  --on-secondary-container: oklch(0.25 0.03 248);
+  --on-background: oklch(0.13 0 0);
+  --outline-variant: oklch(0.75 0.03 248);
+  --surface-variant: oklch(0.9 0.02 248);
+  --surface-tint: oklch(0.63 0.19 248);
+  --surface-elevated: oklch(1 0 0);
+  --border-subtle: oklch(0.88 0 0);
+  --error: oklch(0.55 0.22 25);
+  --on-error: oklch(0.99 0 0);
+  --error-container: oklch(0.88 0.1 25);
+  --success-emerald: #10b981;
+  --tertiary-container: oklch(0.88 0.08 50);
+  --on-tertiary: oklch(0.2 0.1 50);
 }
 
 @layer base {
@@ -157,4 +266,33 @@
   html {
     @apply font-sans;
   }
+}
+
+/* Precision Mobility glass-card component */
+.glass-card {
+  background: rgba(26, 26, 26, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid #27272a;
+}
+
+.light .glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: oklch(0.88 0 0);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #424754;
 }

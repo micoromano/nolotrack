@@ -93,23 +93,18 @@ function Tile({
   return (
     <div
       className={cn(
-        "bg-card border rounded-lg p-4 relative overflow-hidden",
-        accent ? "border-primary/30" : "border-border"
+        "glass-card rounded-2xl p-5 relative overflow-hidden",
+        accent && "border-primary/30"
       )}
     >
-      <div
-        className={cn(
-          "absolute top-3 right-3 w-9 h-9 rounded-xl flex items-center justify-center",
-          iconClass
-        )}
-      >
+      <div className={cn("p-2.5 rounded-xl w-fit mb-3 flex items-center justify-center", iconClass)}>
         <Icon size={18} weight="fill" />
       </div>
-      <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1 pr-10">{label}</p>
-      <p className={cn("font-mono text-xl font-semibold mt-1", valueClass ?? "text-foreground")}>
+      <p className="text-[11px] font-bold uppercase tracking-widest text-on-secondary-container mb-1">{label}</p>
+      <p className={cn("font-mono text-xl font-bold mt-1", valueClass ?? "text-foreground")}>
         {value}
       </p>
-      {sub && <p className="text-xs text-muted-foreground mt-0.5 font-mono">{sub}</p>}
+      {sub && <p className="text-xs text-on-surface-variant mt-0.5 font-mono">{sub}</p>}
     </div>
   );
 }
@@ -118,7 +113,7 @@ function Tile({
 // Input helper
 // ---------------------------------------------------------------------------
 const inputCls =
-  "w-full bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all font-mono";
+  "w-full bg-surface-container-lowest border border-border-subtle text-sm text-foreground placeholder:text-on-surface-variant/50 px-3 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary transition-all font-mono";
 
 // ---------------------------------------------------------------------------
 // Page
@@ -360,17 +355,17 @@ export default function StipendioPage() {
   // ---------------------------------------------------------------------------
   return (
     <div>
-      {/* Command bar */}
-      <div className="border-b border-border px-6 py-3 flex items-center justify-between bg-card">
+      {/* Header */}
+      <header className="sticky top-0 z-30 bg-surface/80 backdrop-blur-xl border-b border-border-subtle h-16 flex items-center justify-between px-4 md:px-10">
         <div>
-          <h1 className="text-sm font-semibold text-foreground">Stipendio</h1>
-          <p className="text-xs text-muted-foreground capitalize">{meseFmt}</p>
+          <h1 className="font-heading text-lg font-bold text-primary">Stipendio</h1>
+          <p className="text-xs text-on-surface-variant capitalize">{meseFmt}</p>
         </div>
         <div className="flex items-center gap-3">
           <select
             value={mese}
             onChange={(e) => setMese(e.target.value)}
-            className="bg-background border border-border text-sm text-foreground px-3 py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+            className="bg-surface-container-lowest border border-border-subtle text-sm text-foreground px-3 py-1.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
           >
             {mesiDisponibili.length === 0 && (
               <option value={mese}>{meseFmt}</option>
@@ -391,22 +386,22 @@ export default function StipendioPage() {
           <button
             onClick={() => setMostraConfig((v) => !v)}
             className={cn(
-              "flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors",
+              "flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg border transition-colors uppercase tracking-wide",
               mostraConfig
                 ? "bg-primary/10 border-primary/30 text-primary"
-                : "bg-background border-border text-muted-foreground hover:text-foreground hover:border-border/80"
+                : "bg-surface-container border-border-subtle text-on-surface-variant hover:text-foreground"
             )}
           >
             <Gear size={13} weight="bold" />
-            Configurazione
+            Config
           </button>
         </div>
-      </div>
+      </header>
 
-      <div className="p-6 space-y-5">
+      <div className="px-4 md:px-10 py-8 max-w-[1440px] mx-auto space-y-6">
         {/* Avviso: nessuna config */}
         {!configCaricamento && !config && (
-          <div className="flex items-start gap-3 bg-amber-400/5 border border-amber-400/20 rounded-lg px-4 py-3">
+          <div className="flex items-start gap-3 bg-amber-400/5 border border-amber-400/20 rounded-xl px-4 py-3">
             <Warning size={16} weight="fill" className="text-amber-400 mt-0.5 shrink-0" />
             <p className="text-sm text-amber-400">
               Nessuna configurazione salario trovata. Imposta tariffa oraria e percentuali qui sotto
@@ -417,10 +412,10 @@ export default function StipendioPage() {
 
         {/* Pannello configurazione */}
         {mostraConfig && (
-          <div className="bg-card border border-border rounded-lg overflow-hidden">
-            <div className="border-b border-border px-4 py-2.5 flex items-center gap-2">
-              <Gear size={13} weight="bold" className="text-muted-foreground" />
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          <div className="glass-card rounded-2xl overflow-hidden">
+            <div className="border-b border-border-subtle px-5 py-3 flex items-center gap-2">
+              <Gear size={13} weight="bold" className="text-on-surface-variant" />
+              <span className="text-[11px] font-bold text-on-secondary-container uppercase tracking-wider">
                 Configurazione salario
               </span>
             </div>
@@ -538,7 +533,7 @@ export default function StipendioPage() {
 
         {/* Config summary banner (when config exists and panel is closed) */}
         {!mostraConfig && config && (
-          <div className="flex items-center gap-4 bg-card border border-border rounded-lg px-4 py-2.5 text-xs text-muted-foreground flex-wrap">
+          <div className="flex items-center gap-4 glass-card rounded-xl px-4 py-2.5 text-xs text-on-surface-variant flex-wrap">
             <span className="flex items-center gap-1">
               <Clock size={11} weight="bold" />
               <span>Tariffa: <span className="font-mono text-foreground">{euro(config.tariffa_oraria)}/h</span></span>
@@ -620,37 +615,19 @@ export default function StipendioPage() {
 
         {/* Dettaglio commissioni */}
         {config && (tot.cash > 0 || tot.carta > 0 || tot.uber > 0) && (
-          <div className="bg-card border border-border rounded-lg overflow-hidden">
-            <div className="border-b border-border px-4 py-2.5">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+          <div className="glass-card rounded-2xl overflow-hidden">
+            <div className="border-b border-border-subtle px-5 py-3">
+              <p className="text-[11px] font-bold text-on-secondary-container uppercase tracking-wider flex items-center gap-2">
                 <ChartBar size={13} weight="bold" />
                 Dettaglio commissioni
               </p>
             </div>
-            <div className="px-4 py-3 space-y-2">
-              <CommRow
-                label="Cash"
-                base={tot.cash}
-                pct={config.percentuale_cash}
-                result={tot.cash * config.percentuale_cash}
-                colorClass="text-amber-400"
-              />
-              <CommRow
-                label="Carte"
-                base={tot.carta}
-                pct={config.percentuale_carta}
-                result={tot.carta * config.percentuale_carta}
-                colorClass="text-indigo-400"
-              />
-              <CommRow
-                label="Uber"
-                base={tot.uber}
-                pct={config.percentuale_uber}
-                result={tot.uber * config.percentuale_uber}
-                colorClass="text-slate-300"
-              />
-              <div className="border-t border-border pt-2 flex items-center justify-between text-sm font-semibold">
-                <span className="text-muted-foreground">Totale commissioni</span>
+            <div className="px-5 py-4 space-y-2">
+              <CommRow label="Cash" base={tot.cash} pct={config.percentuale_cash} result={tot.cash * config.percentuale_cash} colorClass="text-amber-400" />
+              <CommRow label="Carte" base={tot.carta} pct={config.percentuale_carta} result={tot.carta * config.percentuale_carta} colorClass="text-indigo-400" />
+              <CommRow label="Uber" base={tot.uber} pct={config.percentuale_uber} result={tot.uber * config.percentuale_uber} colorClass="text-slate-300" />
+              <div className="border-t border-border-subtle pt-2 flex items-center justify-between text-sm font-semibold">
+                <span className="text-on-surface-variant">Totale commissioni</span>
                 <span className="font-mono text-violet-400">{euro(tot.commissioni)}</span>
               </div>
             </div>
@@ -658,119 +635,76 @@ export default function StipendioPage() {
         )}
 
         {/* Lista giorni del mese */}
-        <div className="bg-card border border-border rounded-lg overflow-hidden">
-          <div className="border-b border-border px-4 py-2.5">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+        <div className="glass-card rounded-2xl overflow-hidden">
+          <div className="border-b border-border-subtle px-5 py-3">
+            <p className="text-[11px] font-bold text-on-secondary-container uppercase tracking-wider flex items-center gap-2">
               <CalendarBlank size={13} weight="bold" />
               Dettaglio giornaliero — {meseFmt}
             </p>
           </div>
 
-          {/* Desktop header */}
-          <div className="hidden sm:grid grid-cols-8 px-4 py-2 bg-muted/30 border-b border-border">
+          <div className="hidden sm:grid grid-cols-8 px-5 py-3 bg-surface-container-low/50 border-b border-border-subtle">
             {["Data", "Ore", "Cash", "Carte", "Uber", "Base", "Comm.", "Totale"].map((h) => (
-              <span
-                key={h}
-                className="text-xs font-medium text-muted-foreground uppercase tracking-wider last:text-right"
-              >
+              <span key={h} className={cn("text-[11px] font-bold uppercase tracking-wider text-on-secondary-container", h === "Totale" && "text-right")}>
                 {h}
               </span>
             ))}
           </div>
 
           {datiCaricamento && (
-            <p className="px-4 py-6 text-sm text-muted-foreground text-center">Caricamento…</p>
+            <p className="px-5 py-8 text-sm text-on-surface-variant text-center">Caricamento…</p>
           )}
 
           {!datiCaricamento && giorni.length === 0 && (
-            <p className="px-4 py-6 text-sm text-muted-foreground text-center">
-              Nessun dato per {meseFmt}.
-            </p>
+            <p className="px-5 py-8 text-sm text-on-surface-variant text-center">Nessun dato per {meseFmt}.</p>
           )}
 
-          <div className="divide-y divide-border">
+          <div className="divide-y divide-border-subtle">
             {[...giorni].reverse().map((g) => (
               <div key={g.data}>
-                {/* Desktop */}
-                <div className="hidden sm:grid grid-cols-8 px-4 py-3 hover:bg-muted/20 transition-colors items-center">
-                  <span className="text-sm font-medium capitalize">
-                    {new Date(g.data + "T00:00:00").toLocaleDateString("it-IT", {
-                      weekday: "short",
-                      day: "numeric",
-                      month: "short",
-                    })}
+                <div className="hidden sm:grid grid-cols-8 px-5 py-4 hover:bg-surface-variant/20 transition-colors items-center">
+                  <span className="text-sm font-medium capitalize text-foreground">
+                    {new Date(g.data + "T00:00:00").toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" })}
                   </span>
-                  <span className={cn("font-mono text-sm", g.ore > 0 ? "text-blue-400" : "text-muted-foreground/40")}>
-                    {g.ore > 0 ? formatOre(g.ore) : "—"}
-                  </span>
-                  <span className={cn("font-mono text-sm", g.cash > 0 ? "text-amber-400" : "text-muted-foreground/40")}>
-                    {g.cash > 0 ? euro(g.cash) : "—"}
-                  </span>
-                  <span className={cn("font-mono text-sm", g.carta > 0 ? "text-indigo-400" : "text-muted-foreground/40")}>
-                    {g.carta > 0 ? euro(g.carta) : "—"}
-                  </span>
-                  <span className={cn("font-mono text-sm", g.uber > 0 ? "text-foreground" : "text-muted-foreground/40")}>
-                    {g.uber > 0 ? euro(g.uber) : "—"}
-                  </span>
-                  <span className={cn("font-mono text-sm", g.stipendioBase > 0 ? "text-teal-400" : "text-muted-foreground/40")}>
-                    {g.stipendioBase > 0 ? euro(g.stipendioBase) : "—"}
-                  </span>
-                  <span className={cn("font-mono text-sm", (g.commCash + g.commCarta + g.commUber) > 0 ? "text-violet-400" : "text-muted-foreground/40")}>
-                    {(g.commCash + g.commCarta + g.commUber) > 0 ? euro(g.commCash + g.commCarta + g.commUber) : "—"}
-                  </span>
-                  <span className="font-mono text-sm font-semibold text-right text-primary">
-                    {euro(g.totaleGiorno)}
-                  </span>
+                  <span className={cn("font-mono text-sm", g.ore > 0 ? "text-blue-400" : "text-on-surface-variant/30")}>{g.ore > 0 ? formatOre(g.ore) : "—"}</span>
+                  <span className={cn("font-mono text-sm", g.cash > 0 ? "text-amber-400" : "text-on-surface-variant/30")}>{g.cash > 0 ? euro(g.cash) : "—"}</span>
+                  <span className={cn("font-mono text-sm", g.carta > 0 ? "text-indigo-400" : "text-on-surface-variant/30")}>{g.carta > 0 ? euro(g.carta) : "—"}</span>
+                  <span className={cn("font-mono text-sm", g.uber > 0 ? "text-foreground" : "text-on-surface-variant/30")}>{g.uber > 0 ? euro(g.uber) : "—"}</span>
+                  <span className={cn("font-mono text-sm", g.stipendioBase > 0 ? "text-teal-400" : "text-on-surface-variant/30")}>{g.stipendioBase > 0 ? euro(g.stipendioBase) : "—"}</span>
+                  <span className={cn("font-mono text-sm", (g.commCash + g.commCarta + g.commUber) > 0 ? "text-violet-400" : "text-on-surface-variant/30")}>{(g.commCash + g.commCarta + g.commUber) > 0 ? euro(g.commCash + g.commCarta + g.commUber) : "—"}</span>
+                  <span className="font-mono text-sm font-bold text-right text-primary">{euro(g.totaleGiorno)}</span>
                 </div>
 
-                {/* Mobile */}
                 <div className="sm:hidden px-4 py-3 space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium capitalize">
-                      {new Date(g.data + "T00:00:00").toLocaleDateString("it-IT", {
-                        weekday: "short",
-                        day: "numeric",
-                        month: "short",
-                      })}
+                    <span className="text-sm font-medium capitalize text-foreground">
+                      {new Date(g.data + "T00:00:00").toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" })}
                     </span>
-                    <span className="font-mono text-sm font-semibold text-primary">
-                      {euro(g.totaleGiorno)}
-                    </span>
+                    <span className="font-mono text-sm font-bold text-primary">{euro(g.totaleGiorno)}</span>
                   </div>
                   <div className="flex items-center gap-3 text-xs font-mono flex-wrap">
                     {g.ore > 0 && <span className="text-blue-400">{formatOre(g.ore)}</span>}
                     {g.cash > 0 && <span className="text-amber-400">C {euro(g.cash)}</span>}
                     {g.carta > 0 && <span className="text-indigo-400">CC {euro(g.carta)}</span>}
                     {g.uber > 0 && <span className="text-foreground">U {euro(g.uber)}</span>}
-                    {g.stipendioBase > 0 && (
-                      <span className="text-teal-400">Base {euro(g.stipendioBase)}</span>
-                    )}
-                    {(g.commCash + g.commCarta + g.commUber) > 0 && (
-                      <span className="text-violet-400">
-                        Comm. {euro(g.commCash + g.commCarta + g.commUber)}
-                      </span>
-                    )}
+                    {g.stipendioBase > 0 && <span className="text-teal-400">Base {euro(g.stipendioBase)}</span>}
+                    {(g.commCash + g.commCarta + g.commUber) > 0 && <span className="text-violet-400">Comm. {euro(g.commCash + g.commCarta + g.commUber)}</span>}
                   </div>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Footer totali */}
           {giorni.length > 0 && (
-            <div className="hidden sm:grid grid-cols-8 px-4 py-3 border-t border-border bg-muted/30 font-semibold">
-              <span className="text-xs text-muted-foreground uppercase tracking-wider self-center">
-                Totale
-              </span>
-              <span className="font-mono text-sm text-blue-400">{formatOre(tot.ore)}</span>
-              <span className="font-mono text-sm text-amber-400">{euro(tot.cash)}</span>
-              <span className="font-mono text-sm text-indigo-400">{euro(tot.carta)}</span>
-              <span className="font-mono text-sm">{euro(tot.uber)}</span>
-              <span className="font-mono text-sm text-teal-400">{euro(tot.stipendioBase)}</span>
-              <span className="font-mono text-sm text-violet-400">{euro(tot.commissioni)}</span>
-              <span className="font-mono text-sm font-bold text-right text-primary">
-                {euro(tot.totale)}
-              </span>
+            <div className="hidden sm:grid grid-cols-8 px-5 py-4 border-t border-border-subtle bg-surface-container-low/50">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-on-secondary-container self-center">Totale</span>
+              <span className="font-mono text-sm font-bold text-blue-400">{formatOre(tot.ore)}</span>
+              <span className="font-mono text-sm font-bold text-amber-400">{euro(tot.cash)}</span>
+              <span className="font-mono text-sm font-bold text-indigo-400">{euro(tot.carta)}</span>
+              <span className="font-mono text-sm font-bold text-foreground">{euro(tot.uber)}</span>
+              <span className="font-mono text-sm font-bold text-teal-400">{euro(tot.stipendioBase)}</span>
+              <span className="font-mono text-sm font-bold text-violet-400">{euro(tot.commissioni)}</span>
+              <span className="font-mono text-sm font-bold text-right text-primary">{euro(tot.totale)}</span>
             </div>
           )}
         </div>

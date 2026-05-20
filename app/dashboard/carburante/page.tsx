@@ -212,16 +212,16 @@ export default function CarburantePage() {
 
   return (
     <div>
-      {/* Command bar */}
-      <div className="border-b border-border px-6 py-3 flex items-center justify-between bg-card">
+      {/* Header */}
+      <header className="sticky top-0 z-30 bg-surface/80 backdrop-blur-xl border-b border-border-subtle h-16 flex items-center justify-between px-4 md:px-10">
         <div>
-          <h1 className="text-sm font-semibold text-foreground">Carburante</h1>
-          <p className="text-xs text-muted-foreground">Registro rifornimenti</p>
+          <h1 className="font-heading text-lg font-bold text-primary">Carburante</h1>
+          <p className="text-xs text-on-surface-variant">Registro rifornimenti</p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setPannelloTarghe(v => !v)}
-            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground border border-border px-3 py-1.5 rounded-lg transition-colors"
+            className="flex items-center gap-1.5 text-xs text-on-surface-variant hover:text-foreground border border-border-subtle px-3 py-1.5 rounded-lg transition-colors bg-surface-container"
           >
             <Car size={13} weight="bold" />
             Targhe
@@ -230,7 +230,7 @@ export default function CarburantePage() {
           <select
             value={mese}
             onChange={e => setMese(e.target.value)}
-            className="bg-background border border-border text-sm text-foreground px-3 py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+            className="bg-surface-container-lowest border border-border-subtle text-sm text-foreground px-3 py-1.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
           >
             <option value="">Tutti i periodi</option>
             {mesiDisponibili.map(m => (
@@ -239,23 +239,20 @@ export default function CarburantePage() {
           </select>
           <CarburantePDFButton mese={mese} />
         </div>
-      </div>
+      </header>
 
       {/* Pannello gestione targhe */}
       {pannelloTarghe && (
-        <div className="border-b border-border bg-muted/20 px-6 py-4">
+        <div className="border-b border-border-subtle bg-surface-container/30 px-4 md:px-10 py-4">
           <div className="flex flex-wrap items-center gap-2 mb-3">
             {targhe.length === 0 && (
-              <span className="text-xs text-muted-foreground">Nessuna targa registrata.</span>
+              <span className="text-xs text-on-surface-variant">Nessuna targa registrata.</span>
             )}
             {targhe.map(t => (
-              <div key={t.id} className="flex items-center gap-1.5 bg-card border border-border rounded-lg px-3 py-1.5">
+              <div key={t.id} className="flex items-center gap-1.5 bg-surface-container border border-border-subtle rounded-lg px-3 py-1.5">
                 <Car size={12} weight="bold" className="text-orange-400" />
-                <span className="text-sm font-mono font-semibold">{t.targa}</span>
-                <button
-                  onClick={() => eliminaTarga(t.id)}
-                  className="text-muted-foreground hover:text-rose-400 transition-colors ml-1"
-                >
+                <span className="text-sm font-mono font-bold text-foreground">{t.targa}</span>
+                <button onClick={() => eliminaTarga(t.id)} className="text-on-surface-variant hover:text-rose-400 transition-colors ml-1">
                   <Trash size={12} weight="bold" />
                 </button>
               </div>
@@ -268,12 +265,12 @@ export default function CarburantePage() {
               onChange={e => setNuovaTarga(e.target.value.toUpperCase())}
               placeholder="es. AB123CD"
               maxLength={10}
-              className="bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 font-mono px-3 py-2 rounded-lg w-36 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all uppercase"
+              className="bg-surface-container-lowest border border-border-subtle text-sm text-foreground placeholder:text-on-surface-variant/50 font-mono px-3 py-2 rounded-lg w-36 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary transition-all uppercase"
             />
             <button
               type="submit"
               disabled={salvandoTarga || !nuovaTarga.trim()}
-              className="flex items-center gap-1.5 bg-primary text-primary-foreground text-xs font-semibold px-3 py-2 rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity"
+              className="flex items-center gap-1.5 bg-primary text-on-primary text-xs font-bold px-3 py-2 rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity shadow-lg shadow-primary/20"
             >
               <Plus size={12} weight="bold" />
               Aggiungi targa
@@ -282,37 +279,37 @@ export default function CarburantePage() {
         </div>
       )}
 
-      <div className="p-6 space-y-5">
+      <div className="px-4 md:px-10 py-8 max-w-[1440px] mx-auto space-y-6">
         {/* 4 tile metriche */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {/* Totale litri */}
-          <div className="bg-card border border-border rounded-lg p-4 relative overflow-hidden">
+          <div className="glass-card rounded-2xl p-5 relative overflow-hidden">
             <div className="absolute top-3 right-3 w-9 h-9 rounded-xl flex items-center justify-center bg-emerald-400/15 text-emerald-400">
               <GasPump size={18} weight="fill" />
             </div>
-            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1 pr-10">Litri mese</p>
+            <p className="text-xs text-on-surface-variant uppercase tracking-wider mb-1 pr-10">Litri mese</p>
             <p className="font-mono text-xl font-semibold mt-1 text-emerald-400">
               {rifFiltrati.length > 0 ? litri(totLitri) : "—"}
             </p>
           </div>
 
           {/* Totale spesa */}
-          <div className="bg-card border border-border rounded-lg p-4 relative overflow-hidden">
+          <div className="glass-card rounded-2xl p-5 relative overflow-hidden">
             <div className="absolute top-3 right-3 w-9 h-9 rounded-xl flex items-center justify-center bg-amber-400/15 text-amber-400">
               <CurrencyEur size={18} weight="fill" />
             </div>
-            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1 pr-10">Spesa mese</p>
+            <p className="text-xs text-on-surface-variant uppercase tracking-wider mb-1 pr-10">Spesa mese</p>
             <p className="font-mono text-xl font-semibold mt-1 text-amber-400">
               {rifFiltrati.length > 0 ? euro(totSpesa) : "—"}
             </p>
           </div>
 
           {/* Media €/L */}
-          <div className="bg-card border border-border rounded-lg p-4 relative overflow-hidden">
+          <div className="glass-card rounded-2xl p-5 relative overflow-hidden">
             <div className="absolute top-3 right-3 w-9 h-9 rounded-xl flex items-center justify-center bg-sky-400/15 text-sky-400">
               <ChartLineUp size={18} weight="fill" />
             </div>
-            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1 pr-10">Media €/L</p>
+            <p className="text-xs text-on-surface-variant uppercase tracking-wider mb-1 pr-10">Media €/L</p>
             <p className="font-mono text-xl font-semibold mt-1 text-sky-400">
               {mediaPrezzo !== null
                 ? new Intl.NumberFormat("it-IT", { minimumFractionDigits: 3, maximumFractionDigits: 3 }).format(mediaPrezzo)
@@ -321,11 +318,11 @@ export default function CarburantePage() {
           </div>
 
           {/* Km registrati */}
-          <div className="bg-card border border-border rounded-lg p-4 relative overflow-hidden">
+          <div className="glass-card rounded-2xl p-5 relative overflow-hidden">
             <div className="absolute top-3 right-3 w-9 h-9 rounded-xl flex items-center justify-center bg-violet-400/15 text-violet-400">
               <Car size={18} weight="fill" />
             </div>
-            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1 pr-10">Km mese</p>
+            <p className="text-xs text-on-surface-variant uppercase tracking-wider mb-1 pr-10">Km mese</p>
             <p className="font-mono text-xl font-semibold mt-1 text-violet-400">
               {totKm !== null
                 ? new Intl.NumberFormat("it-IT").format(totKm)
@@ -335,8 +332,8 @@ export default function CarburantePage() {
         </div>
 
         {/* Form aggiunta rifornimento */}
-        <div className="bg-card border border-border rounded-lg p-4">
-          <h2 className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">
+        <div className="glass-card rounded-2xl p-5">
+          <h2 className="flex items-center gap-2 text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-4">
             <Plus size={12} weight="bold" />
             Nuovo rifornimento
           </h2>
@@ -344,23 +341,23 @@ export default function CarburantePage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               {/* Data */}
               <div className="relative col-span-2 sm:col-span-1">
-                <CalendarBlank size={13} weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50 pointer-events-none" />
+                <CalendarBlank size={13} weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50 pointer-events-none" />
                 <input
                   type="date"
                   value={form.data}
                   onChange={e => setForm(f => ({ ...f, data: e.target.value }))}
-                  className="w-full bg-background border border-border text-sm text-foreground pl-8 pr-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+                  className="w-full bg-surface-container-lowest border border-border-subtle text-sm text-foreground pl-8 pr-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
                 />
               </div>
 
               {/* Targa */}
               <div className="relative">
-                <Car size={13} weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50 pointer-events-none z-10" />
+                <Car size={13} weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50 pointer-events-none z-10" />
                 {targhe.length > 0 ? (
                   <select
                     value={form.targa}
                     onChange={e => setForm(f => ({ ...f, targa: e.target.value }))}
-                    className="w-full bg-background border border-border text-sm text-foreground pl-8 pr-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all appearance-none font-mono"
+                    className="w-full bg-surface-container-lowest border border-border-subtle text-sm text-foreground pl-8 pr-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all appearance-none font-mono"
                   >
                     {targhe.map(t => (
                       <option key={t.id} value={t.targa}>{t.targa}</option>
@@ -372,7 +369,7 @@ export default function CarburantePage() {
                     value={form.targa}
                     onChange={e => setForm(f => ({ ...f, targa: e.target.value.toUpperCase() }))}
                     placeholder="Targa"
-                    className="w-full bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 pl-8 pr-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all font-mono uppercase"
+                    className="w-full bg-surface-container-lowest border border-border-subtle text-sm text-foreground placeholder:text-on-surface-variant/50 pl-8 pr-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all font-mono uppercase"
                   />
                 )}
               </div>
@@ -385,7 +382,7 @@ export default function CarburantePage() {
                   placeholder="Km (es. 45230)"
                   value={form.km}
                   onChange={e => setForm(f => ({ ...f, km: e.target.value }))}
-                  className="w-full bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all font-mono"
+                  className="w-full bg-surface-container-lowest border border-border-subtle text-sm text-foreground placeholder:text-on-surface-variant/50 px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all font-mono"
                 />
               </div>
 
@@ -398,7 +395,7 @@ export default function CarburantePage() {
                   placeholder="Litri"
                   value={form.litri}
                   onChange={e => handleLitriChange(e.target.value)}
-                  className="w-full bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all font-mono"
+                  className="w-full bg-surface-container-lowest border border-border-subtle text-sm text-foreground placeholder:text-on-surface-variant/50 px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all font-mono"
                 />
               </div>
 
@@ -411,13 +408,13 @@ export default function CarburantePage() {
                   placeholder="€/L (es. 1.759)"
                   value={form.prezzo_litro}
                   onChange={e => handlePrezzoChange(e.target.value)}
-                  className="w-full bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all font-mono"
+                  className="w-full bg-surface-container-lowest border border-border-subtle text-sm text-foreground placeholder:text-on-surface-variant/50 px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all font-mono"
                 />
               </div>
 
               {/* Importo */}
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground/50 pointer-events-none font-bold">€</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-on-surface-variant/50 pointer-events-none font-bold">€</span>
                 <input
                   type="number"
                   inputMode="decimal"
@@ -425,7 +422,7 @@ export default function CarburantePage() {
                   placeholder="0,00"
                   value={form.importo}
                   onChange={e => setForm(f => ({ ...f, importo: e.target.value }))}
-                  className="w-full bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 pl-7 pr-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all font-mono"
+                  className="w-full bg-surface-container-lowest border border-border-subtle text-sm text-foreground placeholder:text-on-surface-variant/50 pl-7 pr-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all font-mono"
                 />
               </div>
             </div>
@@ -445,14 +442,14 @@ export default function CarburantePage() {
         </div>
 
         {/* Tabella lista rifornimenti */}
-        <div className="bg-card border border-border rounded-lg overflow-hidden">
+        <div className="glass-card rounded-2xl overflow-hidden">
           {/* Header desktop */}
-          <div className="hidden sm:grid grid-cols-7 px-4 py-2 border-b border-border bg-muted/30">
+          <div className="hidden sm:grid grid-cols-7 px-6 py-3 border-b border-border-subtle bg-surface-container-low/50">
             {["Data", "Targa", "Km", "Litri", "€/L", "Importo", ""].map((h, i) => (
               <span
                 key={i}
                 className={cn(
-                  "text-xs font-medium text-muted-foreground uppercase tracking-wider",
+                  "text-[11px] font-bold text-on-secondary-container uppercase tracking-wider",
                   (h === "Importo" || h === "") && "text-right"
                 )}
               >
@@ -462,29 +459,29 @@ export default function CarburantePage() {
           </div>
 
           {caricamento && (
-            <p className="px-4 py-6 text-sm text-muted-foreground text-center">Caricamento…</p>
+            <p className="px-4 py-6 text-sm text-on-surface-variant text-center">Caricamento…</p>
           )}
 
           {!caricamento && rifFiltrati.length === 0 && (
-            <p className="px-4 py-6 text-sm text-muted-foreground text-center">Nessun rifornimento per questo periodo.</p>
+            <p className="px-4 py-6 text-sm text-on-surface-variant text-center">Nessun rifornimento per questo periodo.</p>
           )}
 
-          <div className="divide-y divide-border">
+          <div className="divide-y divide-border-subtle">
             {rifFiltrati.map(r => (
               <div key={r.id}>
                 {/* Desktop */}
-                <div className="hidden sm:grid grid-cols-7 px-4 py-3 hover:bg-muted/20 transition-colors items-center">
-                  <span className="text-sm text-muted-foreground">
+                <div className="hidden sm:grid grid-cols-7 px-4 py-3 hover:bg-surface-variant/20 transition-colors items-center">
+                  <span className="text-sm text-on-surface-variant">
                     {new Date(r.data + "T00:00:00").toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" })}
                   </span>
                   <span className="text-sm font-mono font-medium text-foreground">{r.targa}</span>
-                  <span className={cn("font-mono text-sm", r.km !== null ? "text-foreground" : "text-muted-foreground/40")}>
+                  <span className={cn("font-mono text-sm", r.km !== null ? "text-foreground" : "text-on-surface-variant/40")}>
                     {r.km !== null ? new Intl.NumberFormat("it-IT").format(r.km) : "—"}
                   </span>
                   <span className="font-mono text-sm text-emerald-400">
                     {new Intl.NumberFormat("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 3 }).format(r.litri)}
                   </span>
-                  <span className={cn("font-mono text-sm", r.prezzo_litro !== null ? "text-sky-400" : "text-muted-foreground/40")}>
+                  <span className={cn("font-mono text-sm", r.prezzo_litro !== null ? "text-sky-400" : "text-on-surface-variant/40")}>
                     {r.prezzo_litro !== null
                       ? new Intl.NumberFormat("it-IT", { minimumFractionDigits: 3, maximumFractionDigits: 3 }).format(r.prezzo_litro)
                       : "—"}
@@ -493,14 +490,14 @@ export default function CarburantePage() {
                   <div className="flex justify-end gap-1">
                     <Link
                       href={`/dashboard/carburante/${r.id}`}
-                      className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors px-2 py-1 rounded-lg hover:bg-primary/10"
+                      className="flex items-center gap-1 text-xs text-on-surface-variant hover:text-primary transition-colors px-2 py-1 rounded-lg hover:bg-primary/10"
                     >
                       <PencilSimple size={13} weight="bold" />
                       Modifica
                     </Link>
                     <button
                       onClick={() => elimina(r.id)}
-                      className="flex items-center gap-1 text-xs text-muted-foreground hover:text-rose-400 transition-colors px-2 py-1 rounded-lg hover:bg-rose-400/10"
+                      className="flex items-center gap-1 text-xs text-on-surface-variant hover:text-rose-400 transition-colors px-2 py-1 rounded-lg hover:bg-rose-400/10"
                     >
                       <Trash size={13} weight="bold" />
                       Elimina
@@ -513,17 +510,17 @@ export default function CarburantePage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-sm font-mono font-semibold text-foreground">{r.targa}</span>
-                      <span className="text-xs text-muted-foreground ml-2">
+                      <span className="text-xs text-on-surface-variant ml-2">
                         {new Date(r.data + "T00:00:00").toLocaleDateString("it-IT", { day: "numeric", month: "short", year: "numeric" })}
                       </span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Link href={`/dashboard/carburante/${r.id}`} className="text-muted-foreground hover:text-primary transition-colors p-1">
+                      <Link href={`/dashboard/carburante/${r.id}`} className="text-on-surface-variant hover:text-primary transition-colors p-1">
                         <PencilSimple size={15} weight="bold" />
                       </Link>
                       <button
                         onClick={() => elimina(r.id)}
-                        className="text-muted-foreground hover:text-rose-400 transition-colors p-1"
+                        className="text-on-surface-variant hover:text-rose-400 transition-colors p-1"
                       >
                         <Trash size={15} weight="bold" />
                       </button>
@@ -540,7 +537,7 @@ export default function CarburantePage() {
                     )}
                     <span className="text-amber-400 font-semibold">{euro(r.importo)}</span>
                     {r.km !== null && (
-                      <span className="text-muted-foreground">
+                      <span className="text-on-surface-variant">
                         {new Intl.NumberFormat("it-IT").format(r.km)} km
                       </span>
                     )}
