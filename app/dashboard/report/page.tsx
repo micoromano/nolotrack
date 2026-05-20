@@ -149,7 +149,7 @@ export default function ReportPage() {
             type="date"
             value={data}
             onChange={e => setData(e.target.value)}
-            className="bg-background border border-border text-sm text-foreground px-3 py-1.5 rounded focus:outline-none focus:ring-1 focus:ring-primary"
+            className="bg-background border border-border text-sm text-foreground px-3 py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
           />
           {rapportino && !caricamento && (
             <PDFButton
@@ -360,4 +360,4 @@ function PagamentoBadge({ tipo }: { tipo: string }) {
 }
 
 const inputClass =
-  "bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-primary transition-all";
+  "bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all";
