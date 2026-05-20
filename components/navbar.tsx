@@ -58,13 +58,19 @@ export default function NavBar({ userEmail, permessi }: { userEmail: string; per
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden sm:flex fixed left-0 top-0 bottom-0 w-56 bg-sidebar border-r border-sidebar-border flex-col z-40">
-        <div className="h-14 flex flex-col justify-center px-4 border-b border-sidebar-border shrink-0">
-          <span className="font-heading italic text-primary text-xl tracking-tight leading-none">NoloTrack</span>
-          <span className="text-[10px] text-muted-foreground uppercase tracking-widest mt-0.5">Fleet Management</span>
+      <aside className="hidden sm:flex fixed left-0 top-0 bottom-0 w-64 bg-surface-container-lowest border-r border-border-subtle flex-col z-40 shadow-xl shadow-black/40">
+        {/* Logo */}
+        <div className="h-16 flex items-center gap-3 px-6 border-b border-border-subtle shrink-0">
+          <div className="w-8 h-8 bg-primary-container rounded-lg flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
+            <Car size={16} weight="fill" className="text-on-primary-container" />
+          </div>
+          <div>
+            <span className="font-heading font-black text-primary text-lg leading-none block">NoloTrack</span>
+            <span className="text-[10px] text-on-surface-variant uppercase tracking-widest">Fleet Management</span>
+          </div>
         </div>
 
-        <nav className="flex-1 py-3 overflow-y-auto">
+        <nav className="flex-1 py-4 overflow-y-auto space-y-0.5 px-2">
           {vociVisibili.map(({ href, label, icon: Icon, color }) => {
             const active = isActive(href);
             return (
@@ -72,46 +78,46 @@ export default function NavBar({ userEmail, permessi }: { userEmail: string; per
                 key={href}
                 href={href}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-2.5 text-sm transition-all relative group",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 group relative",
                   active
-                    ? "text-foreground bg-sidebar-accent"
-                    : "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/50"
+                    ? "bg-primary text-on-primary shadow-md shadow-primary/20"
+                    : "text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30"
                 )}
               >
-                {active && (
-                  <span className="absolute left-0 top-1.5 bottom-1.5 w-0.5 bg-primary rounded-r" />
-                )}
                 <span className={cn(
-                  "flex items-center justify-center w-7 h-7 rounded-lg transition-all shrink-0",
-                  active
-                    ? cn("bg-sidebar-accent", color)
-                    : cn(color, "opacity-40 group-hover:opacity-100")
+                  "flex items-center justify-center shrink-0 transition-all",
+                  active ? "text-on-primary" : color
                 )}>
-                  <Icon size={16} weight={active ? "fill" : "regular"} />
+                  <Icon size={17} weight={active ? "fill" : "regular"} />
                 </span>
-                <span className={cn("font-medium", active ? "text-foreground" : "text-muted-foreground group-hover:text-foreground")}>{label}</span>
+                <span className={cn(
+                  "text-xs font-semibold tracking-wide uppercase",
+                  active ? "text-on-primary" : "text-on-surface-variant group-hover:text-on-surface"
+                )}>
+                  {label}
+                </span>
               </Link>
             );
           })}
         </nav>
 
-        <div className="border-t border-sidebar-border p-3 shrink-0 space-y-1">
-          <div className="px-0 pb-2">
+        <div className="border-t border-border-subtle p-3 shrink-0 space-y-1">
+          <div className="px-1 pb-2">
             <select
               value={theme ?? "dark"}
               onChange={(e) => setTheme(e.target.value)}
-              className="w-full bg-sidebar-accent border border-sidebar-border text-xs text-muted-foreground px-2 py-1.5 rounded focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-full bg-surface-container border border-border-subtle text-xs text-on-surface-variant px-2 py-1.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary"
             >
               <option value="dark">🌙 Scuro</option>
               <option value="light">☀️ Chiaro</option>
               <option value="system">💻 Sistema</option>
             </select>
           </div>
-          <p className="text-xs text-muted-foreground px-1 truncate">{userEmail}</p>
+          <p className="text-xs text-on-surface-variant px-1 truncate">{userEmail}</p>
           <PushSubscribe />
           <button
             onClick={esci}
-            className="flex items-center gap-2 w-full px-1 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors rounded"
+            className="flex items-center gap-2 w-full px-2 py-1.5 text-xs text-on-surface-variant hover:text-error hover:bg-error-container/10 transition-colors rounded-lg"
           >
             <SignOut size={13} weight="bold" />
             Disconnetti
@@ -120,26 +126,31 @@ export default function NavBar({ userEmail, permessi }: { userEmail: string; per
       </aside>
 
       {/* Mobile top bar */}
-      <header className="sm:hidden fixed top-0 left-0 right-0 z-40 h-12 bg-sidebar border-b border-sidebar-border flex items-center justify-between px-4">
-        <span className="font-heading italic text-primary text-lg">NoloTrack</span>
+      <header className="sm:hidden fixed top-0 left-0 right-0 z-40 h-12 bg-surface-container-lowest/80 backdrop-blur-xl border-b border-border-subtle flex items-center justify-between px-4">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 bg-primary-container rounded flex items-center justify-center">
+            <Car size={13} weight="fill" className="text-on-primary-container" />
+          </div>
+          <span className="font-heading font-black text-primary text-base">NoloTrack</span>
+        </div>
         <div className="flex items-center gap-2">
           <select
             value={theme ?? "dark"}
             onChange={(e) => setTheme(e.target.value)}
-            className="bg-transparent text-muted-foreground text-xs border-none focus:outline-none"
+            className="bg-transparent text-on-surface-variant text-xs border-none focus:outline-none"
           >
             <option value="dark">🌙</option>
             <option value="light">☀️</option>
             <option value="system">💻</option>
           </select>
-          <button onClick={esci} className="text-muted-foreground p-1">
+          <button onClick={esci} className="text-on-surface-variant p-1">
             <SignOut size={18} weight="bold" />
           </button>
         </div>
       </header>
 
       {/* Mobile bottom tabs */}
-      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-sidebar border-t border-sidebar-border safe-area-bottom">
+      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface-container-lowest/90 backdrop-blur-xl border-t border-border-subtle safe-area-bottom">
         <div className="flex h-16 overflow-x-auto scrollbar-none">
           {vociMobile.map(({ href, label, icon: Icon, color }) => {
             const active = isActive(href);
@@ -157,11 +168,11 @@ export default function NavBar({ userEmail, permessi }: { userEmail: string; per
                 )}
                 <span className={cn(
                   "flex items-center justify-center w-9 h-9 rounded-xl transition-all",
-                  active ? cn("bg-sidebar-accent", color) : ""
+                  active ? cn("bg-primary/10", color) : ""
                 )}>
                   <Icon size={20} weight={active ? "fill" : "regular"} />
                 </span>
-                <span className={cn("text-[10px] font-semibold leading-none", active ? "text-foreground" : "text-muted-foreground/70")}>
+                <span className={cn("text-[10px] font-semibold leading-none uppercase tracking-wide", active ? "text-foreground" : "text-muted-foreground/70")}>
                   {label}
                 </span>
               </Link>

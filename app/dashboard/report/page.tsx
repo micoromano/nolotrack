@@ -138,18 +138,18 @@ export default function ReportPage() {
 
   return (
     <div>
-      {/* Command bar */}
-      <div className="border-b border-border px-6 py-3 flex items-center justify-between bg-card">
+      {/* Header */}
+      <header className="sticky top-0 z-30 bg-surface/80 backdrop-blur-xl border-b border-border-subtle h-16 flex items-center justify-between px-4 md:px-10">
         <div>
-          <h1 className="text-sm font-semibold text-foreground">Report giornaliero</h1>
-          <p className="text-xs text-muted-foreground capitalize">{dataFmt}</p>
+          <h1 className="font-heading text-lg font-bold text-primary">Report giornaliero</h1>
+          <p className="text-xs text-on-surface-variant capitalize">{dataFmt}</p>
         </div>
         <div className="flex items-center gap-3">
           <input
             type="date"
             value={data}
             onChange={e => setData(e.target.value)}
-            className="bg-background border border-border text-sm text-foreground px-3 py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+            className="bg-surface-container-lowest border border-border-subtle text-sm text-foreground px-3 py-1.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
           />
           {rapportino && !caricamento && (
             <PDFButton
@@ -168,53 +168,45 @@ export default function ReportPage() {
             />
           )}
         </div>
-      </div>
+      </header>
 
-      <div className="p-6 space-y-5">
+      <div className="px-4 md:px-10 py-8 max-w-[1440px] mx-auto space-y-6">
         {caricamento && (
-          <p className="text-sm text-muted-foreground">Caricamento…</p>
+          <p className="text-sm text-on-surface-variant">Caricamento…</p>
         )}
 
         {rapportino && !caricamento && (
           <>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Orari */}
-              <section className="bg-card border border-border rounded-lg">
-                <div className="border-b border-border px-4 py-2">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Orari</p>
+              <section className="glass-card rounded-2xl overflow-hidden">
+                <div className="border-b border-border-subtle px-5 py-3">
+                  <p className="text-[11px] font-bold text-on-secondary-container uppercase tracking-widest">Orari</p>
                 </div>
                 {rapportino.turno ? (
-                  <div className="px-4 py-3 space-y-2">
+                  <div className="px-5 py-4 space-y-3">
                     <Row label="Inizio" value={rapportino.turno.ora_inizio.slice(0, 5)} mono />
                     <Row label="Fine" value={rapportino.turno.ora_fine.slice(0, 5)} mono />
                     <Row label="Totale ore" value={formatOre(rapportino.turno.ore_lavorate)} mono accent />
                   </div>
                 ) : (
-                  <p className="px-4 py-3 text-sm text-muted-foreground">Nessun turno registrato.</p>
+                  <p className="px-5 py-4 text-sm text-on-surface-variant">Nessun turno registrato.</p>
                 )}
               </section>
 
               {/* Flussi */}
-              <section className="bg-card border border-border rounded-lg">
-                <div className="border-b border-border px-4 py-2">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Flussi cassa</p>
+              <section className="glass-card rounded-2xl overflow-hidden">
+                <div className="border-b border-border-subtle px-5 py-3">
+                  <p className="text-[11px] font-bold text-on-secondary-container uppercase tracking-widest">Flussi cassa</p>
                 </div>
-                <div className="px-4 py-3 space-y-2">
-                  <Row
-                    label={`Cassa al ${new Date(dataPrev + "T00:00:00").toLocaleDateString("it-IT")}`}
-                    value={euro(rapportino.saldoPrev)}
-                    mono
-                  />
+                <div className="px-5 py-4 space-y-3">
+                  <Row label={`Cassa al ${new Date(dataPrev + "T00:00:00").toLocaleDateString("it-IT")}`} value={euro(rapportino.saldoPrev)} mono />
                   <Row label="+ Entrate cash" value={euro(rapportino.totCash)} mono />
                   <Row label="− Uscite (spese)" value={euro(rapportino.totSpese)} mono />
-                  <div className="border-t border-border pt-2 mt-2">
-                    <Row
-                      label={`Cassa al ${new Date(data + "T00:00:00").toLocaleDateString("it-IT")}`}
-                      value={euro(rapportino.saldoOggi)}
-                      mono accent
-                    />
+                  <div className="border-t border-border-subtle pt-3 mt-1">
+                    <Row label={`Cassa al ${new Date(data + "T00:00:00").toLocaleDateString("it-IT")}`} value={euro(rapportino.saldoOggi)} mono accent />
                   </div>
-                  <div className="border-t border-border pt-2 mt-1 space-y-2">
+                  <div className="border-t border-border-subtle pt-3 mt-1 space-y-3">
                     <Row label="Carte" value={euro(rapportino.totCarte)} mono />
                     <Row label="Uber" value={euro(rapportino.totUber)} mono />
                     {rapportino.totNonInc > 0 && (
@@ -226,100 +218,76 @@ export default function ReportPage() {
             </div>
 
             {/* Spese */}
-            <section className="bg-card border border-border rounded-lg">
-              <div className="border-b border-border px-4 py-2 flex items-center justify-between">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Spese</p>
-                <p className="font-mono text-xs font-medium text-foreground">{euro(rapportino.totSpese)}</p>
+            <section className="glass-card rounded-2xl overflow-hidden">
+              <div className="border-b border-border-subtle px-5 py-3 flex items-center justify-between">
+                <p className="text-[11px] font-bold text-on-secondary-container uppercase tracking-widest">Spese</p>
+                <p className="font-mono text-xs font-bold text-destructive">{euro(rapportino.totSpese)}</p>
               </div>
-              <div className="divide-y divide-border">
+              <div className="divide-y divide-border-subtle">
                 {rapportino.spese.length === 0 && (
-                  <p className="px-4 py-3 text-sm text-muted-foreground">Nessuna spesa.</p>
+                  <p className="px-5 py-4 text-sm text-on-surface-variant">Nessuna spesa.</p>
                 )}
                 {rapportino.spese.map(sp => (
-                  <div key={sp.id} className="px-4 py-2.5 flex items-center justify-between gap-4">
-                    <span className="text-sm">{sp.descrizione}</span>
+                  <div key={sp.id} className="px-5 py-3 flex items-center justify-between gap-4 hover:bg-surface-variant/20 transition-colors">
+                    <span className="text-sm text-foreground">{sp.descrizione}</span>
                     <div className="flex items-center gap-3 shrink-0">
-                      <span className="font-mono text-sm font-medium">{euro(sp.importo)}</span>
-                      <button
-                        onClick={() => eliminaSpesa(sp.id)}
-                        className="text-xs text-muted-foreground hover:text-destructive transition-colors"
-                      >
-                        ✕
-                      </button>
+                      <span className="font-mono text-sm font-bold text-destructive">− {euro(sp.importo)}</span>
+                      <button onClick={() => eliminaSpesa(sp.id)} className="text-xs text-on-surface-variant hover:text-destructive transition-colors p-1">✕</button>
                     </div>
                   </div>
                 ))}
               </div>
-              {/* Add spesa form */}
-              <form onSubmit={aggiungiSpesa} className="px-4 py-3 border-t border-border flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Descrizione spesa"
-                  value={nuovaSpesaDesc}
-                  onChange={e => setNuovaSpesaDesc(e.target.value)}
-                  className={cn(inputClass, "flex-1")}
-                />
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  placeholder="€"
-                  value={nuovaSpesaImporto}
-                  onChange={e => setNuovaSpesaImporto(e.target.value)}
-                  className={cn(inputClass, "w-24 font-mono")}
-                />
-                <button
-                  type="submit"
-                  disabled={salvandoSpesa}
-                  className="bg-primary text-primary-foreground text-xs font-medium px-3 py-2 rounded-lg transition-colors hover:opacity-90 disabled:opacity-50 shrink-0"
-                >
+              <form onSubmit={aggiungiSpesa} className="px-5 py-4 border-t border-border-subtle flex gap-2">
+                <input type="text" placeholder="Descrizione spesa" value={nuovaSpesaDesc} onChange={e => setNuovaSpesaDesc(e.target.value)} className={cn(inputClass, "flex-1")} />
+                <input type="number" step="0.01" min="0" placeholder="€" value={nuovaSpesaImporto} onChange={e => setNuovaSpesaImporto(e.target.value)} className={cn(inputClass, "w-24 font-mono")} />
+                <button type="submit" disabled={salvandoSpesa} className="bg-primary text-on-primary text-xs font-bold px-3 py-2 rounded-lg transition-colors hover:opacity-90 disabled:opacity-50 shrink-0 uppercase tracking-wide shadow-lg shadow-primary/20">
                   + Aggiungi
                 </button>
               </form>
             </section>
 
             {/* Servizi */}
-            <section className="bg-card border border-border rounded-lg">
-              <div className="border-b border-border px-4 py-2">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+            <section className="glass-card rounded-2xl overflow-hidden">
+              <div className="border-b border-border-subtle px-5 py-3">
+                <p className="text-[11px] font-bold text-on-secondary-container uppercase tracking-widest">
                   Dettaglio servizi ({rapportino.corse.length})
                 </p>
               </div>
               {rapportino.corse.length === 0 ? (
-                <p className="px-4 py-3 text-sm text-muted-foreground">Nessuna corsa registrata.</p>
+                <p className="px-5 py-4 text-sm text-on-surface-variant">Nessuna corsa registrata.</p>
               ) : (
                 <div>
-                  <div className="hidden sm:grid grid-cols-5 px-4 py-2 bg-muted/30 border-b border-border">
+                  <div className="hidden sm:grid grid-cols-5 px-5 py-3 bg-surface-container-low/50 border-b border-border-subtle">
                     {["Ora", "Tipo", "Partenza", "Destinazione", "Importo"].map(h => (
-                      <span key={h} className="text-xs font-medium text-muted-foreground uppercase tracking-wider last:text-right">{h}</span>
+                      <span key={h} className={cn("text-[11px] font-bold uppercase tracking-wider text-on-secondary-container", h === "Importo" && "text-right")}>{h}</span>
                     ))}
                   </div>
-                  <div className="divide-y divide-border">
+                  <div className="divide-y divide-border-subtle">
                     {rapportino.corse.map((c, i) => (
-                      <div key={i} className="px-4 py-3 hidden sm:grid grid-cols-5 items-center gap-2">
-                        <span className="font-mono text-xs">{c.ora_partenza.slice(0, 5)}</span>
+                      <div key={i} className="px-5 py-3 hidden sm:grid grid-cols-5 items-center gap-2 hover:bg-surface-variant/20 transition-colors">
+                        <span className="font-mono text-xs text-on-surface-variant">{c.ora_partenza.slice(0, 5)}</span>
                         <PagamentoBadge tipo={c.tipo_pagamento} />
-                        <span className="text-sm truncate">{c.origine}</span>
-                        <span className="text-sm truncate">{c.destinazione}</span>
-                        <span className="font-mono text-sm text-right">{euro(c.importo)}</span>
+                        <span className="text-sm text-foreground truncate">{c.origine}</span>
+                        <span className="text-sm text-on-surface-variant truncate">{c.destinazione}</span>
+                        <span className="font-mono text-sm font-bold text-right text-success-emerald">{euro(c.importo)}</span>
                       </div>
                     ))}
                     {rapportino.corse.map((c, i) => (
                       <div key={`m-${i}`} className="sm:hidden px-4 py-3 flex items-center justify-between gap-3">
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="font-mono text-xs text-muted-foreground">{c.ora_partenza.slice(0, 5)}</span>
+                            <span className="font-mono text-xs text-on-surface-variant">{c.ora_partenza.slice(0, 5)}</span>
                             <PagamentoBadge tipo={c.tipo_pagamento} />
                           </div>
-                          <p className="text-sm truncate">{c.origine} → {c.destinazione}</p>
+                          <p className="text-sm text-foreground truncate">{c.origine} → {c.destinazione}</p>
                         </div>
-                        <span className="font-mono text-sm font-medium shrink-0">{euro(c.importo)}</span>
+                        <span className="font-mono text-sm font-bold text-success-emerald shrink-0">{euro(c.importo)}</span>
                       </div>
                     ))}
                   </div>
-                  <div className="px-4 py-3 border-t border-border bg-muted/20 hidden sm:grid grid-cols-5">
-                    <span className="col-span-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Totali</span>
-                    <span className="font-mono text-sm font-semibold text-right text-primary">{euro(rapportino.totCash + rapportino.totCarte + rapportino.totUber + rapportino.totNonInc)}</span>
+                  <div className="px-5 py-3 border-t border-border-subtle bg-surface-container-low/50 hidden sm:grid grid-cols-5">
+                    <span className="col-span-4 text-[11px] font-bold uppercase tracking-wider text-on-secondary-container">Totali</span>
+                    <span className="font-mono text-sm font-bold text-right text-primary">{euro(rapportino.totCash + rapportino.totCarte + rapportino.totUber + rapportino.totNonInc)}</span>
                   </div>
                 </div>
               )}
@@ -334,17 +302,17 @@ export default function ReportPage() {
 function Row({ label, value, mono, accent }: { label: string; value: string; mono?: boolean; accent?: boolean }) {
   return (
     <div className="flex items-center justify-between text-sm">
-      <span className="text-muted-foreground">{label}</span>
-      <span className={cn(mono && "font-mono", "font-medium", accent && "text-primary")}>{value}</span>
+      <span className="text-on-surface-variant">{label}</span>
+      <span className={cn(mono && "font-mono", "font-bold", accent ? "text-primary" : "text-foreground")}>{value}</span>
     </div>
   );
 }
 
 const pagamentoBadgeStyle: Record<string, string> = {
-  cash: "bg-amber-400/10 text-amber-400",
-  carta: "bg-blue-400/10 text-blue-400",
-  uber: "bg-muted text-muted-foreground",
-  noninc: "bg-purple-400/10 text-purple-400",
+  cash:   "bg-amber-400/10 text-amber-400 border border-amber-400/20",
+  carta:  "bg-blue-400/10 text-blue-400 border border-blue-400/20",
+  uber:   "bg-slate-400/10 text-slate-400 border border-slate-400/20",
+  noninc: "bg-purple-400/10 text-purple-400 border border-purple-400/20",
 };
 
 const pagamentoLabel: Record<string, string> = {
@@ -353,11 +321,11 @@ const pagamentoLabel: Record<string, string> = {
 
 function PagamentoBadge({ tipo }: { tipo: string }) {
   return (
-    <span className={cn("text-xs px-1.5 py-0.5 rounded-lg font-medium", pagamentoBadgeStyle[tipo] ?? "bg-muted text-muted-foreground")}>
+    <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-bold uppercase w-fit", pagamentoBadgeStyle[tipo] ?? "bg-surface-container text-on-surface-variant")}>
       {pagamentoLabel[tipo] ?? tipo}
     </span>
   );
 }
 
 const inputClass =
-  "bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all";
+  "bg-surface-container-lowest border border-border-subtle text-sm text-foreground placeholder:text-on-surface-variant/50 px-3 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary transition-all";

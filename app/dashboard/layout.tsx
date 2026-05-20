@@ -14,7 +14,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <div className="min-h-screen bg-background">
       <NavBar userEmail={user.email ?? ""} permessi={permessi} />
-      <main className="sm:pl-56 pt-12 sm:pt-0 pb-20 sm:pb-0 min-h-screen bg-background">
+      <main className="sm:pl-64 pt-12 sm:pt-0 pb-20 sm:pb-0 min-h-screen bg-background">
         {children}
       </main>
     </div>
