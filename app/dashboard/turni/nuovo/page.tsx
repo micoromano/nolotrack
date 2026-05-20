@@ -117,4 +117,4 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 const inputClass =
-  "w-full bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all";
+  "w-full bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all";

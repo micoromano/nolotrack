@@ -35,7 +35,7 @@ const DOCUMENTI_DISPONIBILI: { id: TipoDocumento; label: string }[] = [
 ];
 
 const inputClass =
-  "w-full bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-primary transition-all";
+  "w-full bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all";
 
 // ─────────────────────────────────────────────────────
 // Helpers date
