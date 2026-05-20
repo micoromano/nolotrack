@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans, IBM_Plex_Mono, DM_Serif_Display } from "next/font/google";
+import { IBM_Plex_Sans, Inter, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
@@ -9,15 +9,15 @@ const ibmSans = IBM_Plex_Sans({
   subsets: ["latin"],
 });
 
-const ibmMono = IBM_Plex_Mono({
-  variable: "--font-ibm-mono",
-  weight: ["400", "500"],
+const inter = Inter({
+  variable: "--font-inter",
+  weight: ["300", "400", "500", "600"],
   subsets: ["latin"],
 });
 
-const dmSerif = DM_Serif_Display({
-  variable: "--font-dm-serif",
-  weight: "400",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  weight: ["400", "500"],
   subsets: ["latin"],
 });
 
@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html
       lang="it"
-      className={`${ibmSans.variable} ${ibmMono.variable} ${dmSerif.variable} h-full antialiased`}
+      className={`${ibmSans.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
