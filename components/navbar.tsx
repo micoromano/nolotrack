@@ -59,8 +59,9 @@ export default function NavBar({ userEmail, permessi }: { userEmail: string; per
     <>
       {/* Desktop sidebar */}
       <aside className="hidden sm:flex fixed left-0 top-0 bottom-0 w-56 bg-sidebar border-r border-sidebar-border flex-col z-40">
-        <div className="h-12 flex items-center px-4 border-b border-sidebar-border shrink-0">
-          <span className="font-heading italic text-primary text-xl tracking-tight">NoloTrack</span>
+        <div className="h-14 flex flex-col justify-center px-4 border-b border-sidebar-border shrink-0">
+          <span className="font-heading italic text-primary text-xl tracking-tight leading-none">NoloTrack</span>
+          <span className="text-[10px] text-muted-foreground uppercase tracking-widest mt-0.5">Fleet Management</span>
         </div>
 
         <nav className="flex-1 py-3 overflow-y-auto">
@@ -81,12 +82,14 @@ export default function NavBar({ userEmail, permessi }: { userEmail: string; per
                   <span className="absolute left-0 top-1.5 bottom-1.5 w-0.5 bg-primary rounded-r" />
                 )}
                 <span className={cn(
-                  "flex items-center justify-center w-7 h-7 rounded-lg transition-all",
-                  active ? cn("bg-sidebar-accent", color) : "text-muted-foreground group-hover:text-foreground"
+                  "flex items-center justify-center w-7 h-7 rounded-lg transition-all shrink-0",
+                  active
+                    ? cn("bg-sidebar-accent", color)
+                    : cn(color, "opacity-40 group-hover:opacity-100")
                 )}>
                   <Icon size={16} weight={active ? "fill" : "regular"} />
                 </span>
-                <span className={cn("font-medium", active && "text-foreground")}>{label}</span>
+                <span className={cn("font-medium", active ? "text-foreground" : "text-muted-foreground group-hover:text-foreground")}>{label}</span>
               </Link>
             );
           })}
