@@ -3,7 +3,7 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
-  ChartLineUp, CurrencyEur, CreditCard, Car, Tag, Clock, ArrowRight, Plus,
+  ChartLineUp, CurrencyEur, CreditCard, Car, Tag, Clock, ArrowRight, Plus, CheckCircle,
 } from "@phosphor-icons/react/dist/ssr";
 
 function formatOre(ore: number) {
@@ -22,7 +22,8 @@ export default async function DashboardPage() {
 
   const oggi = new Date().toISOString().split("T")[0];
 
-  const [{ data: turnoOggi }, { data: corseOggi }] = await Promise.all([
+  const [{ data: autista }, { data: turnoOggi }, { data: corseOggi }] = await Promise.all([
+    supabase.from("autisti").select("nome").eq("id", user!.id).maybeSingle(),
     supabase.from("turni").select("*").eq("autista_id", user!.id).eq("data", oggi).maybeSingle(),
     supabase.from("corse").select("*").eq("autista_id", user!.id).eq("data", oggi),
   ]);
@@ -37,29 +38,52 @@ export default async function DashboardPage() {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
   });
 
+  const nomeUtente = autista?.nome?.split(" ")[0] ?? "Marco";
+  const inServizio = !!turnoOggi;
+
   return (
     <div>
-      {/* Command bar */}
-      <div className="border-b border-border px-6 py-3 flex items-center justify-between bg-card">
-        <div>
-          <h1 className="text-sm font-semibold text-foreground">Dashboard</h1>
-          <p className="text-xs text-muted-foreground capitalize">{dataOggi}</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Link
-            href="/dashboard/turni/nuovo"
-            className={cn(buttonVariants({ variant: "outline", size: "sm" }), "text-xs gap-1")}
-          >
-            <Plus size={12} weight="bold" />
-            Turno
-          </Link>
-          <Link
-            href="/dashboard/corse/nuova"
-            className={cn(buttonVariants({ size: "sm" }), "text-xs gap-1")}
-          >
-            <Plus size={12} weight="bold" />
-            Corsa
-          </Link>
+      {/* Hero header */}
+      <div className="border-b border-border px-6 py-5 bg-card">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1 capitalize">{dataOggi}</p>
+            <h1 className="font-heading text-3xl font-semibold text-foreground leading-tight">
+              Bentornato, {nomeUtente}.
+            </h1>
+            <div className="flex items-center gap-2 mt-2">
+              <span className={cn(
+                "inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full",
+                inServizio
+                  ? "bg-success/10 text-success"
+                  : "bg-muted text-muted-foreground"
+              )}>
+                <CheckCircle size={12} weight="fill" />
+                {inServizio ? "In servizio" : "Fuori servizio"}
+              </span>
+              {corseOggi && corseOggi.length > 0 && (
+                <span className="text-xs text-muted-foreground">
+                  {corseOggi.length} {corseOggi.length === 1 ? "corsa" : "corse"} oggi
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <Link
+              href="/dashboard/turni/nuovo"
+              className={cn(buttonVariants({ variant: "outline", size: "sm" }), "text-xs gap-1.5")}
+            >
+              <Plus size={13} weight="bold" />
+              Turno
+            </Link>
+            <Link
+              href="/dashboard/corse/nuova"
+              className={cn(buttonVariants({ size: "sm" }), "text-xs gap-1.5 px-3")}
+            >
+              <Plus size={13} weight="bold" />
+              Registra corsa
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -194,12 +218,12 @@ function MetricTile({ label, value, icon: Icon, iconClass, valueClass }: {
   valueClass?: string;
 }) {
   return (
-    <div className="bg-card border border-border rounded-lg p-4 relative overflow-hidden">
-      <div className={cn("absolute top-3 right-3 w-9 h-9 rounded-xl flex items-center justify-center", iconClass)}>
+    <div className="bg-card border border-border rounded-xl p-5 relative overflow-hidden">
+      <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center mb-3", iconClass)}>
         <Icon size={18} weight="fill" />
       </div>
-      <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1 pr-10">{label}</p>
-      <p className={cn("font-mono text-xl font-semibold mt-1", valueClass ?? "text-foreground")}>
+      <p className="text-xs text-muted-foreground uppercase tracking-wider">{label}</p>
+      <p className={cn("font-mono text-2xl font-semibold mt-1 tracking-tight", valueClass ?? "text-foreground")}>
         {value}
       </p>
     </div>
