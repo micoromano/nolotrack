@@ -95,7 +95,7 @@ export default function SpesePage() {
         <select
           value={mese}
           onChange={e => setMese(e.target.value)}
-          className="bg-background border border-border text-sm text-foreground px-3 py-1.5 rounded focus:outline-none focus:ring-1 focus:ring-primary"
+          className="bg-background border border-border text-sm text-foreground px-3 py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
         >
           <option value="">Tutti i periodi</option>
           {mesiDisponibili.map(m => {
@@ -169,7 +169,7 @@ export default function SpesePage() {
         </div>
 
         {/* Lista spese */}
-        <div className="bg-card border border-border rounded overflow-hidden">
+        <div className="bg-card border border-border rounded-lg overflow-hidden">
           <div className="hidden sm:grid grid-cols-4 px-4 py-2 border-b border-border bg-muted/30">
             {["Data", "Descrizione", "Importo", ""].map(h => (
               <span key={h} className={cn("text-xs font-medium text-muted-foreground uppercase tracking-wider", h === "Importo" && "text-right", h === "" && "text-right")}>{h}</span>
@@ -197,14 +197,14 @@ export default function SpesePage() {
                   <div className="flex justify-end gap-1">
                     <Link
                       href={`/dashboard/spese/${s.id}`}
-                      className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors px-2 py-1 rounded hover:bg-primary/10"
+                      className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors px-2 py-1 rounded-lg hover:bg-primary/10"
                     >
                       <PencilSimple size={13} weight="bold" />
                       Modifica
                     </Link>
                     <button
                       onClick={() => elimina(s.id)}
-                      className="flex items-center gap-1 text-xs text-muted-foreground hover:text-rose-400 transition-colors px-2 py-1 rounded hover:bg-rose-400/10"
+                      className="flex items-center gap-1 text-xs text-muted-foreground hover:text-rose-400 transition-colors px-2 py-1 rounded-lg hover:bg-rose-400/10"
                     >
                       <Trash size={13} weight="bold" />
                       Elimina

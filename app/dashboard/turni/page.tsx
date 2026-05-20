@@ -35,7 +35,7 @@ export default async function TurniPage() {
 
       {/* Table */}
       <div className="p-6">
-        <div className="bg-card border border-border rounded overflow-hidden">
+        <div className="bg-card border border-border rounded-lg overflow-hidden">
           {/* Header */}
           <div className="grid grid-cols-4 px-4 py-2 border-b border-border bg-muted/30">
             <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Data</span>

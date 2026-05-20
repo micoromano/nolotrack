@@ -6,7 +6,7 @@ import { useRouter, useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { ArrowLeft, CheckCircle, Trash } from "@phosphor-icons/react";
 
-const inputClass = "w-full bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all";
+const inputClass = "w-full bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all";
 
 export default function EditaTurnoPage() {
   const params = useParams();
@@ -67,7 +67,7 @@ export default function EditaTurnoPage() {
         <h1 className="text-sm font-semibold">Modifica turno</h1>
       </div>
       <div className="p-6">
-        <div className="max-w-md bg-card border border-border rounded">
+        <div className="max-w-md bg-card border border-border rounded-lg">
           <div className="border-b border-border px-5 py-3">
             <p className="text-xs text-muted-foreground">Modifica l'orario di lavoro</p>
           </div>
@@ -89,15 +89,15 @@ export default function EditaTurnoPage() {
             {errore && <p className="text-sm text-destructive">{errore}</p>}
             <div className="flex gap-2 pt-2">
               <button type="submit" disabled={saving}
-                className="flex items-center gap-1.5 bg-primary text-primary-foreground text-xs font-medium px-4 py-2 rounded hover:opacity-90 disabled:opacity-50">
+                className="flex items-center gap-1.5 bg-primary text-primary-foreground text-xs font-medium px-4 py-2 rounded-lg hover:opacity-90 disabled:opacity-50">
                 <CheckCircle size={13} weight="fill" />
                 {saving ? "Salvataggio…" : "Salva modifiche"}
               </button>
-              <button type="button" onClick={() => router.back()} className="bg-muted text-foreground text-xs font-medium px-4 py-2 rounded hover:bg-muted/70">
+              <button type="button" onClick={() => router.back()} className="bg-muted text-foreground text-xs font-medium px-4 py-2 rounded-lg hover:bg-muted/70">
                 Annulla
               </button>
               <button type="button" onClick={elimina} disabled={deleting}
-                className="ml-auto flex items-center gap-1.5 text-xs text-destructive hover:bg-destructive/10 px-3 py-2 rounded transition-colors disabled:opacity-50">
+                className="ml-auto flex items-center gap-1.5 text-xs text-destructive hover:bg-destructive/10 px-3 py-2 rounded-lg transition-colors disabled:opacity-50">
                 <Trash size={13} weight="bold" />
                 {deleting ? "…" : "Elimina"}
               </button>

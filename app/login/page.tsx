@@ -86,7 +86,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={caricamento}
-              className="w-full bg-primary text-primary-foreground text-sm font-medium py-2.5 rounded transition-colors hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-primary text-primary-foreground text-sm font-medium py-2.5 rounded-lg transition-colors hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {caricamento ? "Accesso in corso…" : "Accedi"}
             </button>
@@ -103,7 +103,7 @@ export default function LoginPage() {
 
           <button
             onClick={accediConGoogle}
-            className="w-full flex items-center justify-center gap-3 bg-card border border-border text-sm text-foreground font-medium py-2.5 rounded transition-colors hover:bg-muted"
+            className="w-full flex items-center justify-center gap-3 bg-card border border-border text-sm text-foreground font-medium py-2.5 rounded-lg transition-colors hover:bg-muted"
           >
             <GoogleIcon />
             Accedi con Google
@@ -135,4 +135,4 @@ function GoogleIcon() {
 }
 
 const inputClass =
-  "w-full bg-card border border-border text-sm text-foreground placeholder:text-muted-foreground px-3 py-2.5 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all";
+  "w-full bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all";
