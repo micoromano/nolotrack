@@ -48,7 +48,7 @@ export default async function CorsePage() {
 
       {/* Table */}
       <div className="p-6">
-        <div className="bg-card border border-border rounded overflow-hidden">
+        <div className="bg-card border border-border rounded-lg overflow-hidden">
           {/* Header */}
           <div className="hidden sm:grid grid-cols-[120px_160px_80px_1fr_1fr_90px] px-4 py-2 border-b border-border bg-muted/30">
             <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Data / Ora</span>
@@ -82,7 +82,7 @@ export default async function CorsePage() {
                       <p className="text-xs text-muted-foreground">{c.n_pax} pax</p>
                     )}
                   </div>
-                  <span className={cn("text-xs px-1.5 py-0.5 rounded font-medium w-fit", pagamentoBadgeStyle[c.tipo_pagamento])}>
+                  <span className={cn("text-xs px-1.5 py-0.5 rounded-lg font-medium w-fit", pagamentoBadgeStyle[c.tipo_pagamento])}>
                     {pagamentoLabel[c.tipo_pagamento] ?? c.tipo_pagamento}
                   </span>
                   <span className="text-sm truncate">{c.origine}</span>
@@ -97,7 +97,7 @@ export default async function CorsePage() {
                       <span className="font-mono text-xs text-muted-foreground">
                         {new Date(c.data).toLocaleDateString("it-IT", { day: "numeric", month: "short" })} · {c.ora_partenza.slice(0, 5)}
                       </span>
-                      <span className={cn("text-xs px-1.5 py-0.5 rounded font-medium", pagamentoBadgeStyle[c.tipo_pagamento])}>
+                      <span className={cn("text-xs px-1.5 py-0.5 rounded-lg font-medium", pagamentoBadgeStyle[c.tipo_pagamento])}>
                         {pagamentoLabel[c.tipo_pagamento] ?? c.tipo_pagamento}
                       </span>
                     </div>

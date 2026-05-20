@@ -64,7 +64,7 @@ export default function NuovoTurnoPage() {
       </div>
 
       <div className="p-6">
-        <div className="max-w-md bg-card border border-border rounded">
+        <div className="max-w-md bg-card border border-border rounded-lg">
           <div className="border-b border-border px-5 py-3">
             <p className="text-xs text-muted-foreground">Registra il tuo orario di lavoro</p>
           </div>
@@ -88,14 +88,14 @@ export default function NuovoTurnoPage() {
               <button
                 type="submit"
                 disabled={caricamento}
-                className="bg-primary text-primary-foreground text-xs font-medium px-4 py-2 rounded transition-colors hover:opacity-90 disabled:opacity-50"
+                className="bg-primary text-primary-foreground text-xs font-medium px-4 py-2 rounded-lg transition-colors hover:opacity-90 disabled:opacity-50"
               >
                 {caricamento ? "Salvataggio…" : "Salva turno"}
               </button>
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="bg-muted text-foreground text-xs font-medium px-4 py-2 rounded transition-colors hover:bg-muted/70"
+                className="bg-muted text-foreground text-xs font-medium px-4 py-2 rounded-lg transition-colors hover:bg-muted/70"
               >
                 Annulla
               </button>

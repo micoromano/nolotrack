@@ -382,7 +382,7 @@ export default function PDFButton(props: Props) {
     <PDFDownloadLink document={<RapportinoDoc {...props} />} fileName={fileName}>
       {({ loading }) => (
         <button
-          className="bg-primary text-primary-foreground text-xs font-medium px-4 py-2 rounded transition-colors hover:opacity-90 disabled:opacity-50"
+          className="bg-primary text-primary-foreground text-xs font-medium px-4 py-2 rounded-lg transition-colors hover:opacity-90 disabled:opacity-50"
           disabled={loading}
         >
           {loading ? "Generazione…" : "↓ Scarica PDF"}

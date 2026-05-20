@@ -370,7 +370,7 @@ export default function StipendioPage() {
           <select
             value={mese}
             onChange={(e) => setMese(e.target.value)}
-            className="bg-background border border-border text-sm text-foreground px-3 py-1.5 rounded focus:outline-none focus:ring-1 focus:ring-primary"
+            className="bg-background border border-border text-sm text-foreground px-3 py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
           >
             {mesiDisponibili.length === 0 && (
               <option value={mese}>{meseFmt}</option>

@@ -179,7 +179,7 @@ export default function ReportPage() {
           <>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               {/* Orari */}
-              <section className="bg-card border border-border rounded">
+              <section className="bg-card border border-border rounded-lg">
                 <div className="border-b border-border px-4 py-2">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Orari</p>
                 </div>
@@ -195,7 +195,7 @@ export default function ReportPage() {
               </section>
 
               {/* Flussi */}
-              <section className="bg-card border border-border rounded">
+              <section className="bg-card border border-border rounded-lg">
                 <div className="border-b border-border px-4 py-2">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Flussi cassa</p>
                 </div>
@@ -226,7 +226,7 @@ export default function ReportPage() {
             </div>
 
             {/* Spese */}
-            <section className="bg-card border border-border rounded">
+            <section className="bg-card border border-border rounded-lg">
               <div className="border-b border-border px-4 py-2 flex items-center justify-between">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Spese</p>
                 <p className="font-mono text-xs font-medium text-foreground">{euro(rapportino.totSpese)}</p>
@@ -271,7 +271,7 @@ export default function ReportPage() {
                 <button
                   type="submit"
                   disabled={salvandoSpesa}
-                  className="bg-primary text-primary-foreground text-xs font-medium px-3 py-2 rounded transition-colors hover:opacity-90 disabled:opacity-50 shrink-0"
+                  className="bg-primary text-primary-foreground text-xs font-medium px-3 py-2 rounded-lg transition-colors hover:opacity-90 disabled:opacity-50 shrink-0"
                 >
                   + Aggiungi
                 </button>
@@ -279,7 +279,7 @@ export default function ReportPage() {
             </section>
 
             {/* Servizi */}
-            <section className="bg-card border border-border rounded">
+            <section className="bg-card border border-border rounded-lg">
               <div className="border-b border-border px-4 py-2">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
                   Dettaglio servizi ({rapportino.corse.length})
@@ -353,7 +353,7 @@ const pagamentoLabel: Record<string, string> = {
 
 function PagamentoBadge({ tipo }: { tipo: string }) {
   return (
-    <span className={cn("text-xs px-1.5 py-0.5 rounded font-medium", pagamentoBadgeStyle[tipo] ?? "bg-muted text-muted-foreground")}>
+    <span className={cn("text-xs px-1.5 py-0.5 rounded-lg font-medium", pagamentoBadgeStyle[tipo] ?? "bg-muted text-muted-foreground")}>
       {pagamentoLabel[tipo] ?? tipo}
     </span>
   );

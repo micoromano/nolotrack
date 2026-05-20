@@ -17,14 +17,14 @@ export function AgendaNav({ anno, mese }: { anno: number; mese: number }) {
     <div className="flex items-center gap-3">
       <button
         onClick={() => naviga(-1)}
-        className="p-1.5 rounded hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground"
+        className="p-1.5 rounded-lg hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground"
       >
         <CaretLeft size={14} weight="bold" />
       </button>
       <span className="text-sm font-semibold capitalize w-36 text-center">{label}</span>
       <button
         onClick={() => naviga(1)}
-        className="p-1.5 rounded hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground"
+        className="p-1.5 rounded-lg hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground"
       >
         <CaretRight size={14} weight="bold" />
       </button>
@@ -47,7 +47,7 @@ export function IcalButton({ anno, mese }: { anno: number; mese: number }) {
   return (
     <button
       onClick={scarica}
-      className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground border border-border rounded px-3 py-1.5 hover:bg-muted/30 transition-colors"
+      className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground border border-border rounded-lg px-3 py-1.5 hover:bg-muted/30 transition-colors"
     >
       <Download size={13} weight="bold" />
       Esporta .ics
@@ -59,7 +59,7 @@ export function GoogleCalendarButton() {
   return (
     <a
       href="/api/google-calendar/connect"
-      className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground border border-border rounded px-3 py-1.5 hover:bg-muted/30 transition-colors"
+      className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground border border-border rounded-lg px-3 py-1.5 hover:bg-muted/30 transition-colors"
     >
       Connetti Google Calendar
     </a>

@@ -107,7 +107,7 @@ export default function CassaPage() {
           <select
             value={mese}
             onChange={e => setMese(e.target.value)}
-            className="bg-background border border-border text-sm text-foreground px-3 py-1.5 rounded focus:outline-none focus:ring-1 focus:ring-primary"
+            className="bg-background border border-border text-sm text-foreground px-3 py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
           >
             <option value="">Tutti i periodi</option>
             {mesiDisponibili.map(m => {
@@ -159,7 +159,7 @@ export default function CassaPage() {
         </div>
 
         {/* Ledger table */}
-        <div className="bg-card border border-border rounded overflow-hidden">
+        <div className="bg-card border border-border rounded-lg overflow-hidden">
           <div className="hidden sm:grid grid-cols-7 px-4 py-2 border-b border-border bg-muted/30">
             {["Data", "Cash", "Carte", "Uber", "No Inc", "Spese", "Saldo"].map(h => (
               <span key={h} className="text-xs font-medium text-muted-foreground uppercase tracking-wider last:text-right">{h}</span>

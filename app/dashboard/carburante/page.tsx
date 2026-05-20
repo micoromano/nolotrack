@@ -230,7 +230,7 @@ export default function CarburantePage() {
           <select
             value={mese}
             onChange={e => setMese(e.target.value)}
-            className="bg-background border border-border text-sm text-foreground px-3 py-1.5 rounded focus:outline-none focus:ring-1 focus:ring-primary"
+            className="bg-background border border-border text-sm text-foreground px-3 py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
           >
             <option value="">Tutti i periodi</option>
             {mesiDisponibili.map(m => (
@@ -445,7 +445,7 @@ export default function CarburantePage() {
         </div>
 
         {/* Tabella lista rifornimenti */}
-        <div className="bg-card border border-border rounded overflow-hidden">
+        <div className="bg-card border border-border rounded-lg overflow-hidden">
           {/* Header desktop */}
           <div className="hidden sm:grid grid-cols-7 px-4 py-2 border-b border-border bg-muted/30">
             {["Data", "Targa", "Km", "Litri", "€/L", "Importo", ""].map((h, i) => (
@@ -493,14 +493,14 @@ export default function CarburantePage() {
                   <div className="flex justify-end gap-1">
                     <Link
                       href={`/dashboard/carburante/${r.id}`}
-                      className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors px-2 py-1 rounded hover:bg-primary/10"
+                      className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors px-2 py-1 rounded-lg hover:bg-primary/10"
                     >
                       <PencilSimple size={13} weight="bold" />
                       Modifica
                     </Link>
                     <button
                       onClick={() => elimina(r.id)}
-                      className="flex items-center gap-1 text-xs text-muted-foreground hover:text-rose-400 transition-colors px-2 py-1 rounded hover:bg-rose-400/10"
+                      className="flex items-center gap-1 text-xs text-muted-foreground hover:text-rose-400 transition-colors px-2 py-1 rounded-lg hover:bg-rose-400/10"
                     >
                       <Trash size={13} weight="bold" />
                       Elimina

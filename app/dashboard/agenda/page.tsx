@@ -77,7 +77,7 @@ export default async function AgendaPage({
           <IcalButton anno={anno} mese={mese} />
           {!integrazioneConnessa && <GoogleCalendarButton />}
           {integrazioneConnessa && (
-            <span className="text-xs text-green-400 border border-green-400/30 rounded px-2 py-1">
+            <span className="text-xs text-green-400 border border-green-400/30 rounded-lg px-2 py-1">
               Google Calendar connesso
             </span>
           )}
@@ -94,7 +94,7 @@ export default async function AgendaPage({
           if (!haServizi) {
             return (
               <div key={dataStr} className={cn(
-                "flex items-center gap-3 px-4 py-2 rounded text-xs text-muted-foreground/50",
+                "flex items-center gap-3 px-4 py-2 rounded-lg text-xs text-muted-foreground/50",
                 isOggi && "bg-primary/5 text-primary font-medium"
               )}>
                 <span className="w-20 shrink-0 capitalize">
@@ -120,7 +120,7 @@ export default async function AgendaPage({
                   isOggi ? "text-primary" : "text-foreground"
                 )}>
                   {giorno.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })}
-                  {isOggi && <span className="ml-2 text-xs bg-primary text-primary-foreground px-1.5 py-0.5 rounded">Oggi</span>}
+                  {isOggi && <span className="ml-2 text-xs bg-primary text-primary-foreground px-1.5 py-0.5 rounded-lg">Oggi</span>}
                 </span>
                 <span className="text-xs text-muted-foreground">{corseGiorno.length} serviz{corseGiorno.length === 1 ? "io" : "i"}</span>
               </div>
@@ -143,7 +143,7 @@ export default async function AgendaPage({
                       {c.tipo_servizio && <p className="text-xs text-muted-foreground/60">{c.tipo_servizio}</p>}
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className={cn("text-xs px-1.5 py-0.5 rounded font-medium", pagamentoBadgeStyle[c.tipo_pagamento])}>
+                      <span className={cn("text-xs px-1.5 py-0.5 rounded-lg font-medium", pagamentoBadgeStyle[c.tipo_pagamento])}>
                         {pagamentoLabel[c.tipo_pagamento]}
                       </span>
                       <span className="font-mono text-xs">

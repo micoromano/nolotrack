@@ -243,21 +243,21 @@ export default function InviaPage() {
       <div className="p-6 space-y-5 max-w-3xl">
         {/* Banner Gmail non configurato */}
         {gmailConfigurato === false && (
-          <div className="flex items-start gap-3 bg-amber-400/10 border border-amber-400/30 rounded px-4 py-3">
+          <div className="flex items-start gap-3 bg-amber-400/10 border border-amber-400/30 rounded-lg px-4 py-3">
             <Warning size={18} className="text-amber-400 shrink-0 mt-0.5" weight="fill" />
             <div className="text-sm">
               <p className="font-semibold text-amber-400">Gmail non configurato</p>
               <p className="text-muted-foreground mt-0.5">
-                Aggiungi <code className="bg-muted px-1 py-0.5 rounded text-xs">GMAIL_USER</code> e{" "}
-                <code className="bg-muted px-1 py-0.5 rounded text-xs">GMAIL_APP_PASSWORD</code> in{" "}
-                <code className="bg-muted px-1 py-0.5 rounded text-xs">.env.local</code> per abilitare l&apos;invio.
+                Aggiungi <code className="bg-muted px-1 py-0.5 rounded-lg text-xs">GMAIL_USER</code> e{" "}
+                <code className="bg-muted px-1 py-0.5 rounded-lg text-xs">GMAIL_APP_PASSWORD</code> in{" "}
+                <code className="bg-muted px-1 py-0.5 rounded-lg text-xs">.env.local</code> per abilitare l&apos;invio.
               </p>
             </div>
           </div>
         )}
 
         {/* Istruzioni App Password Gmail */}
-        <div className="bg-card border border-border rounded overflow-hidden">
+        <div className="bg-card border border-border rounded-lg overflow-hidden">
           <button
             type="button"
             onClick={() => setIstruzioniAperte((v) => !v)}
@@ -276,7 +276,7 @@ export default function InviaPage() {
                 <li>Attiva la <strong className="text-foreground">Verifica in 2 passaggi</strong> se non è già attiva</li>
                 <li>Cerca <strong className="text-foreground">Password per le app</strong> (nella stessa sezione Sicurezza)</li>
                 <li>Crea una nuova app password per &quot;NoloTrack&quot;</li>
-                <li>Copia la password (16 caratteri con spazi) e incollala in <code className="bg-muted px-1 rounded">GMAIL_APP_PASSWORD</code> nel file <code className="bg-muted px-1 rounded">.env.local</code></li>
+                <li>Copia la password (16 caratteri con spazi) e incollala in <code className="bg-muted px-1 rounded-lg">GMAIL_APP_PASSWORD</code> nel file <code className="bg-muted px-1 rounded-lg">.env.local</code></li>
               </ol>
             </div>
           )}
@@ -284,7 +284,7 @@ export default function InviaPage() {
 
         <form onSubmit={inviaEmail} className="space-y-5">
           {/* A) Destinatario */}
-          <section className="bg-card border border-border rounded">
+          <section className="bg-card border border-border rounded-lg">
             <div className="border-b border-border px-4 py-2 flex items-center gap-2">
               <EnvelopeSimple size={13} className="text-muted-foreground" />
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Destinatario</p>
@@ -303,7 +303,7 @@ export default function InviaPage() {
                   <button
                     type="button"
                     onClick={() => setDestinatario(userEmail)}
-                    className="shrink-0 text-xs bg-muted border border-border text-muted-foreground hover:text-foreground px-3 py-2 rounded transition-colors"
+                    className="shrink-0 text-xs bg-muted border border-border text-muted-foreground hover:text-foreground px-3 py-2 rounded-lg transition-colors"
                   >
                     Usa mia email
                   </button>
@@ -323,7 +323,7 @@ export default function InviaPage() {
           </section>
 
           {/* B) Periodo */}
-          <section className="bg-card border border-border rounded">
+          <section className="bg-card border border-border rounded-lg">
             <div className="border-b border-border px-4 py-2 flex items-center gap-2">
               <CalendarBlank size={13} className="text-muted-foreground" />
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Periodo</p>
@@ -335,7 +335,7 @@ export default function InviaPage() {
                     key={tipo}
                     type="button"
                     onClick={() => impostaPeriodo(tipo)}
-                    className="text-xs bg-muted border border-border text-muted-foreground hover:text-foreground px-3 py-1.5 rounded transition-colors capitalize"
+                    className="text-xs bg-muted border border-border text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-lg transition-colors capitalize"
                   >
                     {tipo === "oggi" ? "Oggi" : tipo === "settimana" ? "Questa settimana" : "Questo mese"}
                   </button>
@@ -366,7 +366,7 @@ export default function InviaPage() {
           </section>
 
           {/* C) Documenti */}
-          <section className="bg-card border border-border rounded">
+          <section className="bg-card border border-border rounded-lg">
             <div className="border-b border-border px-4 py-2 flex items-center gap-2">
               <FileText size={13} className="text-muted-foreground" />
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Documenti da allegare</p>
@@ -376,7 +376,7 @@ export default function InviaPage() {
                 <label
                   key={doc.id}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded border cursor-pointer transition-all",
+                    "flex items-center gap-3 px-3 py-2.5 rounded-lg border cursor-pointer transition-all",
                     documentiSelezionati.has(doc.id)
                       ? "border-primary/40 bg-primary/5 text-foreground"
                       : "border-border text-muted-foreground hover:border-border/80 hover:text-foreground"
@@ -400,7 +400,7 @@ export default function InviaPage() {
           </section>
 
           {/* D) Anteprima */}
-          <section className="bg-card border border-border rounded">
+          <section className="bg-card border border-border rounded-lg">
             <div className="border-b border-border px-4 py-2 flex items-center justify-between">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Anteprima corpo email</p>
               {caricandoAnteprima && (
@@ -424,7 +424,7 @@ export default function InviaPage() {
               type="submit"
               disabled={invio === "caricamento" || gmailConfigurato === false || documentiSelezionati.size === 0}
               className={cn(
-                "flex items-center justify-center gap-2 px-6 py-2.5 rounded text-sm font-semibold transition-all",
+                "flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all",
                 invio === "caricamento"
                   ? "bg-primary/50 text-primary-foreground cursor-wait"
                   : invio === "ok"
@@ -466,7 +466,7 @@ export default function InviaPage() {
             </button>
 
             {invio === "errore" && erroreInvio && (
-              <div className="flex items-start gap-2 text-sm text-destructive bg-destructive/10 border border-destructive/30 rounded px-3 py-2">
+              <div className="flex items-start gap-2 text-sm text-destructive bg-destructive/10 border border-destructive/30 rounded-lg px-3 py-2">
                 <Warning size={15} weight="fill" className="shrink-0 mt-0.5" />
                 <span>{erroreInvio}</span>
               </div>
@@ -476,7 +476,7 @@ export default function InviaPage() {
 
         {/* F) Storico invii di sessione */}
         {storico.length > 0 && (
-          <section className="bg-card border border-border rounded">
+          <section className="bg-card border border-border rounded-lg">
             <div className="border-b border-border px-4 py-2">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Storico invii (sessione)</p>
             </div>
