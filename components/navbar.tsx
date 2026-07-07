@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import {
   House, Clock, Car, Wallet, Receipt, FileText, SignOut,
-  GasPump, Money, PaperPlaneTilt, CalendarBlank, Users,
+  GasPump, Money, PaperPlaneTilt, CalendarBlank, Users, WhatsappLogo,
 } from "@phosphor-icons/react";
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import type { Permessi } from "@/lib/permessi";
@@ -32,10 +32,11 @@ const vociDesktop: VoceNav[] = [
   { href: "/dashboard/stipendio",  label: "Stipendio",  icon: Money,          color: "text-green-400",   sezione: "stipendio" },
   { href: "/dashboard/report",     label: "Report",     icon: FileText,       color: "text-violet-400",  sezione: "report" },
   { href: "/dashboard/invia",      label: "Invia",      icon: PaperPlaneTilt, color: "text-cyan-400",    sezione: "invia" },
+  { href: "/dashboard/whatsapp",   label: "WhatsApp",   icon: WhatsappLogo,   color: "text-emerald-400", sezione: "whatsapp" },
   { href: "/dashboard/admin",      label: "Admin",      icon: Users,          color: "text-slate-400",   sezione: "admin" },
 ];
 
-const sezioniMobile = ["home", "turni", "corse", "cassa", "spese", "agenda", "carburante", "stipendio", "report", "invia", "admin"];
+const sezioniMobile = ["home", "turni", "corse", "cassa", "spese", "agenda", "carburante", "stipendio", "report", "invia", "whatsapp", "admin"];
 
 export default function NavBar({ userEmail, permessi }: { userEmail: string; permessi: Permessi }) {
   const pathname = usePathname();

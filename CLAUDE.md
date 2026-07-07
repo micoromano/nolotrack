@@ -46,6 +46,12 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=...   # Places Autocomplete
 GMAIL_USER=...                         # Gmail SMTP mittente
 GMAIL_APP_PASSWORD=...                 # App Password Gmail (no 2FA password)
+NEXT_PUBLIC_APP_URL=...                 # Origine pubblica, usata per link email/invito e callback URL WhatsApp
+SUPABASE_SERVICE_ROLE_KEY=...           # Usata dal webhook WhatsApp (route pubblica, nessuna sessione utente)
+META_WHATSAPP_TOKEN=...                 # Meta Cloud API — access token permanente
+META_WHATSAPP_PHONE_NUMBER_ID=...       # Meta Cloud API — Phone Number ID
+META_WHATSAPP_VERIFY_TOKEN=...          # Stringa a scelta, usata per la verifica webhook (hub.verify_token)
+META_WHATSAPP_APP_SECRET=...            # Opzionale ma consigliato — verifica firma X-Hub-Signature-256
 ```
 
 ---
@@ -112,6 +118,27 @@ id uuid PK, autista_id uuid FK autisti, targa text, created_at timestamptz
 -- Policy: autista_id = auth.uid()
 ```
 
+**`whatsapp_templates`** (RLS) — SP7, SQL in `supabase/migrations/20260707_sp7_whatsapp.sql`
+```sql
+id uuid PK, autista_id uuid FK autisti, nome text, categoria text CHECK IN ('autista','cliente','libero'),
+corpo text, created_at timestamptz
+-- UNIQUE(autista_id, nome) — corpo con placeholder {{chiave}}
+-- Policy: autista_id = auth.uid()
+```
+
+**`whatsapp_log`** (RLS) — SP7
+```sql
+id uuid PK, autista_id uuid FK autisti nullable, corsa_id uuid FK corse nullable,
+destinatario_tipo text CHECK IN ('autista','cliente'), telefono text,
+direzione text CHECK IN ('in','out'), tipo text CHECK IN ('testo','template','interactive_bottoni','interactive_lista','bottone_click'),
+contenuto text, wa_message_id text, stato text CHECK IN ('inviato','consegnato','letto','errore','ricevuto'),
+errore_msg text, created_at timestamptz
+-- SELECT/INSERT: autista_id = auth.uid(); il webhook pubblico scrive con SUPABASE_SERVICE_ROLE_KEY (bypassa RLS)
+```
+
+**`autisti.telefono`** (SP7) — numero WhatsApp dell'autista, usato per avviare il flusso servizio
+**`corse.stato_servizio`** (SP7) — `'da_iniziare' | 'in_corso' | 'attesa_pagamento' | 'pagato' | 'completato'`, avanzato dai bottoni WhatsApp
+
 ---
 
 ## Logica di business
@@ -157,12 +184,20 @@ app/
 │   ├── report/
 │   │   ├── page.tsx            — rapportino giornaliero + PDF download
 │   │   └── pdf.tsx             — PDF component (esporta RapportinoDoc + Props)
-│   └── invia/page.tsx          — composizione email + allegati PDF
+│   ├── invia/page.tsx          — composizione email + allegati PDF
+│   └── whatsapp/
+│       ├── page.tsx            — hub: webhook/callback URL, avvio flusso servizio, invio cliente/libero, storico
+│       └── template/page.tsx   — CRUD template con placeholder {{chiave}}
 └── api/
-    └── invia-email/route.ts    — POST Nodemailer Gmail SMTP
+    ├── invia-email/route.ts    — POST Nodemailer Gmail SMTP
+    └── whatsapp/
+        ├── webhook/route.ts    — GET verifica Meta, POST eventi (bottoni/testo/ricevute stato)
+        ├── invia/route.ts      — POST azioni: avvia_flusso_autista | messaggio_libero | usa_template
+        ├── templates/route.ts  — GET/POST template (+ [id]/route.ts per PUT/DELETE)
+        └── status/route.ts     — GET stato configurazione + callback URL
 
 components/
-├── navbar.tsx                  — sidebar desktop (9 voci) + bottom tabs mobile (5 voci)
+├── navbar.tsx                  — sidebar desktop (11 voci) + bottom tabs mobile (scroll orizzontale)
 ├── place-autocomplete.tsx      — Google Places wrapper (lazy load)
 └── ui/                         — shadcn components
 
@@ -172,9 +207,10 @@ lib/
 │   └── server.ts               — createClient() per server components
 ├── pdf-allegati.tsx            — generatori PDF base64 (rapportino/stipendio/carburante)
 ├── email-content.ts            — generatori testo email per anteprima
+├── whatsapp.ts                 — client Meta Cloud API (invio testo/bottoni/lista, firma webhook, placeholder)
 └── utils.ts                    — cn()
 
-types/index.ts                  — TipoPagamento, Corsa, Turno, Spesa, ConfigurazioneSalario
+types/index.ts                  — TipoPagamento, Corsa, Turno, Spesa, ConfigurazioneSalario, WhatsappTemplate, WhatsappLog
 ```
 
 ---
@@ -223,6 +259,34 @@ Home, Corse, Cassa, Stipendio, Invia
 - Restrizione: `componentRestrictions: { country: "it" }`
 - Usato nei campi Origine e Destinazione di `/dashboard/corse/nuova`
 - Fallback a input normale se API key non presente
+
+---
+
+## WhatsApp (Meta Cloud API) — SP7
+
+**Flusso servizio → autista** (macchina a stati guidata da bottoni interattivi, id formato `step:<fase>:<corsaId>` / `pagamento:<tipo>:<corsaId>`):
+
+```
+da_iniziare --[▶️ Inizio corsa]--> in_corso --[🏁 Fine corsa]--> attesa_pagamento
+  --[lista: Cash/Carta/Uber/Non incassato]--> pagato --[✅ Fine servizio]--> completato
+```
+
+- Ogni step aggiorna `corse.stato_servizio` (e `tipo_pagamento` alla scelta del pagamento) e logga in `whatsapp_log`.
+- Al passaggio a `in_corso` e a `completato`, se `corse.cliente_tel` è valorizzato, viene inviato automaticamente un messaggio di cortesia al cliente.
+
+**Setup webhook Meta:**
+1. Meta for Developers → app → WhatsApp → Configuration → Callback URL = `{NEXT_PUBLIC_APP_URL}/api/whatsapp/webhook`, Verify token = `META_WHATSAPP_VERIFY_TOKEN`
+2. Iscriversi al campo webhook `messages`
+3. Copiare Token e Phone Number ID da "API Setup" in `META_WHATSAPP_TOKEN` / `META_WHATSAPP_PHONE_NUMBER_ID`
+4. `META_WHATSAPP_APP_SECRET` abilita la verifica della firma `X-Hub-Signature-256` (fortemente consigliato in produzione)
+
+**Template locali** (non i template Meta ufficiali, che richiedono approvazione): CRUD in `/dashboard/whatsapp/template`, corpo con placeholder `{{chiave}}` sostituiti lato server prima dell'invio (`lib/whatsapp.ts` → `estraiPlaceholder` / `riempiPlaceholder`).
+
+**Route API:**
+- `GET/POST /api/whatsapp/webhook` — pubblica, usa `SUPABASE_SERVICE_ROLE_KEY` per scrivere (nessuna sessione utente)
+- `POST /api/whatsapp/invia` — autenticata, azioni `avvia_flusso_autista` / `messaggio_libero` / `usa_template`
+- `GET/POST /api/whatsapp/templates`, `PUT/DELETE /api/whatsapp/templates/[id]` — CRUD template, RLS per autista
+- `GET /api/whatsapp/status` — configurazione + callback URL per la UI
 
 ---
 

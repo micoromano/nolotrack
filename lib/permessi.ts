@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 export type Sezione =
   | "home" | "turni" | "corse" | "cassa" | "spese"
   | "carburante" | "stipendio" | "report" | "invia"
-  | "agenda" | "admin";
+  | "agenda" | "admin" | "whatsapp";
 
 export interface Permessi {
   [sezione: string]: { can_view: boolean; can_edit: boolean };
@@ -49,7 +49,7 @@ export async function getPermessiUtente(): Promise<Permessi> {
 }
 
 function defaultAutistaPermessi(): Permessi {
-  const sezioni: Sezione[] = ["home", "turni", "corse", "cassa", "spese", "carburante", "stipendio", "report", "invia", "agenda"];
+  const sezioni: Sezione[] = ["home", "turni", "corse", "cassa", "spese", "carburante", "stipendio", "report", "invia", "agenda", "whatsapp"];
   const result: Permessi = {};
   for (const s of sezioni) result[s] = { can_view: true, can_edit: true };
   result["admin"] = { can_view: false, can_edit: false };
@@ -57,7 +57,7 @@ function defaultAutistaPermessi(): Permessi {
 }
 
 function defaultAdminPermessi(): Permessi {
-  const sezioni: Sezione[] = ["home", "turni", "corse", "cassa", "spese", "carburante", "stipendio", "report", "invia", "agenda", "admin"];
+  const sezioni: Sezione[] = ["home", "turni", "corse", "cassa", "spese", "carburante", "stipendio", "report", "invia", "agenda", "admin", "whatsapp"];
   const result: Permessi = {};
   for (const s of sezioni) result[s] = { can_view: true, can_edit: true };
   return result;
