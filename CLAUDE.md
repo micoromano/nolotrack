@@ -46,12 +46,16 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=...   # Places Autocomplete
 GMAIL_USER=...                         # Gmail SMTP mittente
 GMAIL_APP_PASSWORD=...                 # App Password Gmail (no 2FA password)
-NEXT_PUBLIC_APP_URL=...                 # Origine pubblica, usata per link email/invito e callback URL WhatsApp
+NEXT_PUBLIC_APP_URL=...                 # Origine pubblica, usata per link email/invito, callback URL WhatsApp e canonical/OG del sito vetrina
 SUPABASE_SERVICE_ROLE_KEY=...           # Usata dal webhook WhatsApp (route pubblica, nessuna sessione utente)
 META_WHATSAPP_TOKEN=...                 # Meta Cloud API — access token permanente
 META_WHATSAPP_PHONE_NUMBER_ID=...       # Meta Cloud API — Phone Number ID
 META_WHATSAPP_VERIFY_TOKEN=...          # Stringa a scelta, usata per la verifica webhook (hub.verify_token)
 META_WHATSAPP_APP_SECRET=...            # Opzionale ma consigliato — verifica firma X-Hub-Signature-256
+NEXT_PUBLIC_CONTACT_PHONE=...           # Opzionale — numero mostrato sul sito vetrina pubblico (tel:/wa.me)
+NEXT_PUBLIC_WHATSAPP_DISPLAY_NUMBER=... # Opzionale — numero WhatsApp mostrato sul sito vetrina (link wa.me)
+NEXT_PUBLIC_CONTACT_CITY=...            # Opzionale — zona di servizio mostrata sul sito vetrina (default "Roma e provincia")
+NEXT_PUBLIC_NCC_LICENSE=...             # Opzionale — numero di licenza NCC mostrato sul sito vetrina
 ```
 
 ---
@@ -166,6 +170,10 @@ stipendio_totale = stipendio_base + comm_cash + comm_carta + comm_uber
 
 ```
 app/
+├── page.tsx                    — sito vetrina pubblico (nessun form, nessuna auth), dati da lib/site-config.ts
+├── privacy/page.tsx            — informativa privacy pubblica (richiesta da Meta per WhatsApp Business API)
+├── termini/page.tsx            — termini di servizio pubblici
+├── robots.ts / sitemap.ts      — indicizzazione SEO del sito vetrina (Route Handler Metadata API)
 ├── login/page.tsx              — email/password + Google OAuth
 ├── auth/callback/route.ts      — callback OAuth Supabase
 ├── dashboard/
@@ -202,6 +210,7 @@ components/
 └── ui/                         — shadcn components
 
 lib/
+├── site-config.ts               — dati pubblici del sito vetrina (nome, contatti, licenza NCC), letti da env var opzionali
 ├── supabase/
 │   ├── client.ts               — createClient() per client components
 │   └── server.ts               — createClient() per server components
@@ -289,6 +298,16 @@ da_iniziare --[▶️ Inizio corsa]--> in_corso --[🏁 Fine corsa]--> attesa_pa
 - `GET /api/whatsapp/status` — configurazione + callback URL per la UI
 
 ---
+
+## Sito vetrina pubblico
+
+`/`, `/privacy`, `/termini` (+ `/robots.txt`, `/sitemap.xml`) sono pubblici — `proxy.ts` li esclude esplicitamente dal redirect a `/login` (bypassano del tutto la sessione Supabase, per superficie d'attacco minima). Tutto il resto (incluso `/dashboard/**`) resta protetto come prima.
+
+Obiettivo: dare a Meta/WhatsApp Business API un sito vetrina reale, statico, senza form né endpoint dinamici, che il crawler riesca a trovare e indicizzare (da qui `robots.ts`/`sitemap.ts` + meta tag canonical/OpenGraph in `app/page.tsx`) e che esponga i contenuti richiesti in fase di verifica business: nome attività, descrizione del servizio, contatti diretti (tel/email/WhatsApp via `tel:`/`mailto:`/`wa.me`, mai un form), privacy policy e termini di servizio.
+
+- Nessun'iscrizione: le pagine pubbliche non hanno form né chiamate a Supabase — sono interamente server-rendered statiche (`○` in `next build`).
+- Header di sicurezza globali (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`) impostati in `next.config.ts` per l'intera app.
+- Contenuti (telefono, email, città, licenza NCC) centralizzati in `lib/site-config.ts`: i campi opzionali spariscono dalla UI finché la relativa env var non è impostata, per non pubblicare dati inventati.
 
 ## Pattern da rispettare
 
