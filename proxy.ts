@@ -1,7 +1,15 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+const PUBLIC_PATHS = new Set(["/", "/privacy", "/termini"]);
+
 export async function proxy(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+
+  if (PUBLIC_PATHS.has(pathname)) {
+    return NextResponse.next({ request });
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -27,7 +35,7 @@ export async function proxy(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  const isAuthPage = request.nextUrl.pathname.startsWith("/login");
+  const isAuthPage = pathname.startsWith("/login");
 
   if (!user && !isAuthPage) {
     return NextResponse.redirect(new URL("/login", request.url));
@@ -41,5 +49,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|api|auth).*)"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|api|auth|robots.txt|sitemap.xml).*)",
+  ],
 };
