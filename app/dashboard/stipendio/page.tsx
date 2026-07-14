@@ -19,6 +19,7 @@ import {
   Percent,
   Clock,
   ChartBar,
+  ChartLineUp,
   CurrencyEur,
   CreditCard,
   Car,
@@ -71,40 +72,48 @@ interface GiornoDetail {
 }
 
 // ---------------------------------------------------------------------------
-// Metric tile
+// Bento hero card (riepilogo mensile in stile "Income Overview")
 // ---------------------------------------------------------------------------
-function Tile({
+function HeroCard({
   label,
   value,
-  sub,
-  icon: Icon,
-  iconClass,
   valueClass,
-  accent,
+  note,
+  colSpan,
 }: {
   label: string;
   value: string;
-  sub?: string;
-  icon: React.ElementType;
-  iconClass: string;
   valueClass?: string;
-  accent?: boolean;
+  note?: React.ReactNode;
+  colSpan?: boolean;
 }) {
   return (
     <div
       className={cn(
-        "glass-card rounded-2xl p-5 relative overflow-hidden",
-        accent && "border-primary/30"
+        "glass-card rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between",
+        colSpan && "md:col-span-2"
       )}
     >
-      <div className={cn("p-2.5 rounded-xl w-fit mb-3 flex items-center justify-center", iconClass)}>
-        <Icon size={18} weight="fill" />
+      <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-3xl" />
+      <div>
+        <span className="text-[11px] font-bold uppercase tracking-widest text-on-secondary-container">
+          {label}
+        </span>
+        <p
+          className={cn(
+            "font-mono font-black tracking-tight mt-2",
+            colSpan ? "text-4xl md:text-5xl" : "text-2xl",
+            valueClass ?? "text-foreground"
+          )}
+        >
+          {value}
+        </p>
       </div>
-      <p className="text-[11px] font-bold uppercase tracking-widest text-on-secondary-container mb-1">{label}</p>
-      <p className={cn("font-mono text-xl font-bold mt-1", valueClass ?? "text-foreground")}>
-        {value}
-      </p>
-      {sub && <p className="text-xs text-on-surface-variant mt-0.5 font-mono">{sub}</p>}
+      {note && (
+        <div className="flex items-center gap-1.5 mt-4 text-on-surface-variant text-xs font-mono">
+          {note}
+        </div>
+      )}
     </div>
   );
 }
@@ -342,6 +351,10 @@ export default function StipendioPage() {
     { ore: 0, cash: 0, carta: 0, uber: 0, stipendioBase: 0, commissioni: 0, totale: 0 }
   );
 
+  // Massimi usati per dimensionare grafico giornaliero e barre "Ripartizione incassi"
+  const maxTotaleGiorno = giorni.reduce((m, g) => Math.max(m, g.totaleGiorno), 0);
+  const maxIncasso = Math.max(tot.cash, tot.carta, tot.uber);
+
   const meseFmt = (() => {
     const [anno, m] = mese.split("-");
     return new Date(+anno, +m - 1).toLocaleDateString("it-IT", {
@@ -553,86 +566,141 @@ export default function StipendioPage() {
           </div>
         )}
 
-        {/* Tile riepilogativi */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <Tile
-            label="Ore totali"
-            value={formatOre(tot.ore)}
-            icon={Clock}
-            iconClass="bg-blue-400/15 text-blue-400"
-            valueClass="text-blue-400"
-          />
-          <Tile
-            label="Totale cash"
-            value={euro(tot.cash)}
-            icon={CurrencyEur}
-            iconClass="bg-amber-400/15 text-amber-400"
-            valueClass="text-amber-400"
-          />
-          <Tile
-            label="Totale carte"
-            value={euro(tot.carta)}
-            icon={CreditCard}
-            iconClass="bg-indigo-400/15 text-indigo-400"
-            valueClass="text-indigo-400"
-          />
-          <Tile
-            label="Totale uber"
-            value={euro(tot.uber)}
-            icon={Car}
-            iconClass="bg-slate-400/15 text-slate-300"
-            valueClass="text-foreground"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <Tile
-            label="Stipendio base (ore)"
-            value={euro(tot.stipendioBase)}
-            sub={config ? `${formatOre(tot.ore)} × ${euro(config.tariffa_oraria)}/h` : undefined}
-            icon={Clock}
-            iconClass="bg-teal-400/15 text-teal-400"
-            valueClass="text-teal-400"
-          />
-          <Tile
-            label="Commissioni"
-            value={euro(tot.commissioni)}
-            sub={config ? `cash + carta + uber` : undefined}
-            icon={Percent}
-            iconClass="bg-violet-400/15 text-violet-400"
-            valueClass="text-violet-400"
-          />
-          <Tile
+        {/* Bento grid — riepilogo mensile */}
+        <section className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <HeroCard
+            colSpan
             label="Totale stipendio"
             value={euro(tot.totale)}
-            sub={meseFmt}
-            icon={Money}
-            iconClass="bg-primary/15 text-primary"
-            valueClass="text-primary text-2xl"
-            accent
-          />
-        </div>
-
-        {/* Dettaglio commissioni */}
-        {config && (tot.cash > 0 || tot.carta > 0 || tot.uber > 0) && (
-          <div className="glass-card rounded-2xl overflow-hidden">
-            <div className="border-b border-border-subtle px-5 py-3">
-              <p className="text-[11px] font-bold text-on-secondary-container uppercase tracking-wider flex items-center gap-2">
+            valueClass="text-primary"
+            note={
+              <>
                 <ChartBar size={13} weight="bold" />
-                Dettaglio commissioni
+                <span>
+                  Base {euro(tot.stipendioBase)} + Commissioni {euro(tot.commissioni)}
+                </span>
+              </>
+            }
+          />
+          <HeroCard
+            label="Ore lavorate"
+            value={formatOre(tot.ore)}
+            note={
+              <>
+                <Clock size={13} weight="bold" />
+                <span>
+                  {config ? `Tariffa ${euro(config.tariffa_oraria)}/h` : "Nessuna tariffa impostata"}
+                </span>
+              </>
+            }
+          />
+          <HeroCard
+            label="Commissioni"
+            value={euro(tot.commissioni)}
+            valueClass="text-violet-400"
+            note={
+              <>
+                <Percent size={13} weight="bold" />
+                <span>Cash + carta + Uber</span>
+              </>
+            }
+          />
+        </section>
+
+        {/* Grafico giornaliero + ripartizione incassi */}
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Andamento giornaliero */}
+          <div className="lg:col-span-2 glass-card p-6 md:p-8 rounded-2xl">
+            <div className="flex items-center justify-between mb-6">
+              <p className="text-[11px] font-bold text-on-secondary-container uppercase tracking-wider flex items-center gap-2">
+                <ChartLineUp size={13} weight="bold" />
+                Andamento giornaliero — {meseFmt}
               </p>
             </div>
-            <div className="px-5 py-4 space-y-2">
-              <CommRow label="Cash" base={tot.cash} pct={config.percentuale_cash} result={tot.cash * config.percentuale_cash} colorClass="text-amber-400" />
-              <CommRow label="Carte" base={tot.carta} pct={config.percentuale_carta} result={tot.carta * config.percentuale_carta} colorClass="text-indigo-400" />
-              <CommRow label="Uber" base={tot.uber} pct={config.percentuale_uber} result={tot.uber * config.percentuale_uber} colorClass="text-slate-300" />
-              <div className="border-t border-border-subtle pt-2 flex items-center justify-between text-sm font-semibold">
-                <span className="text-on-surface-variant">Totale commissioni</span>
-                <span className="font-mono text-violet-400">{euro(tot.commissioni)}</span>
+
+            {datiCaricamento && (
+              <p className="py-16 text-sm text-on-surface-variant text-center">Caricamento…</p>
+            )}
+            {!datiCaricamento && giorni.length === 0 && (
+              <p className="py-16 text-sm text-on-surface-variant text-center">Nessun dato per {meseFmt}.</p>
+            )}
+            {!datiCaricamento && giorni.length > 0 && (
+              <div className="overflow-x-auto">
+                <div
+                  className="h-48 flex items-end gap-1.5 px-1"
+                  style={{ minWidth: giorni.length * 22 }}
+                >
+                  {giorni.map((g) => {
+                    const altezza =
+                      maxTotaleGiorno > 0
+                        ? Math.max((g.totaleGiorno / maxTotaleGiorno) * 100, g.totaleGiorno > 0 ? 4 : 1)
+                        : 1;
+                    return (
+                      <div key={g.data} className="flex-1 min-w-[14px] flex flex-col items-center gap-2 group relative">
+                        <div
+                          className="w-full bg-primary/20 rounded-t-md relative transition-all duration-300"
+                          style={{ height: `${altezza}%` }}
+                        >
+                          <div className="absolute inset-0 bg-primary opacity-40 group-hover:opacity-100 transition-opacity rounded-t-md" />
+                          <div className="absolute -top-9 left-1/2 -translate-x-1/2 bg-surface border border-border-subtle px-2 py-1 rounded text-[10px] font-mono hidden group-hover:block whitespace-nowrap z-10">
+                            {euro(g.totaleGiorno)}
+                          </div>
+                        </div>
+                        <span className="text-[9px] font-mono text-on-surface-variant">
+                          {g.data.slice(8, 10)}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
+            )}
+          </div>
+
+          {/* Ripartizione incassi */}
+          <div className="glass-card p-6 md:p-8 rounded-2xl flex flex-col">
+            <p className="text-[11px] font-bold text-on-secondary-container uppercase tracking-wider flex items-center gap-2 mb-6">
+              <Money size={13} weight="bold" />
+              Ripartizione incassi
+            </p>
+            <div className="space-y-5 flex-1">
+              <TierRow
+                label="Cash"
+                amount={tot.cash}
+                maxAmount={maxIncasso}
+                barClass="bg-amber-400"
+                valueClass="text-amber-400"
+                pctVal={config?.percentuale_cash ?? 0}
+                commissione={tot.cash * (config?.percentuale_cash ?? 0)}
+                mostraFormula={!!config}
+              />
+              <TierRow
+                label="Carte"
+                amount={tot.carta}
+                maxAmount={maxIncasso}
+                barClass="bg-indigo-400"
+                valueClass="text-indigo-400"
+                pctVal={config?.percentuale_carta ?? 0}
+                commissione={tot.carta * (config?.percentuale_carta ?? 0)}
+                mostraFormula={!!config}
+              />
+              <TierRow
+                label="Uber"
+                amount={tot.uber}
+                maxAmount={maxIncasso}
+                barClass="bg-slate-300"
+                valueClass="text-foreground"
+                pctVal={config?.percentuale_uber ?? 0}
+                commissione={tot.uber * (config?.percentuale_uber ?? 0)}
+                mostraFormula={!!config}
+              />
+            </div>
+            <div className="mt-6 pt-4 border-t border-border-subtle flex items-center justify-between text-sm font-semibold">
+              <span className="text-on-surface-variant">Totale commissioni</span>
+              <span className="font-mono text-violet-400">{euro(tot.commissioni)}</span>
             </div>
           </div>
-        )}
+        </section>
 
         {/* Lista giorni del mese */}
         <div className="glass-card rounded-2xl overflow-hidden">
@@ -714,30 +782,42 @@ export default function StipendioPage() {
 }
 
 // ---------------------------------------------------------------------------
-// CommRow helper
+// TierRow helper — riga "Ripartizione incassi" (cash / carta / uber)
 // ---------------------------------------------------------------------------
-function CommRow({
+function TierRow({
   label,
-  base,
-  pct: pctVal,
-  result,
-  colorClass,
+  amount,
+  maxAmount,
+  barClass,
+  valueClass,
+  pctVal,
+  commissione,
+  mostraFormula,
 }: {
   label: string;
-  base: number;
-  pct: number;
-  result: number;
-  colorClass: string;
+  amount: number;
+  maxAmount: number;
+  barClass: string;
+  valueClass: string;
+  pctVal: number;
+  commissione: number;
+  mostraFormula: boolean;
 }) {
+  const larghezza = maxAmount > 0 ? Math.max((amount / maxAmount) * 100, amount > 0 ? 3 : 0) : 0;
   return (
-    <div className="flex items-center justify-between text-sm">
-      <div className="flex items-center gap-2">
-        <span className="text-muted-foreground w-12">{label}</span>
-        <span className="font-mono text-xs text-muted-foreground">
-          {euro(base)} × {pct(pctVal)}
-        </span>
+    <div>
+      <div className="flex justify-between mb-2">
+        <span className="text-sm text-on-surface-variant">{label}</span>
+        <span className={cn("font-mono text-sm font-semibold", valueClass)}>{euro(amount)}</span>
       </div>
-      <span className={cn("font-mono font-medium", colorClass)}>{euro(result)}</span>
+      <div className="w-full bg-surface-container rounded-full h-2">
+        <div className={cn("h-2 rounded-full transition-all", barClass)} style={{ width: `${larghezza}%` }} />
+      </div>
+      {mostraFormula && (
+        <p className="text-[11px] text-on-surface-variant/70 font-mono mt-1.5">
+          {euro(amount)} × {pct(pctVal)} = {euro(commissione)}
+        </p>
+      )}
     </div>
   );
 }
