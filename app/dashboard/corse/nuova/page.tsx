@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import type { TipoPagamento } from "@/types";
 import {
-  CurrencyEur, CreditCard, Car, Tag, MapPin, Clock, CalendarBlank, ArrowLeft, CheckCircle,
+  CurrencyEur, CreditCard, Car, Tag, MapPin, CalendarBlank, ArrowLeft, CheckCircle,
   Path, Receipt, UserPlus, Buildings,
 } from "@phosphor-icons/react";
 import PlaceAutocomplete from "@/components/place-autocomplete";
