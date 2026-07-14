@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { CaretLeft, CaretRight, Download } from "@phosphor-icons/react";
+import { CaretLeft, CaretRight, DownloadSimple, GoogleLogo } from "@phosphor-icons/react";
 
 export function AgendaNav({ anno, mese }: { anno: number; mese: number }) {
   const router = useRouter();
@@ -14,17 +14,17 @@ export function AgendaNav({ anno, mese }: { anno: number; mese: number }) {
   const label = new Date(anno, mese - 1).toLocaleDateString("it-IT", { month: "long", year: "numeric" });
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-1 bg-surface-container-low border border-border-subtle rounded-lg p-1">
       <button
         onClick={() => naviga(-1)}
-        className="p-1.5 rounded-lg hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground"
+        className="p-1.5 rounded-md hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-foreground"
       >
         <CaretLeft size={14} weight="bold" />
       </button>
-      <span className="text-sm font-semibold capitalize w-36 text-center">{label}</span>
+      <span className="text-sm font-semibold capitalize w-36 text-center text-foreground">{label}</span>
       <button
         onClick={() => naviga(1)}
-        className="p-1.5 rounded-lg hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground"
+        className="p-1.5 rounded-md hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-foreground"
       >
         <CaretRight size={14} weight="bold" />
       </button>
@@ -47,9 +47,9 @@ export function IcalButton({ anno, mese }: { anno: number; mese: number }) {
   return (
     <button
       onClick={scarica}
-      className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground border border-border rounded-lg px-3 py-1.5 hover:bg-muted/30 transition-colors"
+      className="flex items-center gap-1.5 text-xs font-semibold text-on-surface-variant hover:text-foreground border border-border-subtle bg-surface-container rounded-lg px-3 py-1.5 hover:bg-surface-container-high transition-colors"
     >
-      <Download size={13} weight="bold" />
+      <DownloadSimple size={13} weight="bold" />
       Esporta .ics
     </button>
   );
@@ -59,8 +59,9 @@ export function GoogleCalendarButton() {
   return (
     <a
       href="/api/google-calendar/connect"
-      className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground border border-border rounded-lg px-3 py-1.5 hover:bg-muted/30 transition-colors"
+      className="flex items-center gap-1.5 text-xs font-semibold text-on-surface-variant hover:text-foreground border border-border-subtle bg-surface-container rounded-lg px-3 py-1.5 hover:bg-surface-container-high transition-colors"
     >
+      <GoogleLogo size={13} weight="bold" />
       Connetti Google Calendar
     </a>
   );
