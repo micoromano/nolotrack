@@ -67,10 +67,10 @@ export default async function AgendaPage({
 
   return (
     <div>
-      {/* Command bar */}
-      <div className="border-b border-border px-6 py-3 flex items-center justify-between bg-card">
+      {/* Header */}
+      <header className="sticky top-0 z-30 bg-surface/80 backdrop-blur-xl border-b border-border-subtle h-16 flex items-center justify-between px-4 md:px-10">
         <div className="flex items-center gap-4">
-          <h1 className="text-sm font-semibold text-foreground">Agenda</h1>
+          <h1 className="font-heading text-lg font-bold text-primary">Agenda</h1>
           <AgendaNav anno={anno} mese={mese} />
         </div>
         <div className="flex items-center gap-2">
@@ -82,9 +82,9 @@ export default async function AgendaPage({
             </span>
           )}
         </div>
-      </div>
+      </header>
 
-      <div className="p-6 space-y-2 max-w-2xl">
+      <div className="px-4 md:px-10 py-8 space-y-2 max-w-2xl">
         {giorni.map((giorno) => {
           const dataStr = giorno.toISOString().split("T")[0];
           const corseGiorno = corsePerGiorno.get(dataStr) ?? [];
@@ -94,7 +94,7 @@ export default async function AgendaPage({
           if (!haServizi) {
             return (
               <div key={dataStr} className={cn(
-                "flex items-center gap-3 px-4 py-2 rounded-lg text-xs text-muted-foreground/50",
+                "flex items-center gap-3 px-4 py-2 rounded-lg text-xs text-on-surface-variant/50",
                 isOggi && "bg-primary/5 text-primary font-medium"
               )}>
                 <span className="w-20 shrink-0 capitalize">
@@ -107,13 +107,13 @@ export default async function AgendaPage({
 
           return (
             <div key={dataStr} className={cn(
-              "bg-card border border-border rounded-lg overflow-hidden",
+              "glass-card rounded-2xl overflow-hidden",
               isOggi && "border-primary/40"
             )}>
               {/* Header giorno */}
               <div className={cn(
-                "flex items-center justify-between px-4 py-2 border-b border-border",
-                isOggi ? "bg-primary/10" : "bg-muted/20"
+                "flex items-center justify-between px-4 py-2 border-b border-border-subtle",
+                isOggi ? "bg-primary/10" : "bg-surface-container-low/50"
               )}>
                 <span className={cn(
                   "text-sm font-semibold capitalize",
@@ -122,25 +122,25 @@ export default async function AgendaPage({
                   {giorno.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })}
                   {isOggi && <span className="ml-2 text-xs bg-primary text-primary-foreground px-1.5 py-0.5 rounded-lg">Oggi</span>}
                 </span>
-                <span className="text-xs text-muted-foreground">{corseGiorno.length} serviz{corseGiorno.length === 1 ? "io" : "i"}</span>
+                <span className="text-xs text-on-surface-variant">{corseGiorno.length} serviz{corseGiorno.length === 1 ? "io" : "i"}</span>
               </div>
 
               {/* Servizi del giorno */}
-              <div className="divide-y divide-border">
+              <div className="divide-y divide-border-subtle">
                 {corseGiorno.map((c) => (
                   <div key={c.id} className="px-4 py-3 flex items-start gap-4">
-                    <div className="font-mono text-sm text-muted-foreground shrink-0 w-20">
+                    <div className="font-mono text-sm text-on-surface-variant shrink-0 w-20">
                       {c.ora_partenza.slice(0, 5)}
                       {c.ora_fine && <><br /><span className="text-xs">→ {c.ora_fine.slice(0, 5)}</span></>}
                     </div>
                     <div className="flex-1 min-w-0">
                       {c.cliente_nome && (
                         <p className="text-sm font-medium text-foreground">{c.cliente_nome}
-                          {c.n_pax && c.n_pax > 1 && <span className="ml-2 text-xs text-muted-foreground">{c.n_pax} pax</span>}
+                          {c.n_pax && c.n_pax > 1 && <span className="ml-2 text-xs text-on-surface-variant">{c.n_pax} pax</span>}
                         </p>
                       )}
-                      <p className="text-xs text-muted-foreground truncate">{c.origine} → {c.destinazione}</p>
-                      {c.tipo_servizio && <p className="text-xs text-muted-foreground/60">{c.tipo_servizio}</p>}
+                      <p className="text-xs text-on-surface-variant truncate">{c.origine} → {c.destinazione}</p>
+                      {c.tipo_servizio && <p className="text-xs text-on-surface-variant/60">{c.tipo_servizio}</p>}
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <span className={cn("text-xs px-1.5 py-0.5 rounded-lg font-medium", pagamentoBadgeStyle[c.tipo_pagamento])}>
