@@ -1,6 +1,26 @@
 import { createClient } from "@/lib/supabase/server";
 import nodemailer from "nodemailer";
 
+// Rate limiter semplice in-memory (resettato a ogni deploy)
+const rateLimit = new Map<string, { count: number; reset: number }>();
+const RATE_LIMIT_MAX = 5;
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minuto
+
+function checkRateLimit(userId: string): boolean {
+  const now = Date.now();
+  const entry = rateLimit.get(userId);
+
+  if (!entry || now > entry.reset) {
+    rateLimit.set(userId, { count: 1, reset: now + RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+
+  if (entry.count >= RATE_LIMIT_MAX) return false;
+
+  entry.count++;
+  return true;
+}
+
 export interface InviaEmailBody {
   to: string;
   subject: string;
@@ -17,6 +37,13 @@ export async function POST(request: Request) {
 
   if (!user) {
     return Response.json({ error: "Non autenticato." }, { status: 401 });
+  }
+
+  if (!checkRateLimit(user.id)) {
+    return Response.json(
+      { error: "Troppe richieste. Attendi un minuto." },
+      { status: 429 }
+    );
   }
 
   // Config check

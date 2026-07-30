@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { sendPush } from "@/lib/push";
 
 export default function NuovoTurnoPage() {
   const oggi = new Date().toISOString().split("T")[0];
@@ -37,6 +38,13 @@ export default function NuovoTurnoPage() {
       setCaricamento(false);
       return;
     }
+    const dataFmt = new Date(data + "T12:00:00").toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" });
+    await sendPush({
+      title: "Turno registrato",
+      body: `${dataFmt} · ${oraInizio}–${oraFine}`,
+      url: "/dashboard/turni",
+      tag: "turno-salvato",
+    });
     router.push("/dashboard/turni");
     router.refresh();
   }
@@ -56,7 +64,7 @@ export default function NuovoTurnoPage() {
       </div>
 
       <div className="p-6">
-        <div className="max-w-md bg-card border border-border rounded">
+        <div className="max-w-md bg-card border border-border rounded-lg">
           <div className="border-b border-border px-5 py-3">
             <p className="text-xs text-muted-foreground">Registra il tuo orario di lavoro</p>
           </div>
@@ -80,14 +88,14 @@ export default function NuovoTurnoPage() {
               <button
                 type="submit"
                 disabled={caricamento}
-                className="bg-primary text-primary-foreground text-xs font-medium px-4 py-2 rounded transition-colors hover:opacity-90 disabled:opacity-50"
+                className="bg-primary text-primary-foreground text-xs font-medium px-4 py-2 rounded-lg transition-colors hover:opacity-90 disabled:opacity-50"
               >
                 {caricamento ? "Salvataggio…" : "Salva turno"}
               </button>
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="bg-muted text-foreground text-xs font-medium px-4 py-2 rounded transition-colors hover:bg-muted/70"
+                className="bg-muted text-foreground text-xs font-medium px-4 py-2 rounded-lg transition-colors hover:bg-muted/70"
               >
                 Annulla
               </button>
@@ -109,4 +117,4 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 const inputClass =
-  "w-full bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all";
+  "w-full bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all";

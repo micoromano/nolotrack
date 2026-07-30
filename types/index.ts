@@ -1,5 +1,7 @@
 export type TipoPagamento = "cash" | "carta" | "uber" | "noninc";
 
+export type StatoServizio = "da_iniziare" | "in_corso" | "attesa_pagamento" | "pagato" | "completato";
+
 export interface Corsa {
   id: string;
   autista_id: string;
@@ -9,8 +11,20 @@ export interface Corsa {
   destinazione: string;
   tipo_pagamento: TipoPagamento;
   importo: number;
-  note?: string;
+  note?: string | null;
   created_at: string;
+  // Campi ordine servizio (SP1)
+  n_ordine?: number | null;
+  anno_ordine?: number | null;
+  rif_agenzia?: string | null;
+  agenzia?: string | null;
+  cliente_nome?: string | null;
+  cliente_tel?: string | null;
+  n_pax?: number;
+  ora_fine?: string | null;
+  tipo_servizio?: string | null;
+  // Flusso WhatsApp (SP7)
+  stato_servizio?: StatoServizio;
 }
 
 export interface Turno {
@@ -64,4 +78,37 @@ export interface ReportMensile {
   stipendio_base: number;
   stipendio_percentuali: number;
   stipendio_totale: number;
+}
+
+// ─────────────────────────────────────────────────────
+// WhatsApp (SP7 — Meta Cloud API)
+// ─────────────────────────────────────────────────────
+export type CategoriaTemplateWA = "autista" | "cliente" | "libero";
+export type DestinatarioTipoWA = "autista" | "cliente";
+export type DirezioneWA = "in" | "out";
+export type TipoMessaggioWA = "testo" | "template" | "interactive_bottoni" | "interactive_lista" | "bottone_click";
+export type StatoMessaggioWA = "inviato" | "consegnato" | "letto" | "errore" | "ricevuto";
+
+export interface WhatsappTemplate {
+  id: string;
+  autista_id: string;
+  nome: string;
+  categoria: CategoriaTemplateWA;
+  corpo: string;
+  created_at: string;
+}
+
+export interface WhatsappLog {
+  id: string;
+  autista_id: string | null;
+  corsa_id: string | null;
+  destinatario_tipo: DestinatarioTipoWA | null;
+  telefono: string;
+  direzione: DirezioneWA;
+  tipo: TipoMessaggioWA;
+  contenuto: string | null;
+  wa_message_id: string | null;
+  stato: StatoMessaggioWA;
+  errore_msg?: string | null;
+  created_at: string;
 }
