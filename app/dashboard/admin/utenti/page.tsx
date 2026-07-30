@@ -12,32 +12,32 @@ export default async function AdminUtentiPage() {
 
   return (
     <div>
-      <div className="border-b border-border px-6 py-3 flex items-center justify-between bg-card">
+      <header className="sticky top-0 z-30 bg-surface/80 backdrop-blur-xl border-b border-border-subtle h-16 flex items-center justify-between px-4 md:px-10">
         <div>
-          <h1 className="text-sm font-semibold">Gestione autisti</h1>
-          <p className="text-xs text-muted-foreground">{autisti.length} autisti registrati</p>
+          <h1 className="font-heading text-lg font-bold text-primary">Gestione autisti</h1>
+          <p className="text-xs text-on-surface-variant">{autisti.length} autisti registrati</p>
         </div>
-        <Link href="/dashboard/admin/utenti/invita" className={cn(buttonVariants({ size: "sm" }), "text-xs")}>
+        <Link href="/dashboard/admin/utenti/invita" className={cn(buttonVariants({ size: "sm" }), "text-xs font-bold uppercase tracking-wide shadow-lg shadow-primary/20")}>
           + Invita autista
         </Link>
-      </div>
-      <div className="p-6">
-        <div className="bg-card border border-border rounded overflow-hidden">
-          <div className="grid grid-cols-3 px-4 py-2 border-b border-border bg-muted/30">
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Nome</span>
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Email</span>
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Ruolo</span>
+      </header>
+      <div className="px-4 md:px-10 py-8">
+        <div className="glass-card rounded-2xl overflow-hidden">
+          <div className="grid grid-cols-3 px-4 py-2 border-b border-border-subtle bg-surface-container-low/50">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-on-secondary-container">Nome</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-on-secondary-container">Email</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-on-secondary-container">Ruolo</span>
           </div>
-          <div className="divide-y divide-border">
+          <div className="divide-y divide-border-subtle">
             {autisti.length === 0 && (
-              <div className="px-4 py-8 text-center text-sm text-muted-foreground">
+              <div className="px-4 py-8 text-center text-sm text-on-surface-variant">
                 Nessun autista registrato
               </div>
             )}
             {autisti.map((a) => (
-              <div key={a.id} className="grid grid-cols-3 px-4 py-3 items-center hover:bg-muted/20 transition-colors">
-                <span className="text-sm font-medium">{a.nome}</span>
-                <span className="text-sm text-muted-foreground">{a.email}</span>
+              <div key={a.id} className="grid grid-cols-3 px-4 py-3 items-center hover:bg-surface-variant/20 transition-colors">
+                <span className="text-sm font-medium text-foreground">{a.nome}</span>
+                <span className="text-sm text-on-surface-variant">{a.email}</span>
                 <span className="text-xs bg-muted px-2 py-0.5 rounded w-fit">
                   {(Array.isArray(a.ruoli) ? (a.ruoli as { nome: string }[])[0]?.nome : (a.ruoli as unknown as { nome: string } | null)?.nome) ?? "autista"}
                 </span>
