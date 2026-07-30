@@ -108,23 +108,23 @@ export default function NuovaCorsaPage() {
 
   return (
     <div>
-      {/* Command bar */}
-      <div className="border-b border-border px-6 py-3 flex items-center gap-3 bg-card">
+      {/* Header */}
+      <header className="sticky top-0 z-30 bg-surface/80 backdrop-blur-xl border-b border-border-subtle h-16 flex items-center gap-3 px-4 md:px-10">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+          className="flex items-center gap-1.5 text-xs text-on-surface-variant hover:text-foreground transition-colors"
         >
           <ArrowLeft size={13} weight="bold" />
           Indietro
         </button>
-        <span className="text-muted-foreground text-xs">/</span>
-        <h1 className="text-sm font-semibold text-foreground">Nuova corsa</h1>
-      </div>
+        <span className="text-on-surface-variant text-xs">/</span>
+        <h1 className="font-heading text-lg font-bold text-primary">Nuova corsa</h1>
+      </header>
 
-      <div className="p-6">
-        <div className="max-w-md bg-card border border-border rounded-lg">
-          <div className="border-b border-border px-5 py-3">
-            <p className="text-xs text-muted-foreground">Inserisci i dettagli della corsa</p>
+      <div className="px-4 md:px-10 py-8">
+        <div className="max-w-md glass-card rounded-2xl">
+          <div className="border-b border-border-subtle px-5 py-3">
+            <p className="text-xs text-on-surface-variant">Inserisci i dettagli della corsa</p>
           </div>
           <form onSubmit={salva} className="p-5 space-y-5">
 
@@ -209,8 +209,8 @@ export default function NuovaCorsaPage() {
             </Field>
 
             {/* Sezione dettaglio ordine */}
-            <div className="border-t border-border pt-5 space-y-4">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            <div className="border-t border-border-subtle pt-5 space-y-4">
+              <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
                 Dettaglio ordine
               </p>
 
@@ -346,7 +346,7 @@ function Field({ label, icon: Icon, iconClass, children }: {
 }) {
   return (
     <div className="space-y-1.5">
-      <label className={cn("flex items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider")}>
+      <label className={cn("flex items-center gap-1.5 text-xs font-semibold text-on-surface-variant uppercase tracking-wider")}>
         {Icon && <Icon size={11} weight="bold" className={iconClass} />}
         {label}
       </label>
