@@ -24,34 +24,34 @@ export default async function AdminRuoliPage() {
 
   return (
     <div>
-      <div className="border-b border-border px-6 py-3 flex items-center gap-3 bg-card">
-        <Link href="/dashboard/admin" className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+      <header className="sticky top-0 z-30 bg-surface/80 backdrop-blur-xl border-b border-border-subtle h-16 flex items-center gap-3 px-4 md:px-10">
+        <Link href="/dashboard/admin" className="flex items-center gap-1.5 text-xs text-on-surface-variant hover:text-foreground transition-colors">
           <ArrowLeft size={13} weight="bold" /> Admin
         </Link>
-        <span className="text-muted-foreground text-xs">/</span>
-        <h1 className="text-sm font-semibold">Ruoli e permessi</h1>
-      </div>
-      <div className="p-6 space-y-6">
+        <span className="text-on-surface-variant text-xs">/</span>
+        <h1 className="font-heading text-lg font-bold text-primary">Ruoli e permessi</h1>
+      </header>
+      <div className="px-4 md:px-10 py-8 space-y-6">
         {ruoli.map((ruolo) => (
-          <div key={ruolo.id} className="bg-card border border-border rounded-lg overflow-hidden">
-            <div className="border-b border-border px-4 py-3">
-              <p className="text-sm font-semibold capitalize">{ruolo.nome}</p>
+          <div key={ruolo.id} className="glass-card rounded-2xl overflow-hidden">
+            <div className="border-b border-border-subtle px-4 py-3">
+              <p className="text-sm font-semibold capitalize text-foreground">{ruolo.nome}</p>
               {ruolo.descrizione && (
-                <p className="text-xs text-muted-foreground">{ruolo.descrizione}</p>
+                <p className="text-xs text-on-surface-variant">{ruolo.descrizione}</p>
               )}
             </div>
-            <div className="divide-y divide-border">
-              <div className="grid grid-cols-4 px-4 py-1.5 bg-muted/30">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Sezione</span>
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider text-center">Visualizza</span>
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider text-center">Modifica</span>
+            <div className="divide-y divide-border-subtle">
+              <div className="grid grid-cols-4 px-4 py-1.5 bg-surface-container-low/50">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-on-secondary-container">Sezione</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-on-secondary-container text-center">Visualizza</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-on-secondary-container text-center">Modifica</span>
                 <span />
               </div>
               {SEZIONI.map((sezione) => {
                 const p = mappa[ruolo.id]?.[sezione];
                 return (
                   <div key={sezione} className="grid grid-cols-4 px-4 py-2 items-center">
-                    <span className="text-sm capitalize">{sezione}</span>
+                    <span className="text-sm capitalize text-foreground">{sezione}</span>
                     <div className="flex justify-center">
                       <span className={cn(
                         "text-xs px-2 py-0.5 rounded",
@@ -76,7 +76,7 @@ export default async function AdminRuoliPage() {
           </div>
         ))}
         {ruoli.length === 0 && (
-          <p className="text-sm text-muted-foreground text-center py-8">
+          <p className="text-sm text-on-surface-variant text-center py-8">
             Nessun ruolo trovato. Esegui la migrazione SQL nel Supabase dashboard.
           </p>
         )}
