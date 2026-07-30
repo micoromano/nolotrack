@@ -1,0 +1,139 @@
+<h2>Form nuova corsa — campi aggiuntivi dal PDF</h2>
+<p class="subtitle">Dal foglio "Ordine di servizio" ho identificato questi campi mancanti. Come vuoi gestire il numero ordine?</p>
+
+<div class="split" style="gap: 20px; align-items: flex-start;">
+
+  <!-- Opzione A: Numero ordine manuale -->
+  <div class="option" data-choice="a" onclick="toggleSelect(this)" style="display:block; padding: 0; overflow: hidden;">
+    <div style="background: rgba(99,179,237,0.12); padding: 10px 14px; border-bottom: 1px solid rgba(99,179,237,0.2);">
+      <div class="letter" style="display:inline; margin-right: 8px;">A</div>
+      <strong>N° ordine inserito manualmente</strong>
+      <p style="font-size: 12px; color: #90cdf4; margin: 4px 0 0;">Marco digita il numero che arriva dall'agenzia (es. 329/2026)</p>
+    </div>
+    <div style="padding: 14px; font-family: monospace; font-size: 12px; display: flex; flex-direction: column; gap: 10px;">
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <div style="border: 1px solid #4a5568; border-radius: 6px; padding: 8px; background: #1a202c;">
+          <div style="font-size: 10px; color: #718096; margin-bottom: 4px;">N° ORDINE AGENZIA</div>
+          <div style="color: #63b3ed;">329/2026</div>
+        </div>
+        <div style="border: 1px solid #4a5568; border-radius: 6px; padding: 8px; background: #1a202c;">
+          <div style="font-size: 10px; color: #718096; margin-bottom: 4px;">AGENZIA / RIFERIMENTO</div>
+          <div style="color: #e2e8f0;">Tika</div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <div style="border: 1px solid #4a5568; border-radius: 6px; padding: 8px; background: #1a202c;">
+          <div style="font-size: 10px; color: #718096; margin-bottom: 4px;">CLIENTE</div>
+          <div style="color: #e2e8f0;">Karen Anderson</div>
+        </div>
+        <div style="border: 1px solid #4a5568; border-radius: 6px; padding: 8px; background: #1a202c;">
+          <div style="font-size: 10px; color: #718096; margin-bottom: 4px;">TEL. CLIENTE</div>
+          <div style="color: #e2e8f0;">+13472150365</div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 2fr 1fr; gap: 8px;">
+        <div style="border: 1px solid #4a5568; border-radius: 6px; padding: 8px; background: #1a202c;">
+          <div style="font-size: 10px; color: #718096; margin-bottom: 4px;">DATA / ORA PARTENZA</div>
+          <div style="color: #e2e8f0;">08-05-2026 · 10:00</div>
+        </div>
+        <div style="border: 1px solid #4a5568; border-radius: 6px; padding: 8px; background: #1a202c;">
+          <div style="font-size: 10px; color: #718096; margin-bottom: 4px;">PAX</div>
+          <div style="color: #e2e8f0;">2</div>
+        </div>
+      </div>
+
+      <div style="border: 1px solid #4a5568; border-radius: 6px; padding: 8px; background: #1a202c;">
+        <div style="font-size: 10px; color: #718096; margin-bottom: 4px;">PARTENZA → DESTINAZIONE</div>
+        <div style="color: #e2e8f0;">The Inn at Roman Forum → APT FCO</div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <div style="border: 1px solid #4a5568; border-radius: 6px; padding: 8px; background: #1a202c;">
+          <div style="font-size: 10px; color: #718096; margin-bottom: 4px;">TIPO SERVIZIO</div>
+          <div style="color: #e2e8f0;">Transfer aeroporto</div>
+        </div>
+        <div style="border: 1px solid #4a5568; border-radius: 6px; padding: 8px; background: #1a202c;">
+          <div style="font-size: 10px; color: #718096; margin-bottom: 4px;">ORA FINE (opz.)</div>
+          <div style="color: #718096; font-style: italic;">— non compilata</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Opzione B: Numero ordine auto -->
+  <div class="option" data-choice="b" onclick="toggleSelect(this)" style="display:block; padding: 0; overflow: hidden;">
+    <div style="background: rgba(154,215,140,0.12); padding: 10px 14px; border-bottom: 1px solid rgba(154,215,140,0.2);">
+      <div class="letter" style="display:inline; margin-right: 8px;">B</div>
+      <strong>N° ordine auto-generato dall'app</strong>
+      <p style="font-size: 12px; color: #9ad78c; margin: 4px 0 0;">NoloTrack assegna un numero progressivo (329/2026). Campo agenzia solo opzionale.</p>
+    </div>
+    <div style="padding: 14px; font-family: monospace; font-size: 12px; display: flex; flex-direction: column; gap: 10px;">
+
+      <div style="border: 1px solid rgba(154,215,140,0.3); border-radius: 6px; padding: 8px; background: rgba(154,215,140,0.06);">
+        <div style="font-size: 10px; color: #9ad78c; margin-bottom: 2px;">N° ORDINE (AUTO)</div>
+        <div style="color: #9ad78c; font-weight: bold;">330/2026 ← generato</div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <div style="border: 1px solid #4a5568; border-radius: 6px; padding: 8px; background: #1a202c;">
+          <div style="font-size: 10px; color: #718096; margin-bottom: 4px;">AGENZIA (opz.)</div>
+          <div style="color: #e2e8f0;">Tika</div>
+        </div>
+        <div style="border: 1px solid #4a5568; border-radius: 6px; padding: 8px; background: #1a202c;">
+          <div style="font-size: 10px; color: #718096; margin-bottom: 4px;">RIF. AGENZIA (opz.)</div>
+          <div style="color: #718096; font-style:italic;">329/2026</div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <div style="border: 1px solid #4a5568; border-radius: 6px; padding: 8px; background: #1a202c;">
+          <div style="font-size: 10px; color: #718096; margin-bottom: 4px;">CLIENTE</div>
+          <div style="color: #e2e8f0;">Karen Anderson</div>
+        </div>
+        <div style="border: 1px solid #4a5568; border-radius: 6px; padding: 8px; background: #1a202c;">
+          <div style="font-size: 10px; color: #718096; margin-bottom: 4px;">TEL. CLIENTE</div>
+          <div style="color: #e2e8f0;">+13472150365</div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 2fr 1fr; gap: 8px;">
+        <div style="border: 1px solid #4a5568; border-radius: 6px; padding: 8px; background: #1a202c;">
+          <div style="font-size: 10px; color: #718096; margin-bottom: 4px;">DATA / ORA PARTENZA</div>
+          <div style="color: #e2e8f0;">08-05-2026 · 10:00</div>
+        </div>
+        <div style="border: 1px solid #4a5568; border-radius: 6px; padding: 8px; background: #1a202c;">
+          <div style="font-size: 10px; color: #718096; margin-bottom: 4px;">PAX</div>
+          <div style="color: #e2e8f0;">2</div>
+        </div>
+      </div>
+
+      <div style="border: 1px solid #4a5568; border-radius: 6px; padding: 8px; background: #1a202c;">
+        <div style="font-size: 10px; color: #718096; margin-bottom: 4px;">PARTENZA → DESTINAZIONE</div>
+        <div style="color: #e2e8f0;">The Inn at Roman Forum → APT FCO</div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <div style="border: 1px solid #4a5568; border-radius: 6px; padding: 8px; background: #1a202c;">
+          <div style="font-size: 10px; color: #718096; margin-bottom: 4px;">TIPO SERVIZIO</div>
+          <div style="color: #e2e8f0;">Transfer aeroporto</div>
+        </div>
+        <div style="border: 1px solid #4a5568; border-radius: 6px; padding: 8px; background: #1a202c;">
+          <div style="font-size: 10px; color: #718096; margin-bottom: 4px;">ORA FINE (opz.)</div>
+          <div style="color: #718096; font-style: italic;">— non compilata</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top: 16px; padding: 12px 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;">
+  <p style="font-size: 12px; color: #a0aec0; margin: 0;">
+    In entrambi i casi i campi <strong style="color:#e2e8f0;">cliente, telefono, agenzia, pax, ora fine, tipo servizio</strong> vengono aggiunti alla form e alla tabella corse. La differenza è solo su chi genera il numero ordine.
+  </p>
+</div>

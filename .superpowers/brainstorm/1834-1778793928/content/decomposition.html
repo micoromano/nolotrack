@@ -1,0 +1,68 @@
+<h2>NoloTrack — Piano di sviluppo</h2>
+<p class="subtitle">6 sotto-progetti indipendenti. Quale ordine preferisci?</p>
+
+<div class="section">
+  <p class="label">Ordine consigliato (per dipendenze e impatto)</p>
+
+  <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 12px;">
+
+    <div style="display: flex; align-items: flex-start; gap: 14px; background: rgba(99,179,237,0.08); border: 1px solid rgba(99,179,237,0.25); border-radius: 10px; padding: 14px 16px;">
+      <div style="font-size: 22px; font-weight: 800; color: #63b3ed; min-width: 32px;">1</div>
+      <div>
+        <div style="font-weight: 700; color: #e2e8f0; margin-bottom: 3px;">Form corse potenziata</div>
+        <div style="font-size: 12px; color: #90cdf4;">Aggiunge dal PDF: cliente, pax, ora fine, telefono, riferimento agenzia, tipo servizio. Richiede migrazione DB.</div>
+      </div>
+      <div style="margin-left: auto; font-size: 11px; background: rgba(99,179,237,0.15); color: #63b3ed; padding: 3px 10px; border-radius: 20px; white-space: nowrap; align-self: flex-start;">Priorità ALTA</div>
+    </div>
+
+    <div style="display: flex; align-items: flex-start; gap: 14px; background: rgba(154,215,140,0.08); border: 1px solid rgba(154,215,140,0.25); border-radius: 10px; padding: 14px 16px;">
+      <div style="font-size: 22px; font-weight: 800; color: #9ad78c; min-width: 32px;">2</div>
+      <div>
+        <div style="font-weight: 700; color: #e2e8f0; margin-bottom: 3px;">Liste modificabili (edit universale)</div>
+        <div style="font-size: 12px; color: #9ad78c;">Ogni riga di ogni lista (corse, turni, spese, carburante) apre la sua form in modalità modifica/elimina.</div>
+      </div>
+      <div style="margin-left: auto; font-size: 11px; background: rgba(154,215,140,0.15); color: #9ad78c; padding: 3px 10px; border-radius: 20px; white-space: nowrap; align-self: flex-start;">Dipende da #1</div>
+    </div>
+
+    <div style="display: flex; align-items: flex-start; gap: 14px; background: rgba(236,201,75,0.08); border: 1px solid rgba(236,201,75,0.25); border-radius: 10px; padding: 14px 16px;">
+      <div style="font-size: 22px; font-weight: 800; color: #ecc94b; min-width: 32px;">3</div>
+      <div>
+        <div style="font-weight: 700; color: #e2e8f0; margin-bottom: 3px;">Tema chiaro / scuro</div>
+        <div style="font-size: 12px; color: #ecc94b;">Toggle nel layout — salva preferenza. Nessuna dipendenza, può partire subito.</div>
+      </div>
+      <div style="margin-left: auto; font-size: 11px; background: rgba(236,201,75,0.15); color: #ecc94b; padding: 3px 10px; border-radius: 20px; white-space: nowrap; align-self: flex-start;">Indipendente</div>
+    </div>
+
+    <div style="display: flex; align-items: flex-start; gap: 14px; background: rgba(183,148,244,0.08); border: 1px solid rgba(183,148,244,0.25); border-radius: 10px; padding: 14px 16px;">
+      <div style="font-size: 22px; font-weight: 800; color: #b794f4; min-width: 32px;">4</div>
+      <div>
+        <div style="font-weight: 700; color: #e2e8f0; margin-bottom: 3px;">Agenda mensile</div>
+        <div style="font-size: 12px; color: #b794f4;">Overview visuale di tutti i servizi del mese. Meglio dopo #1 così mostra i dati arricchiti (cliente, pax, ora fine…). Integrazione calendario da decidere.</div>
+      </div>
+      <div style="margin-left: auto; font-size: 11px; background: rgba(183,148,244,0.15); color: #b794f4; padding: 3px 10px; border-radius: 20px; white-space: nowrap; align-self: flex-start;">Dipende da #1</div>
+    </div>
+
+    <div style="display: flex; align-items: flex-start; gap: 14px; background: rgba(252,129,74,0.08); border: 1px solid rgba(252,129,74,0.25); border-radius: 10px; padding: 14px 16px;">
+      <div style="font-size: 22px; font-weight: 800; color: #fc814a; min-width: 32px;">5</div>
+      <div>
+        <div style="font-weight: 700; color: #e2e8f0; margin-bottom: 3px;">Admin utenti multi-autista</div>
+        <div style="font-size: 12px; color: #fc814a;">Workflow admin: invita autisti, assegna ruoli, vedi le loro corse. Richiede cambi al DB e alla logica di autorizzazione.</div>
+      </div>
+      <div style="margin-left: auto; font-size: 11px; background: rgba(252,129,74,0.15); color: #fc814a; padding: 3px 10px; border-radius: 20px; white-space: nowrap; align-self: flex-start;">Complesso</div>
+    </div>
+
+    <div style="display: flex; align-items: flex-start; gap: 14px; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); border-radius: 10px; padding: 14px 16px;">
+      <div style="font-size: 22px; font-weight: 800; color: #ef4444; min-width: 32px;">6</div>
+      <div>
+        <div style="font-weight: 700; color: #e2e8f0; margin-bottom: 3px;">Security review + Test suite</div>
+        <div style="font-size: 12px; color: #f87171;">Meglio fare dopo che il codice è stabile. Security review scansiona vulnerabilità, test suite copre le funzionalità critiche.</div>
+      </div>
+      <div style="margin-left: auto; font-size: 11px; background: rgba(239,68,68,0.15); color: #ef4444; padding: 3px 10px; border-radius: 20px; white-space: nowrap; align-self: flex-start;">Ultimo step</div>
+    </div>
+
+  </div>
+</div>
+
+<div style="margin-top: 20px; padding: 14px 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;">
+  <div style="font-size: 12px; color: #a0aec0;">Confermi questo ordine o vuoi cambiare qualcosa? Poi passiamo alla prima domanda concreta sull'integrazione calendario per l'agenda.</div>
+</div>

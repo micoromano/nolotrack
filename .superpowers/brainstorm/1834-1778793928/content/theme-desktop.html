@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NoloTrack — Desktop App Feel</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0a0d14; font-family: 'Segoe UI', 'IBM Plex Sans', system-ui, sans-serif; color: #e2e8f0; padding: 24px; }
+  h1 { font-size: 17px; font-weight: 700; margin-bottom: 4px; color: #e2e8f0; }
+  .subtitle { font-size: 12px; color: #718096; margin-bottom: 24px; }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 700px) { .split { grid-template-columns: 1fr; } }
+  .label-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 10px; color: #a0aec0; display: flex; align-items: center; gap: 6px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* ── WINDOW CHROME SHARED ── */
+  .app-window { border-radius: 10px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
+
+  .title-bar { display: flex; align-items: center; padding: 0 12px; height: 32px; font-size: 11px; font-weight: 500; user-select: none; }
+  .win-controls { display: flex; gap: 6px; margin-right: 10px; }
+  .win-dot { width: 11px; height: 11px; border-radius: 50%; }
+  .wc-close { background: #ff5f57; }
+  .wc-min   { background: #ffbd2e; }
+  .wc-max   { background: #28c840; }
+  .win-title { flex: 1; text-align: center; }
+
+  .app-body { display: grid; grid-template-columns: 110px 1fr; min-height: 300px; }
+  .app-sidebar { display: flex; flex-direction: column; padding: 10px 8px; gap: 2px; }
+  .brand { font-size: 12px; font-weight: 800; padding: 6px 8px 12px; letter-spacing: -0.02em; }
+
+  .nav-item { padding: 6px 9px; border-radius: 5px; font-size: 10px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .nav-spacer { height: 1px; margin: 6px 0; }
+
+  .main-area { display: flex; flex-direction: column; }
+  .toolbar { display: flex; align-items: center; padding: 0 12px; height: 36px; gap: 8px; border-bottom-width: 1px; border-bottom-style: solid; }
+  .toolbar-title { font-size: 11px; font-weight: 600; flex: 1; }
+  .tb-btn { padding: 3px 10px; border-radius: 4px; font-size: 10px; border: 1px solid; cursor: pointer; font-family: inherit; }
+  .tb-sep { width: 1px; height: 16px; }
+
+  .breadcrumb { display: flex; align-items: center; gap: 4px; font-size: 10px; }
+
+  .content-area { flex: 1; padding: 12px; overflow: hidden; }
+  .table-header { display: grid; grid-template-columns: 80px 1fr 80px 52px; padding: 5px 10px; font-size: 9px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+  .table-row { display: grid; grid-template-columns: 80px 1fr 80px 52px; padding: 7px 10px; font-size: 10px; border-radius: 4px; align-items: center; cursor: pointer; }
+
+  .badge { padding: 1px 6px; border-radius: 3px; font-size: 9px; font-weight: 700; }
+
+  .status-bar { display: flex; align-items: center; padding: 0 12px; height: 22px; font-size: 10px; gap: 12px; border-top-width: 1px; border-top-style: solid; }
+  .status-item { display: flex; align-items: center; gap: 4px; opacity: 0.6; }
+  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: #38a169; }
+
+  .theme-select { border-radius: 4px; padding: 2px 6px; font-size: 9px; font-family: inherit; cursor: pointer; border-width: 1px; border-style: solid; margin-top: auto; }
+
+  /* ─── DARK THEME ─── */
+  .dark .app-window { background: #1a1d27; }
+  .dark .title-bar { background: #0f1117; border-bottom: 1px solid rgba(255,255,255,0.06); color: rgba(255,255,255,0.5); }
+  .dark .win-title { color: rgba(255,255,255,0.4); }
+  .dark .app-sidebar { background: #0d1018; border-right: 1px solid rgba(255,255,255,0.06); }
+  .dark .brand { color: #fff; }
+  .dark .nav-item { color: rgba(255,255,255,0.38); }
+  .dark .nav-item:hover { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.65); }
+  .dark .nav-item.active { background: rgba(0,120,212,0.18); color: #60a5fa; border-left: 2px solid #0078d4; padding-left: 7px; }
+  .dark .nav-spacer { background: rgba(255,255,255,0.06); }
+  .dark .toolbar { background: #14171f; border-bottom-color: rgba(255,255,255,0.07); }
+  .dark .toolbar-title { color: #e2e8f0; }
+  .dark .tb-btn.primary { background: #0078d4; border-color: #0078d4; color: #fff; }
+  .dark .tb-btn.secondary { background: transparent; border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.6); }
+  .dark .tb-sep { background: rgba(255,255,255,0.08); }
+  .dark .breadcrumb { color: rgba(255,255,255,0.35); }
+  .dark .breadcrumb .current { color: rgba(255,255,255,0.75); }
+  .dark .content-area { background: #1a1d27; }
+  .dark .table-header { color: rgba(255,255,255,0.3); border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 4px; }
+  .dark .table-row { color: rgba(255,255,255,0.72); }
+  .dark .table-row:hover { background: rgba(255,255,255,0.04); }
+  .dark .table-row.selected { background: rgba(0,120,212,0.12); }
+  .dark .badge.cash   { background: rgba(236,201,75,0.15);  color: #ecc94b; }
+  .dark .badge.noninc { background: rgba(183,148,244,0.15); color: #b794f4; }
+  .dark .badge.carta  { background: rgba(99,179,237,0.15);  color: #63b3ed; }
+  .dark .status-bar { background: #0078d4; color: #fff; border-top-color: transparent; }
+  .dark .theme-select { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.12); color: rgba(255,255,255,0.55); }
+  .dark .mono { font-family: 'IBM Plex Mono', monospace; }
+
+  /* ─── LIGHT THEME ─── */
+  .light .app-window { background: #f0f2f5; box-shadow: 0 20px 60px rgba(0,0,0,0.25); }
+  .light .title-bar { background: #e8eaed; border-bottom: 1px solid rgba(0,0,0,0.08); color: rgba(0,0,0,0.45); }
+  .light .win-title { color: rgba(0,0,0,0.45); }
+  .light .app-sidebar { background: #dde1e7; border-right: 1px solid rgba(0,0,0,0.08); }
+  .light .brand { color: #0f172a; }
+  .light .nav-item { color: rgba(0,0,0,0.4); }
+  .light .nav-item:hover { background: rgba(0,0,0,0.05); color: rgba(0,0,0,0.7); }
+  .light .nav-item.active { background: rgba(0,120,212,0.1); color: #0058a3; border-left: 2px solid #0078d4; padding-left: 7px; font-weight: 600; }
+  .light .nav-spacer { background: rgba(0,0,0,0.08); }
+  .light .toolbar { background: #f8f9fb; border-bottom-color: rgba(0,0,0,0.08); }
+  .light .toolbar-title { color: #0f172a; }
+  .light .tb-btn.primary { background: #0078d4; border-color: #0078d4; color: #fff; }
+  .light .tb-btn.secondary { background: #fff; border-color: rgba(0,0,0,0.15); color: rgba(0,0,0,0.55); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+  .light .tb-sep { background: rgba(0,0,0,0.1); }
+  .light .breadcrumb { color: rgba(0,0,0,0.35); }
+  .light .breadcrumb .current { color: rgba(0,0,0,0.75); }
+  .light .content-area { background: #f0f2f5; }
+  .light .table-header { color: rgba(0,0,0,0.35); border-bottom: 1px solid rgba(0,0,0,0.07); margin-bottom: 4px; }
+  .light .table-row { color: rgba(0,0,0,0.72); background: #fff; margin-bottom: 1px; border: 1px solid rgba(0,0,0,0.05); }
+  .light .table-row:hover { background: #f0f7ff; border-color: rgba(0,120,212,0.2); }
+  .light .table-row.selected { background: #e8f0fe; border-color: rgba(0,120,212,0.3); }
+  .light .badge.cash   { background: rgba(180,130,0,0.12); color: #8a6000; }
+  .light .badge.noninc { background: rgba(100,60,180,0.1);  color: #5b3fa0; }
+  .light .badge.carta  { background: rgba(0,80,180,0.1);    color: #0050b8; }
+  .light .status-bar { background: #0078d4; color: #fff; border-top-color: transparent; }
+  .light .theme-select { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.12); color: rgba(0,0,0,0.5); }
+  .light .mono { font-family: 'IBM Plex Mono', monospace; }
+</style>
+</head>
+<body>
+<h1>NoloTrack — look desktop application</h1>
+<p class="subtitle">Title bar, toolbar con breadcrumb, righe selezionabili, status bar Azure. Clicca per confrontare.</p>
+
+<div class="split">
+
+  <!-- DARK -->
+  <div class="dark">
+    <div class="label-tag"><div class="dot" style="background:#4a5568;"></div> Tema Scuro</div>
+    <div class="app-window">
+
+      <!-- Title bar -->
+      <div class="title-bar">
+        <div class="win-controls"><div class="win-dot wc-close"></div><div class="win-dot wc-min"></div><div class="win-dot wc-max"></div></div>
+        <div class="win-title">NoloTrack</div>
+      </div>
+
+      <div class="app-body">
+        <!-- Sidebar -->
+        <div class="app-sidebar">
+          <div class="brand">NoloTrack</div>
+          <div class="nav-item active">🚗 Corse</div>
+          <div class="nav-item">⏱ Turni</div>
+          <div class="nav-item">💰 Cassa</div>
+          <div class="nav-item">📋 Spese</div>
+          <div class="nav-item">📅 Agenda</div>
+          <div class="nav-spacer"></div>
+          <div class="nav-item">⛽ Carburant</div>
+          <div class="nav-item">📊 Stipendio</div>
+          <div class="nav-item">✉ Invia</div>
+          <div style="flex:1;"></div>
+          <select class="theme-select">
+            <option>🌙 Scuro</option>
+            <option>☀️ Chiaro</option>
+            <option>💻 Sistema</option>
+          </select>
+        </div>
+
+        <!-- Main -->
+        <div class="main-area">
+          <div class="toolbar">
+            <div class="breadcrumb"><span>Dashboard</span><span style="margin:0 3px;">›</span><span class="current">Corse</span></div>
+            <div class="tb-sep"></div>
+            <button class="tb-btn primary">+ Nuova corsa</button>
+            <button class="tb-btn secondary">Filtri</button>
+            <button class="tb-btn secondary">Esporta</button>
+          </div>
+
+          <div class="content-area">
+            <div class="table-header">
+              <span>DATA / ORA</span>
+              <span>CLIENTE</span>
+              <span>TIPO</span>
+              <span style="text-align:right;">€</span>
+            </div>
+            <div class="table-row selected">
+              <span class="mono" style="font-size:9px;">08 mag 10:00</span>
+              <div><div style="font-size:10px;">Karen Anderson</div><div style="font-size:9px;opacity:.5;">FCO → Roman Forum</div></div>
+              <span class="badge noninc">No Inc</span>
+              <span class="mono" style="text-align:right;font-size:10px;">€0</span>
+            </div>
+            <div class="table-row">
+              <span class="mono" style="font-size:9px;">08 mag 13:10</span>
+              <div><div style="font-size:10px;">Jerry Ziang</div><div style="font-size:9px;opacity:.5;">FCO pickup</div></div>
+              <span class="badge noninc">No Inc</span>
+              <span class="mono" style="text-align:right;font-size:10px;">€0</span>
+            </div>
+            <div class="table-row">
+              <span class="mono" style="font-size:9px;">08 mag 15:30</span>
+              <div><div style="font-size:10px;">Klaas Tuinema</div><div style="font-size:9px;opacity:.5;">Hotel Abruzzi → FCO</div></div>
+              <span class="badge cash">Cash</span>
+              <span class="mono" style="text-align:right;font-size:10px;">€120</span>
+            </div>
+            <div class="table-row">
+              <span class="mono" style="font-size:9px;">08 mag 19:20</span>
+              <div><div style="font-size:10px;">Angelo Asciano</div><div style="font-size:9px;opacity:.5;">Termini → Stadio Tennis</div></div>
+              <span class="badge carta">Carta</span>
+              <span class="mono" style="text-align:right;font-size:10px;">€85</span>
+            </div>
+          </div>
+
+          <div class="status-bar">
+            <div class="status-item"><div class="status-dot"></div> Connesso</div>
+            <div class="status-item">4 corse · Mag 2026</div>
+            <div style="flex:1;"></div>
+            <div class="status-item">Marco Camelin</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIGHT -->
+  <div class="light">
+    <div class="label-tag"><div class="dot" style="background:#c0c8d4;"></div> Tema Chiaro</div>
+    <div class="app-window">
+
+      <!-- Title bar -->
+      <div class="title-bar">
+        <div class="win-controls"><div class="win-dot wc-close"></div><div class="win-dot wc-min"></div><div class="win-dot wc-max"></div></div>
+        <div class="win-title">NoloTrack</div>
+      </div>
+
+      <div class="app-body">
+        <!-- Sidebar -->
+        <div class="app-sidebar">
+          <div class="brand">NoloTrack</div>
+          <div class="nav-item active">🚗 Corse</div>
+          <div class="nav-item">⏱ Turni</div>
+          <div class="nav-item">💰 Cassa</div>
+          <div class="nav-item">📋 Spese</div>
+          <div class="nav-item">📅 Agenda</div>
+          <div class="nav-spacer"></div>
+          <div class="nav-item">⛽ Carburant</div>
+          <div class="nav-item">📊 Stipendio</div>
+          <div class="nav-item">✉ Invia</div>
+          <div style="flex:1;"></div>
+          <select class="theme-select">
+            <option>☀️ Chiaro</option>
+            <option>🌙 Scuro</option>
+            <option>💻 Sistema</option>
+          </select>
+        </div>
+
+        <!-- Main -->
+        <div class="main-area">
+          <div class="toolbar">
+            <div class="breadcrumb"><span>Dashboard</span><span style="margin:0 3px;">›</span><span class="current">Corse</span></div>
+            <div class="tb-sep"></div>
+            <button class="tb-btn primary">+ Nuova corsa</button>
+            <button class="tb-btn secondary">Filtri</button>
+            <button class="tb-btn secondary">Esporta</button>
+          </div>
+
+          <div class="content-area">
+            <div class="table-header">
+              <span>DATA / ORA</span>
+              <span>CLIENTE</span>
+              <span>TIPO</span>
+              <span style="text-align:right;">€</span>
+            </div>
+            <div class="table-row selected">
+              <span class="mono" style="font-size:9px;">08 mag 10:00</span>
+              <div><div style="font-size:10px;">Karen Anderson</div><div style="font-size:9px;opacity:.5;">FCO → Roman Forum</div></div>
+              <span class="badge noninc">No Inc</span>
+              <span class="mono" style="text-align:right;font-size:10px; font-weight:600;">€0</span>
+            </div>
+            <div class="table-row">
+              <span class="mono" style="font-size:9px;">08 mag 13:10</span>
+              <div><div style="font-size:10px;">Jerry Ziang</div><div style="font-size:9px;opacity:.5;">FCO pickup</div></div>
+              <span class="badge noninc">No Inc</span>
+              <span class="mono" style="text-align:right;font-size:10px; font-weight:600;">€0</span>
+            </div>
+            <div class="table-row">
+              <span class="mono" style="font-size:9px;">08 mag 15:30</span>
+              <div><div style="font-size:10px;">Klaas Tuinema</div><div style="font-size:9px;opacity:.5;">Hotel Abruzzi → FCO</div></div>
+              <span class="badge cash">Cash</span>
+              <span class="mono" style="text-align:right;font-size:10px; font-weight:600;">€120</span>
+            </div>
+            <div class="table-row">
+              <span class="mono" style="font-size:9px;">08 mag 19:20</span>
+              <div><div style="font-size:10px;">Angelo Asciano</div><div style="font-size:9px;opacity:.5;">Termini → Stadio Tennis</div></div>
+              <span class="badge carta">Carta</span>
+              <span class="mono" style="text-align:right;font-size:10px; font-weight:600;">€85</span>
+            </div>
+          </div>
+
+          <div class="status-bar">
+            <div class="status-item"><div class="status-dot"></div> Connesso</div>
+            <div class="status-item">4 corse · Mag 2026</div>
+            <div style="flex:1;"></div>
+            <div class="status-item">Marco Camelin</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tema Chiaro vs Scuro — NoloTrack</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0f1117; font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #e2e8f0; padding: 24px; }
+  h1 { font-size: 18px; font-weight: 700; margin-bottom: 6px; color: #e2e8f0; }
+  .subtitle { font-size: 13px; color: #718096; margin-bottom: 24px; }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 700px) { .split { grid-template-columns: 1fr; } }
+
+  .label-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* ── DARK MOCKUP ── */
+  .mock-dark {
+    background: oklch(0.16 0 0);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: 12px;
+  }
+  .mock-dark .sidebar {
+    background: oklch(0.11 0 0);
+    padding: 14px 10px;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .mock-dark .brand { font-size: 13px; font-weight: 800; color: #fff; padding: 6px 8px 14px; letter-spacing: -0.02em; }
+  .mock-dark .nav-item { padding: 7px 10px; border-radius: 6px; color: rgba(255,255,255,0.45); font-size: 11px; display: flex; align-items: center; gap: 7px; }
+  .mock-dark .nav-item.active { background: rgba(255,255,255,0.06); color: #fff; border-left: 2px solid #0078d4; padding-left: 8px; }
+  .mock-dark .content { background: oklch(0.16 0 0); padding: 14px; flex: 1; }
+  .mock-dark .topbar { background: oklch(0.13 0 0); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 10px 14px; font-size: 11px; font-weight: 600; color: #fff; display: flex; justify-content: space-between; align-items: center; }
+  .mock-dark .card { background: oklch(0.13 0 0); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px; margin-top: 12px; }
+  .mock-dark .card-title { font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .mock-dark .row { padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; color: rgba(255,255,255,0.75); font-size: 11px; }
+  .mock-dark .row:last-child { border-bottom: none; }
+  .mock-dark .badge { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+  .mock-dark .badge.cash { background: rgba(236,201,75,0.15); color: #ecc94b; }
+  .mock-dark .badge.noninc { background: rgba(183,148,244,0.15); color: #b794f4; }
+  .mock-dark .badge.carta { background: rgba(99,179,237,0.15); color: #63b3ed; }
+  .mock-dark .toggle-pill { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 3px 8px; font-size: 10px; color: rgba(255,255,255,0.5); display: flex; align-items: center; gap: 4px; }
+
+  /* ── LIGHT MOCKUP ── */
+  .mock-light {
+    background: oklch(0.97 0 0);
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: 12px;
+    color: oklch(0.15 0 0);
+  }
+  .mock-light .sidebar {
+    background: oklch(0.93 0 0);
+    padding: 14px 10px;
+    border-right: 1px solid rgba(0,0,0,0.07);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .mock-light .brand { font-size: 13px; font-weight: 800; color: #0f172a; padding: 6px 8px 14px; letter-spacing: -0.02em; }
+  .mock-light .nav-item { padding: 7px 10px; border-radius: 6px; color: rgba(0,0,0,0.4); font-size: 11px; display: flex; align-items: center; gap: 7px; }
+  .mock-light .nav-item.active { background: rgba(0,120,212,0.08); color: #0078d4; border-left: 2px solid #0078d4; padding-left: 8px; font-weight: 600; }
+  .mock-light .content { background: oklch(0.97 0 0); padding: 14px; flex: 1; }
+  .mock-light .topbar { background: #fff; border-bottom: 1px solid rgba(0,0,0,0.07); padding: 10px 14px; font-size: 11px; font-weight: 600; color: #0f172a; display: flex; justify-content: space-between; align-items: center; }
+  .mock-light .card { background: #fff; border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; padding: 12px; margin-top: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .mock-light .card-title { font-size: 11px; color: rgba(0,0,0,0.4); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .mock-light .row { padding: 7px 0; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; color: rgba(0,0,0,0.7); font-size: 11px; }
+  .mock-light .row:last-child { border-bottom: none; }
+  .mock-light .badge { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+  .mock-light .badge.cash { background: rgba(180,140,0,0.12); color: #92700a; }
+  .mock-light .badge.noninc { background: rgba(120,80,200,0.1); color: #6b3fa0; }
+  .mock-light .badge.carta { background: rgba(0,90,200,0.1); color: #0057b8; }
+  .mock-light .toggle-pill { background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; padding: 3px 8px; font-size: 10px; color: rgba(0,0,0,0.45); display: flex; align-items: center; gap: 4px; }
+
+  .app-frame { display: grid; grid-template-columns: 120px 1fr; min-height: 280px; }
+
+  /* toggle demo */
+  .toggle-section { margin-top: 20px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 16px; }
+  .toggle-section h3 { font-size: 13px; font-weight: 600; margin-bottom: 12px; color: #e2e8f0; }
+  .toggle-demo { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .toggle-opt { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .toggle-opt span { font-size: 10px; color: #718096; }
+
+  /* Select toggle styles */
+  .select-dark { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 5px 10px; color: #e2e8f0; font-size: 11px; font-family: inherit; cursor: pointer; }
+  .select-light { background: #fff; border: 1px solid rgba(0,0,0,0.15); border-radius: 6px; padding: 5px 10px; color: #0f172a; font-size: 11px; font-family: inherit; box-shadow: 0 1px 2px rgba(0,0,0,0.08); cursor: pointer; }
+  .icon-btn { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; }
+  .icon-btn.dark { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); }
+  .icon-btn.light { background: #fff; border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
+</style>
+</head>
+<body>
+<h1>Tema Scuro vs Tema Chiaro — NoloTrack</h1>
+<p class="subtitle">Stesso design language Azure Portal. Il toggle sarà nella sidebar/header.</p>
+
+<div class="split">
+  <!-- DARK -->
+  <div>
+    <div class="label-tag"><div class="dot" style="background:#4a5568;"></div> Tema Scuro (attuale)</div>
+    <div class="mock-dark">
+      <div class="app-frame">
+        <div class="sidebar">
+          <div class="brand">NoloTrack</div>
+          <div class="nav-item active">⬛ Corse</div>
+          <div class="nav-item">◻ Turni</div>
+          <div class="nav-item">◻ Cassa</div>
+          <div class="nav-item">◻ Spese</div>
+          <div class="nav-item">◻ Agenda</div>
+          <div style="flex:1;"></div>
+          <div class="toggle-pill">☀ Sistema ▾</div>
+        </div>
+        <div class="content">
+          <div class="topbar">
+            Corse
+            <button style="background:#0078d4; color:#fff; border:none; border-radius:5px; padding: 4px 10px; font-size:10px; cursor:pointer;">+ Nuova</button>
+          </div>
+          <div class="card">
+            <div class="card-title">Ultime corse</div>
+            <div class="row">
+              <span>08 mag · 10:00</span>
+              <span>Karen Anderson</span>
+              <span class="badge noninc">No Inc</span>
+              <span style="font-family:monospace;">€0</span>
+            </div>
+            <div class="row">
+              <span>08 mag · 13:10</span>
+              <span>Jerry Ziang</span>
+              <span class="badge noninc">No Inc</span>
+              <span style="font-family:monospace;">€0</span>
+            </div>
+            <div class="row">
+              <span>08 mag · 15:30</span>
+              <span>Klaas Tuinema</span>
+              <span class="badge cash">Cash</span>
+              <span style="font-family:monospace;">€120</span>
+            </div>
+            <div class="row">
+              <span>08 mag · 19:20</span>
+              <span>Angelo Asciano</span>
+              <span class="badge carta">Carta</span>
+              <span style="font-family:monospace;">€85</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIGHT -->
+  <div>
+    <div class="label-tag"><div class="dot" style="background:#e2e8f0;"></div> Tema Chiaro (nuovo)</div>
+    <div class="mock-light">
+      <div class="app-frame">
+        <div class="sidebar">
+          <div class="brand">NoloTrack</div>
+          <div class="nav-item active">⬛ Corse</div>
+          <div class="nav-item">◻ Turni</div>
+          <div class="nav-item">◻ Cassa</div>
+          <div class="nav-item">◻ Spese</div>
+          <div class="nav-item">◻ Agenda</div>
+          <div style="flex:1;"></div>
+          <div class="toggle-pill" style="background:rgba(0,0,0,0.05); border-color:rgba(0,0,0,0.1); color:rgba(0,0,0,0.45);">☀ Chiaro ▾</div>
+        </div>
+        <div class="content">
+          <div class="topbar">
+            Corse
+            <button style="background:#0078d4; color:#fff; border:none; border-radius:5px; padding: 4px 10px; font-size:10px; cursor:pointer;">+ Nuova</button>
+          </div>
+          <div class="card">
+            <div class="card-title">Ultime corse</div>
+            <div class="row">
+              <span>08 mag · 10:00</span>
+              <span>Karen Anderson</span>
+              <span class="badge noninc">No Inc</span>
+              <span style="font-family:monospace; color:#0f172a; font-weight:600;">€0</span>
+            </div>
+            <div class="row">
+              <span>08 mag · 13:10</span>
+              <span>Jerry Ziang</span>
+              <span class="badge noninc">No Inc</span>
+              <span style="font-family:monospace; color:#0f172a; font-weight:600;">€0</span>
+            </div>
+            <div class="row">
+              <span>08 mag · 15:30</span>
+              <span>Klaas Tuinema</span>
+              <span class="badge cash">Cash</span>
+              <span style="font-family:monospace; color:#0f172a; font-weight:600;">€120</span>
+            </div>
+            <div class="row">
+              <span>08 mag · 19:20</span>
+              <span>Angelo Asciano</span>
+              <span class="badge carta">Carta</span>
+              <span style="font-family:monospace; color:#0f172a; font-weight:600;">€85</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toggle demo -->
+<div class="toggle-section">
+  <h3>Toggle tema — dove vive nella UI</h3>
+  <div class="toggle-demo">
+    <div class="toggle-opt">
+      <select class="select-dark">
+        <option>🌙 Scuro</option>
+        <option>☀️ Chiaro</option>
+        <option>💻 Sistema</option>
+      </select>
+      <span>Sidebar desktop (scuro)</span>
+    </div>
+    <div class="toggle-opt">
+      <select class="select-light">
+        <option>☀️ Chiaro</option>
+        <option>🌙 Scuro</option>
+        <option>💻 Sistema</option>
+      </select>
+      <span>Sidebar desktop (chiaro)</span>
+    </div>
+    <div class="toggle-opt">
+      <div class="icon-btn dark">🌙</div>
+      <span>Alternativa: icona</span>
+    </div>
+    <div class="toggle-opt">
+      <div class="icon-btn light">☀️</div>
+      <span>Alternativa: icona</span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
