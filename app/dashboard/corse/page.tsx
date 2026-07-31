@@ -4,9 +4,24 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { getServerLocale } from "@/lib/locale";
 import { Plus, Car } from "@phosphor-icons/react/dist/ssr";
+import { eurEquivalent, formatValuta } from "@/lib/valuta";
 
 function formatEuro(n: number) {
   return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(n);
+}
+
+function ImportoCella({ c }: { c: { importo: number; valuta: string; tasso_cambio: number } }) {
+  if (c.valuta === "EUR") {
+    return <>{formatEuro(c.importo)}</>;
+  }
+  return (
+    <span className="inline-flex flex-col items-end leading-tight">
+      <span>{formatValuta(c.importo, c.valuta)}</span>
+      <span className="text-[11px] font-normal text-on-surface-variant">
+        ≈ {formatEuro(eurEquivalent(c))}
+      </span>
+    </span>
+  );
 }
 
 const pagamentoBadgeStyle: Record<string, string> = {
@@ -90,7 +105,7 @@ export default async function CorsePage() {
                   </span>
                   <span className="text-sm text-foreground truncate">{c.origine}</span>
                   <span className="text-sm text-on-surface-variant truncate">{c.destinazione}</span>
-                  <span className="font-mono text-sm font-bold text-right text-success-emerald">{formatEuro(c.importo)}</span>
+                  <span className="font-mono text-sm font-bold text-right text-success-emerald"><ImportoCella c={c} /></span>
                 </div>
 
                 {/* Mobile row */}
