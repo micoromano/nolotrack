@@ -111,8 +111,8 @@ export default function InviaPage() {
       .join(", ");
     const periodoFmt =
       dataInizio === dataFine
-        ? new Date(dataInizio + "T00:00:00").toLocaleDateString("it-IT")
-        : `${new Date(dataInizio + "T00:00:00").toLocaleDateString("it-IT")} – ${new Date(dataFine + "T00:00:00").toLocaleDateString("it-IT")}`;
+        ? new Date(dataInizio + "T00:00:00").toLocaleDateString(undefined)
+        : `${new Date(dataInizio + "T00:00:00").toLocaleDateString(undefined)} – ${new Date(dataFine + "T00:00:00").toLocaleDateString(undefined)}`;
     setOggettoEmail(docs ? `[NoloTrack] ${docs} — ${periodoFmt}` : "");
   }, [documentiSelezionati, dataInizio, dataFine]);
 
@@ -210,7 +210,7 @@ export default function InviaPage() {
 
     const record: InvioRecord = {
       id: Date.now().toString(),
-      timestamp: new Date().toLocaleString("it-IT"),
+      timestamp: new Date().toLocaleString(undefined),
       to: destinatario,
       subject: oggettoEmail,
       documenti: DOCUMENTI_DISPONIBILI.filter((d) => documentiSelezionati.has(d.id)).map((d) => d.label),
@@ -257,11 +257,11 @@ export default function InviaPage() {
         )}
 
         {/* Istruzioni App Password Gmail */}
-        <div className="bg-card border border-border rounded-lg overflow-hidden">
+        <div className="glass-card rounded-2xl overflow-hidden">
           <button
             type="button"
             onClick={() => setIstruzioniAperte((v) => !v)}
-            className="w-full flex items-center justify-between px-4 py-2.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="w-full flex items-center justify-between px-4 py-2.5 text-xs text-on-surface-variant hover:text-foreground transition-colors"
           >
             <span className="flex items-center gap-2 font-medium">
               <EnvelopeSimple size={13} />
@@ -270,7 +270,7 @@ export default function InviaPage() {
             {istruzioniAperte ? <CaretUp size={12} /> : <CaretDown size={12} />}
           </button>
           {istruzioniAperte && (
-            <div className="border-t border-border px-4 py-3 text-xs text-muted-foreground space-y-1.5">
+            <div className="border-t border-border-subtle px-4 py-3 text-xs text-on-surface-variant space-y-1.5">
               <ol className="list-decimal list-inside space-y-1">
                 <li>Vai su <a href="https://myaccount.google.com/security" target="_blank" rel="noopener noreferrer" className="text-primary underline">account.google.com → Sicurezza</a></li>
                 <li>Attiva la <strong className="text-foreground">Verifica in 2 passaggi</strong> se non è già attiva</li>
@@ -284,10 +284,10 @@ export default function InviaPage() {
 
         <form onSubmit={inviaEmail} className="space-y-5">
           {/* A) Destinatario */}
-          <section className="bg-card border border-border rounded-lg">
-            <div className="border-b border-border px-4 py-2 flex items-center gap-2">
-              <EnvelopeSimple size={13} className="text-muted-foreground" />
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Destinatario</p>
+          <section className="glass-card rounded-2xl">
+            <div className="border-b border-border-subtle px-4 py-2 flex items-center gap-2">
+              <EnvelopeSimple size={13} className="text-on-surface-variant" />
+              <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-widest">Destinatario</p>
             </div>
             <div className="px-4 py-3 space-y-2">
               <div className="flex gap-2">
@@ -303,14 +303,14 @@ export default function InviaPage() {
                   <button
                     type="button"
                     onClick={() => setDestinatario(userEmail)}
-                    className="shrink-0 text-xs bg-muted border border-border text-muted-foreground hover:text-foreground px-3 py-2 rounded-lg transition-colors"
+                    className="shrink-0 text-xs bg-muted border border-border-subtle text-on-surface-variant hover:text-foreground px-3 py-2 rounded-lg transition-colors"
                   >
                     Usa mia email
                   </button>
                 )}
               </div>
               <div>
-                <label className="block text-xs text-muted-foreground mb-1">Oggetto</label>
+                <label className="block text-xs text-on-surface-variant mb-1">Oggetto</label>
                 <input
                   type="text"
                   value={oggettoEmail}
@@ -323,10 +323,10 @@ export default function InviaPage() {
           </section>
 
           {/* B) Periodo */}
-          <section className="bg-card border border-border rounded-lg">
-            <div className="border-b border-border px-4 py-2 flex items-center gap-2">
-              <CalendarBlank size={13} className="text-muted-foreground" />
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Periodo</p>
+          <section className="glass-card rounded-2xl">
+            <div className="border-b border-border-subtle px-4 py-2 flex items-center gap-2">
+              <CalendarBlank size={13} className="text-on-surface-variant" />
+              <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-widest">Periodo</p>
             </div>
             <div className="px-4 py-3 space-y-3">
               <div className="flex flex-wrap gap-2">
@@ -335,7 +335,7 @@ export default function InviaPage() {
                     key={tipo}
                     type="button"
                     onClick={() => impostaPeriodo(tipo)}
-                    className="text-xs bg-muted border border-border text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-lg transition-colors capitalize"
+                    className="text-xs bg-muted border border-border-subtle text-on-surface-variant hover:text-foreground px-3 py-1.5 rounded-lg transition-colors capitalize"
                   >
                     {tipo === "oggi" ? "Oggi" : tipo === "settimana" ? "Questa settimana" : "Questo mese"}
                   </button>
@@ -343,7 +343,7 @@ export default function InviaPage() {
               </div>
               <div className="flex gap-3 items-center">
                 <div className="flex-1">
-                  <label className="block text-xs text-muted-foreground mb-1">Da</label>
+                  <label className="block text-xs text-on-surface-variant mb-1">Da</label>
                   <input
                     type="date"
                     value={dataInizio}
@@ -352,7 +352,7 @@ export default function InviaPage() {
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="block text-xs text-muted-foreground mb-1">A</label>
+                  <label className="block text-xs text-on-surface-variant mb-1">A</label>
                   <input
                     type="date"
                     value={dataFine}
@@ -366,10 +366,10 @@ export default function InviaPage() {
           </section>
 
           {/* C) Documenti */}
-          <section className="bg-card border border-border rounded-lg">
-            <div className="border-b border-border px-4 py-2 flex items-center gap-2">
-              <FileText size={13} className="text-muted-foreground" />
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Documenti da allegare</p>
+          <section className="glass-card rounded-2xl">
+            <div className="border-b border-border-subtle px-4 py-2 flex items-center gap-2">
+              <FileText size={13} className="text-on-surface-variant" />
+              <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-widest">Documenti da allegare</p>
             </div>
             <div className="px-4 py-3 space-y-2">
               {DOCUMENTI_DISPONIBILI.map((doc) => (
@@ -379,7 +379,7 @@ export default function InviaPage() {
                     "flex items-center gap-3 px-3 py-2.5 rounded-lg border cursor-pointer transition-all",
                     documentiSelezionati.has(doc.id)
                       ? "border-primary/40 bg-primary/5 text-foreground"
-                      : "border-border text-muted-foreground hover:border-border/80 hover:text-foreground"
+                      : "border-border-subtle text-on-surface-variant hover:border-border-subtle/60 hover:text-foreground"
                   )}
                 >
                   <input
@@ -400,11 +400,11 @@ export default function InviaPage() {
           </section>
 
           {/* D) Anteprima */}
-          <section className="bg-card border border-border rounded-lg">
-            <div className="border-b border-border px-4 py-2 flex items-center justify-between">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Anteprima corpo email</p>
+          <section className="glass-card rounded-2xl">
+            <div className="border-b border-border-subtle px-4 py-2 flex items-center justify-between">
+              <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-widest">Anteprima corpo email</p>
               {caricandoAnteprima && (
-                <span className="text-xs text-muted-foreground animate-pulse">Generazione…</span>
+                <span className="text-xs text-on-surface-variant animate-pulse">Generazione…</span>
               )}
             </div>
             <div className="px-4 py-3">
@@ -476,11 +476,11 @@ export default function InviaPage() {
 
         {/* F) Storico invii di sessione */}
         {storico.length > 0 && (
-          <section className="bg-card border border-border rounded-lg">
-            <div className="border-b border-border px-4 py-2">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Storico invii (sessione)</p>
+          <section className="glass-card rounded-2xl">
+            <div className="border-b border-border-subtle px-4 py-2">
+              <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-widest">Storico invii (sessione)</p>
             </div>
-            <div className="divide-y divide-border">
+            <div className="divide-y divide-border-subtle">
               {storico.map((rec) => (
                 <div key={rec.id} className="px-4 py-3 flex items-start gap-3">
                   {rec.esito === "ok" ? (
@@ -490,12 +490,12 @@ export default function InviaPage() {
                   )}
                   <div className="min-w-0 flex-1">
                     <p className="text-sm text-foreground truncate">{rec.to}</p>
-                    <p className="text-xs text-muted-foreground truncate">{rec.subject}</p>
+                    <p className="text-xs text-on-surface-variant truncate">{rec.subject}</p>
                     {rec.errore && (
                       <p className="text-xs text-destructive mt-0.5">{rec.errore}</p>
                     )}
                   </div>
-                  <span className="text-xs text-muted-foreground shrink-0">{rec.timestamp}</span>
+                  <span className="text-xs text-on-surface-variant shrink-0">{rec.timestamp}</span>
                 </div>
               ))}
             </div>

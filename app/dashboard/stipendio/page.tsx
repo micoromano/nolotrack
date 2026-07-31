@@ -27,6 +27,7 @@ import {
   FloppyDisk,
   Warning,
   CalendarBlank,
+  Download,
 } from "@phosphor-icons/react";
 
 // ---------------------------------------------------------------------------
@@ -152,6 +153,7 @@ export default function StipendioPage() {
   const [erroreConfig, setErroreConfig] = useState<string | null>(null);
   const [configSalvata, setConfigSalvata] = useState(false);
   const [mostraConfig, setMostraConfig] = useState(false);
+  const [scaricandoPDF, setScaricandoPDF] = useState(false);
 
   // ---------------------------------------------------------------------------
   // Load config
@@ -336,6 +338,38 @@ export default function StipendioPage() {
   }
 
   // ---------------------------------------------------------------------------
+  // Download PDF riepilogo mensile
+  // ---------------------------------------------------------------------------
+  async function scaricaPDF() {
+    setScaricandoPDF(true);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      setScaricandoPDF(false);
+      return;
+    }
+    const [anno, m] = mese.split("-").map(Number);
+    const dataInizio = `${mese}-01`;
+    const dataFine = new Date(anno, m, 0).toISOString().split("T")[0];
+
+    const { generaPDFStipendio } = await import("@/lib/pdf-allegati");
+    const { filename, content } = await generaPDFStipendio(user.id, dataInizio, dataFine);
+
+    const byteChars = atob(content);
+    const byteNumbers = new Array(byteChars.length);
+    for (let i = 0; i < byteChars.length; i++) byteNumbers[i] = byteChars.charCodeAt(i);
+    const blob = new Blob([new Uint8Array(byteNumbers)], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+    setScaricandoPDF(false);
+  }
+
+  // ---------------------------------------------------------------------------
   // Totali mese
   // ---------------------------------------------------------------------------
   const tot = giorni.reduce(
@@ -357,7 +391,7 @@ export default function StipendioPage() {
 
   const meseFmt = (() => {
     const [anno, m] = mese.split("-");
-    return new Date(+anno, +m - 1).toLocaleDateString("it-IT", {
+    return new Date(+anno, +m - 1).toLocaleDateString(undefined, {
       month: "long",
       year: "numeric",
     });
@@ -385,7 +419,7 @@ export default function StipendioPage() {
             )}
             {mesiDisponibili.map((m) => {
               const [anno, mes] = m.split("-");
-              const label = new Date(+anno, +mes - 1).toLocaleDateString("it-IT", {
+              const label = new Date(+anno, +mes - 1).toLocaleDateString(undefined, {
                 month: "long",
                 year: "numeric",
               });
@@ -396,6 +430,14 @@ export default function StipendioPage() {
               );
             })}
           </select>
+          <button
+            onClick={scaricaPDF}
+            disabled={scaricandoPDF}
+            className="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg border border-border-subtle bg-surface-container text-on-surface-variant hover:text-foreground transition-colors uppercase tracking-wide disabled:opacity-50"
+          >
+            <Download size={13} weight="bold" />
+            {scaricandoPDF ? "Generazione…" : "PDF"}
+          </button>
           <button
             onClick={() => setMostraConfig((v) => !v)}
             className={cn(
@@ -732,7 +774,7 @@ export default function StipendioPage() {
               <div key={g.data}>
                 <div className="hidden sm:grid grid-cols-8 px-5 py-4 hover:bg-surface-variant/20 transition-colors items-center">
                   <span className="text-sm font-medium capitalize text-foreground">
-                    {new Date(g.data + "T00:00:00").toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" })}
+                    {new Date(g.data + "T00:00:00").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}
                   </span>
                   <span className={cn("font-mono text-sm", g.ore > 0 ? "text-blue-400" : "text-on-surface-variant/30")}>{g.ore > 0 ? formatOre(g.ore) : "—"}</span>
                   <span className={cn("font-mono text-sm", g.cash > 0 ? "text-amber-400" : "text-on-surface-variant/30")}>{g.cash > 0 ? euro(g.cash) : "—"}</span>
@@ -746,7 +788,7 @@ export default function StipendioPage() {
                 <div className="sm:hidden px-4 py-3 space-y-1.5">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium capitalize text-foreground">
-                      {new Date(g.data + "T00:00:00").toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" })}
+                      {new Date(g.data + "T00:00:00").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}
                     </span>
                     <span className="font-mono text-sm font-bold text-primary">{euro(g.totaleGiorno)}</span>
                   </div>

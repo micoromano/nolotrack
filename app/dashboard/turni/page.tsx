@@ -2,7 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { Plus, Clock, CalendarCheck, ChartLineUp, CaretRight } from "@phosphor-icons/react/dist/ssr";
+import { getServerLocale } from "@/lib/locale";
+import { Plus, Clock } from "@phosphor-icons/react/dist/ssr";
 
 function formatOre(ore: number) {
   const h = Math.floor(ore);
@@ -11,6 +12,7 @@ function formatOre(ore: number) {
 }
 
 export default async function TurniPage() {
+  const locale = await getServerLocale();
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -100,50 +102,22 @@ export default async function TurniPage() {
           )}
 
           <div className="divide-y divide-border-subtle">
-            {turni?.map((t) => {
-              const isOggi = t.data === oggi;
-              return (
-                <Link
-                  key={t.id}
-                  href={`/dashboard/turni/${t.id}`}
-                  className="flex flex-wrap md:flex-nowrap items-center gap-4 md:gap-6 px-5 sm:px-6 py-4 hover:bg-surface-variant/20 transition-colors group"
-                >
-                  <div className="flex flex-col min-w-[84px] shrink-0">
-                    <span className="font-mono text-sm font-semibold text-primary">
-                      {t.ora_inizio.slice(0, 5)}–{t.ora_fine.slice(0, 5)}
-                    </span>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mt-1">
-                      {new Date(t.data + "T00:00:00").toLocaleDateString("it-IT", { weekday: "short" })}
-                    </span>
-                  </div>
-
-                  <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center border border-border-subtle text-sky-400 shrink-0">
-                    <Clock size={18} weight="fill" />
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground capitalize truncate">
-                      {new Date(t.data + "T00:00:00").toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" })}
-                    </p>
-                    <p className="text-xs text-on-surface-variant truncate">
-                      {t.note || "Nessuna nota"}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-3 shrink-0 ml-auto md:ml-0">
-                    {isOggi && (
-                      <span className="hidden sm:inline-flex px-2.5 py-0.5 rounded-full bg-success-emerald/10 text-success-emerald text-[10px] font-bold uppercase border border-success-emerald/20">
-                        Oggi
-                      </span>
-                    )}
-                    <span className="font-mono text-sm font-bold text-foreground bg-surface-container-highest px-3 py-1.5 rounded-lg">
-                      {formatOre(t.ore_lavorate)}
-                    </span>
-                    <CaretRight size={14} weight="bold" className="text-on-surface-variant/50 group-hover:text-primary transition-colors hidden sm:block" />
-                  </div>
-                </Link>
-              );
-            })}
+            {turni?.map((t) => (
+              <Link
+                key={t.id}
+                href={`/dashboard/turni/${t.id}`}
+                className="grid grid-cols-4 px-6 py-4 hover:bg-surface-variant/20 transition-colors cursor-pointer items-center"
+              >
+                <span className="text-sm font-medium capitalize text-foreground">
+                  {new Date(t.data).toLocaleDateString(locale, { weekday: "short", day: "numeric", month: "short" })}
+                </span>
+                <span className="font-mono text-sm text-foreground">{t.ora_inizio.slice(0, 5)}</span>
+                <span className="font-mono text-sm text-foreground">{t.ora_fine.slice(0, 5)}</span>
+                <span className="font-mono text-sm font-bold text-primary text-right">
+                  {formatOre(t.ore_lavorate)}
+                </span>
+              </Link>
+            ))}
           </div>
         </div>
       </div>

@@ -36,26 +36,26 @@ export default function InvitaAutistaPage() {
 
   return (
     <div>
-      <div className="border-b border-border px-6 py-3 flex items-center gap-3 bg-card">
+      <header className="sticky top-0 z-30 bg-surface/80 backdrop-blur-xl border-b border-border-subtle h-16 flex items-center gap-3 px-4 md:px-10">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+          className="flex items-center gap-1.5 text-xs text-on-surface-variant hover:text-foreground transition-colors"
         >
           <ArrowLeft size={13} weight="bold" /> Admin
         </button>
-        <span className="text-muted-foreground text-xs">/</span>
-        <h1 className="text-sm font-semibold">Invita autista</h1>
-      </div>
-      <div className="p-6">
-        <div className="max-w-md bg-card border border-border rounded-lg">
-          <div className="border-b border-border px-5 py-3">
-            <p className="text-xs text-muted-foreground">
+        <span className="text-on-surface-variant text-xs">/</span>
+        <h1 className="font-heading text-lg font-bold text-primary">Invita autista</h1>
+      </header>
+      <div className="px-4 md:px-10 py-8">
+        <div className="max-w-3xl glass-card rounded-2xl">
+          <div className="border-b border-border-subtle px-5 py-3">
+            <p className="text-xs text-on-surface-variant">
               L&apos;autista riceverà una email con il link di registrazione.
             </p>
           </div>
           <form onSubmit={invita} className="p-5 space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
                 Nome
               </label>
               <input
@@ -68,7 +68,7 @@ export default function InvitaAutistaPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
                 Email
               </label>
               <input

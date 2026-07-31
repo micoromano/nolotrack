@@ -55,21 +55,21 @@ export default function EditaTurnoPage() {
     router.refresh();
   }
 
-  if (loading) return <div className="p-6 text-sm text-muted-foreground">Caricamento…</div>;
+  if (loading) return <div className="px-4 md:px-10 py-8 text-sm text-on-surface-variant">Caricamento…</div>;
 
   return (
     <div>
-      <div className="border-b border-border px-6 py-3 flex items-center gap-3 bg-card">
-        <button onClick={() => router.back()} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+      <header className="sticky top-0 z-30 bg-surface/80 backdrop-blur-xl border-b border-border-subtle h-16 flex items-center gap-3 px-4 md:px-10">
+        <button onClick={() => router.back()} className="flex items-center gap-1.5 text-xs text-on-surface-variant hover:text-foreground transition-colors">
           <ArrowLeft size={13} weight="bold" /> Turni
         </button>
-        <span className="text-muted-foreground text-xs">/</span>
-        <h1 className="text-sm font-semibold">Modifica turno</h1>
-      </div>
-      <div className="p-6">
-        <div className="max-w-md bg-card border border-border rounded-lg">
-          <div className="border-b border-border px-5 py-3">
-            <p className="text-xs text-muted-foreground">Modifica l'orario di lavoro</p>
+        <span className="text-on-surface-variant text-xs">/</span>
+        <h1 className="font-heading text-lg font-bold text-primary">Modifica turno</h1>
+      </header>
+      <div className="px-4 md:px-10 py-8">
+        <div className="max-w-3xl glass-card rounded-2xl">
+          <div className="border-b border-border-subtle px-5 py-3">
+            <p className="text-xs text-on-surface-variant">Modifica l'orario di lavoro</p>
           </div>
           <form onSubmit={salva} className="p-5 space-y-4">
             <Field label="Data">
@@ -112,7 +112,7 @@ export default function EditaTurnoPage() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
-      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{label}</label>
+      <label className="text-xs font-medium text-on-surface-variant uppercase tracking-wider">{label}</label>
       {children}
     </div>
   );

@@ -1,0 +1,66 @@
+<h2>Edit universale — come si apre il dettaglio?</h2>
+<p class="subtitle">Quando clicchi una riga nella lista, come vuoi che si apra la form di modifica?</p>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Pannello laterale (slide-over)</h3>
+      <p>Si apre da destra senza cambiare pagina. La lista rimane visibile sullo sfondo. Ottimo su desktop. Pattern usato da Notion, Linear, Azure Portal.</p>
+      <div style="margin-top: 10px; display: flex; gap: 6px; font-size: 11px; font-family: monospace;">
+        <div style="flex: 1; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 8px; color: #718096;">
+          ← Lista corse<br/>────────────<br/>08 mag · 10:00<br/>08 mag · 13:10<br/><span style="background: rgba(99,179,237,0.2); color: #63b3ed; padding: 0 2px; border-radius: 2px;">08 mag · 15:30 ←</span><br/>08 mag · 19:20
+        </div>
+        <div style="flex: 1; background: rgba(99,179,237,0.08); border: 1px solid rgba(99,179,237,0.3); border-radius: 6px; padding: 8px; color: #e2e8f0; font-size: 10px;">
+          <div style="color: #63b3ed; font-weight: bold; margin-bottom: 6px;">✏ Modifica corsa</div>
+          Cliente: Klaas Tuinema<br/>Pax: 3<br/>15:30 → Fiumicino<br/>No Inc<br/>€ 0.00<br/><br/>
+          <div style="display:flex; gap:4px; margin-top:4px;">
+            <div style="background:#63b3ed; color:#1a202c; border-radius:4px; padding: 2px 8px; font-size:10px;">Salva</div>
+            <div style="background:#2d3748; border-radius:4px; padding: 2px 8px; font-size:10px; color:#a0aec0;">Elimina</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Pagina separata (come "Nuova corsa")</h3>
+      <p>Click sulla riga → naviga a <code>/dashboard/corse/[id]</code>. La stessa form di inserimento funziona in modalità edit. URL condivisibile, back button funziona.</p>
+      <div style="margin-top: 10px; font-size: 11px; font-family: monospace; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 8px; color: #a0aec0;">
+        /dashboard/corse/<span style="color:#ecc94b;">abc-123</span><br/>
+        ← Indietro / Corse<br/>
+        ────────────────<br/>
+        <span style="color:#9ad78c;">✏ Modifica corsa #330</span><br/>
+        [form completa]<br/>
+        [Salva] [Elimina]
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Modal (popup centrato)</h3>
+      <p>Si apre una finestra sopra la lista. Più compatto, buono su mobile. Meno spazio per campi numerosi.</p>
+      <div style="margin-top: 10px; font-size: 11px; font-family: monospace; position: relative; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 8px; color: #718096; min-height: 80px;">
+        Lista corse (sfondo)<br/>08 mag · 10:00…<br/>
+        <div style="position: absolute; top: 12px; left: 12px; right: 12px; background: #2d3748; border: 1px solid #4a5568; border-radius: 8px; padding: 10px; color: #e2e8f0; font-size: 10px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+          <div style="font-weight: bold; color:#b794f4; margin-bottom:6px;">✏ Modifica corsa</div>
+          Cliente · Pax · Importo…<br/>
+          <div style="display:flex; gap:4px; margin-top:6px;">
+            <div style="background:#b794f4; color:#1a202c; border-radius:4px; padding: 2px 8px;">Salva</div>
+            <div style="background:#4a5568; border-radius:4px; padding: 2px 8px; color:#a0aec0;">Annulla</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top: 14px; padding: 10px 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; font-size: 12px; color: #a0aec0;">
+  La scelta si applica a tutte le sezioni: corse, turni, spese, carburante.
+</div>

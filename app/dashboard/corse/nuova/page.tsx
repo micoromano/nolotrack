@@ -122,19 +122,24 @@ export default function NuovaCorsaPage() {
 
   return (
     <div>
-      {/* Header sticky */}
+      {/* Header */}
       <header className="sticky top-0 z-30 bg-surface/80 backdrop-blur-xl border-b border-border-subtle h-16 flex items-center gap-3 px-4 md:px-10">
         <button
           onClick={() => router.back()}
-          className="flex items-center justify-center w-9 h-9 rounded-full border border-border-subtle text-on-surface-variant hover:text-foreground hover:bg-surface-container transition-colors shrink-0"
+          className="flex items-center gap-1.5 text-xs text-on-surface-variant hover:text-foreground transition-colors"
         >
           <ArrowLeft size={16} weight="bold" />
         </button>
-        <div>
-          <h1 className="font-heading text-lg font-bold text-primary">Nuova corsa</h1>
-          <p className="text-xs text-on-surface-variant">Registra i dettagli della corsa</p>
-        </div>
+        <span className="text-on-surface-variant text-xs">/</span>
+        <h1 className="font-heading text-lg font-bold text-primary">Nuova corsa</h1>
       </header>
+
+      <div className="px-4 md:px-10 py-8">
+        <div className="max-w-3xl glass-card rounded-2xl">
+          <div className="border-b border-border-subtle px-5 py-3">
+            <p className="text-xs text-on-surface-variant">Inserisci i dettagli della corsa</p>
+          </div>
+          <form onSubmit={salva} className="p-5 space-y-5">
 
       <div className="px-4 md:px-10 py-8 max-w-[1440px] mx-auto">
         <form onSubmit={salva} className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -263,7 +268,13 @@ export default function NuovaCorsaPage() {
                   </Field>
                 </div>
               </div>
-            </section>
+            </Field>
+
+            {/* Sezione dettaglio ordine */}
+            <div className="border-t border-border-subtle pt-5 space-y-4">
+              <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+                Dettaglio ordine
+              </p>
 
             {/* Cliente & Agenzia */}
             <section className="glass-card p-6 rounded-2xl">

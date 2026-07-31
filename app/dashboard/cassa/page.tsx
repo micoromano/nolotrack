@@ -103,7 +103,7 @@ export default function CassaPage() {
             <option value="">Tutti i periodi</option>
             {mesiDisponibili.map(m => {
               const [anno, mes] = m.split("-");
-              const label = new Date(+anno, +mes - 1).toLocaleDateString("it-IT", { month: "long", year: "numeric" });
+              const label = new Date(+anno, +mes - 1).toLocaleDateString(undefined, { month: "long", year: "numeric" });
               return <option key={m} value={m}>{label}</option>;
             })}
           </select>
@@ -171,7 +171,7 @@ export default function CassaPage() {
               <div key={g.data}>
                 <div className="hidden sm:grid grid-cols-7 px-6 py-4 hover:bg-surface-variant/20 transition-colors items-center">
                   <span className="text-sm font-medium capitalize text-foreground">
-                    {new Date(g.data + "T00:00:00").toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" })}
+                    {new Date(g.data + "T00:00:00").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}
                   </span>
                   <span className={cn("font-mono text-sm", g.cash > 0 ? "text-amber-400" : "text-on-surface-variant/30")}>
                     {g.cash > 0 ? euro(g.cash) : "—"}
@@ -196,7 +196,7 @@ export default function CassaPage() {
                 <div className="sm:hidden px-4 py-3 space-y-1.5">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium capitalize text-foreground">
-                      {new Date(g.data + "T00:00:00").toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" })}
+                      {new Date(g.data + "T00:00:00").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}
                     </span>
                     <span className={cn("font-mono text-sm font-bold", g.saldo >= 0 ? "text-primary" : "text-destructive")}>
                       {euro(g.saldo)}

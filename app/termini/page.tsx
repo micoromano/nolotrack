@@ -13,10 +13,10 @@ export default function TerminiPage() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="max-w-3xl mx-auto px-6 py-16">
         <Link href="/" className="text-sm text-primary hover:underline">&larr; Torna al sito</Link>
-        <h1 className="text-2xl font-semibold mt-6">Termini di servizio</h1>
-        <p className="text-sm text-muted-foreground mt-1">Ultimo aggiornamento: {new Date().toLocaleDateString("it-IT")}</p>
+        <h1 className="font-heading text-2xl font-bold mt-6 text-foreground">Termini di servizio</h1>
+        <p className="text-sm text-on-surface-variant mt-1">Ultimo aggiornamento: {new Date().toLocaleDateString("it-IT")}</p>
 
-        <div className="mt-8 space-y-6 text-sm leading-relaxed text-foreground/90">
+        <div className="mt-8 glass-card rounded-2xl p-6 sm:p-8 space-y-6 text-sm leading-relaxed text-foreground/90">
           <section>
             <h2 className="text-base font-medium mb-2">1. Natura del sito</h2>
             <p>

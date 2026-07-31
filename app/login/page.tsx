@@ -38,12 +38,27 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 py-12">
-      <div className="w-full max-w-sm">
-        {/* Brand */}
-        <div className="flex flex-col items-center text-center mb-8">
-          <div className="w-14 h-14 bg-primary-container rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20 mb-4">
-            <Car size={28} weight="fill" className="text-on-primary-container" />
+    <div className="min-h-screen bg-background flex">
+      {/* Left brand panel */}
+      <div className="hidden lg:flex w-80 bg-sidebar border-r border-border flex-col justify-between p-8 shrink-0">
+        <div>
+          <span className="font-heading italic text-primary text-2xl">NoloTrack</span>
+          <p className="text-muted-foreground text-xs mt-1 uppercase tracking-widest">Gestione NCC</p>
+        </div>
+        <div className="space-y-4">
+          <FeatureRow icon="🗓️" text="Registra turni e corse" />
+          <FeatureRow icon="💶" text="Tieni traccia degli incassi" />
+          <FeatureRow icon="📄" text="Genera report PDF mensili" />
+        </div>
+        <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} NoloTrack</p>
+      </div>
+
+      {/* Right form panel */}
+      <div className="flex-1 flex items-center justify-center p-6">
+        <div className="w-full max-w-sm glass-card rounded-2xl p-6 space-y-6">
+          <div>
+            <h1 className="font-heading text-xl font-bold text-primary">Accedi a NoloTrack</h1>
+            <p className="text-sm text-on-surface-variant mt-1">Inserisci le tue credenziali per continuare.</p>
           </div>
           <h1 className="font-heading text-3xl font-black text-primary leading-none">NoloTrack</h1>
           <p className="text-xs text-on-surface-variant uppercase tracking-widest mt-2">
@@ -54,35 +69,29 @@ export default function LoginPage() {
         {/* Form card */}
         <div className="glass-card rounded-2xl p-6">
           <form onSubmit={accedi} className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-on-secondary-container uppercase tracking-widest">Email</label>
-              <div className="relative">
-                <EnvelopeSimple size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/60" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  autoComplete="email"
-                  placeholder="nome@azienda.it"
-                  className={inputClass}
-                />
-              </div>
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+                placeholder="nome@email.com"
+                className={inputClass}
+              />
             </div>
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-on-secondary-container uppercase tracking-widest">Password</label>
-              <div className="relative">
-                <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/60" />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  autoComplete="current-password"
-                  placeholder="••••••••"
-                  className={inputClass}
-                />
-              </div>
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+                placeholder="••••••••"
+                className={inputClass}
+              />
             </div>
 
             {errore && (
@@ -94,7 +103,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={caricamento}
-              className="w-full flex items-center justify-center gap-2 bg-primary text-on-primary text-sm font-bold py-3 rounded-lg transition-all hover:opacity-90 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-primary text-primary-foreground text-sm font-medium py-2.5 rounded-lg shadow-lg shadow-primary/20 transition-colors hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {caricamento ? "Accesso in corso…" : (
                 <>Accedi <ArrowRight size={15} weight="bold" /></>
@@ -107,15 +116,13 @@ export default function LoginPage() {
               <span className="w-full border-t border-border-subtle" />
             </div>
             <div className="relative flex justify-center">
-              <span className="bg-surface-container-low px-3 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">
-                Oppure continua con
-              </span>
+              <span className="bg-surface-container px-3 text-xs text-on-surface-variant">oppure</span>
             </div>
           </div>
 
           <button
             onClick={accediConGoogle}
-            className="w-full flex items-center justify-center gap-3 bg-surface-container-lowest border border-border-subtle text-sm text-foreground font-medium py-2.5 rounded-lg transition-colors hover:bg-surface-container-high"
+            className="w-full flex items-center justify-center gap-3 bg-surface-container-low border border-border-subtle text-sm text-foreground font-medium py-2.5 rounded-lg transition-colors hover:bg-muted"
           >
             <GoogleIcon />
             Accedi con Google

@@ -207,7 +207,7 @@ export default function CarburantePage() {
 
   const labelMese = (m: string) => {
     const [anno, mes] = m.split("-");
-    return new Date(+anno, +mes - 1).toLocaleDateString("it-IT", { month: "long", year: "numeric" });
+    return new Date(+anno, +mes - 1).toLocaleDateString(undefined, { month: "long", year: "numeric" });
   };
 
   return (
@@ -472,7 +472,7 @@ export default function CarburantePage() {
                 {/* Desktop */}
                 <div className="hidden sm:grid grid-cols-7 px-4 py-3 hover:bg-surface-variant/20 transition-colors items-center">
                   <span className="text-sm text-on-surface-variant">
-                    {new Date(r.data + "T00:00:00").toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" })}
+                    {new Date(r.data + "T00:00:00").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}
                   </span>
                   <span className="text-sm font-mono font-medium text-foreground">{r.targa}</span>
                   <span className={cn("font-mono text-sm", r.km !== null ? "text-foreground" : "text-on-surface-variant/40")}>
@@ -511,7 +511,7 @@ export default function CarburantePage() {
                     <div>
                       <span className="text-sm font-mono font-semibold text-foreground">{r.targa}</span>
                       <span className="text-xs text-on-surface-variant ml-2">
-                        {new Date(r.data + "T00:00:00").toLocaleDateString("it-IT", { day: "numeric", month: "short", year: "numeric" })}
+                        {new Date(r.data + "T00:00:00").toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}
                       </span>
                     </div>
                     <div className="flex items-center gap-1">

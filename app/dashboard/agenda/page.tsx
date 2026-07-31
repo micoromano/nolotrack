@@ -1,13 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { AgendaNav, IcalButton, GoogleCalendarButton } from "./client";
 import { cn } from "@/lib/utils";
-import {
-  CalendarBlank,
-  CalendarCheck,
-  Clock,
-  UsersThree,
-  CarProfile,
-} from "@phosphor-icons/react/dist/ssr";
+import { getServerLocale } from "@/lib/locale";
 
 const pagamentoBadgeStyle: Record<string, string> = {
   cash: "bg-amber-400/10 text-amber-400 border border-amber-400/20",
@@ -41,6 +35,7 @@ export default async function AgendaPage({
   searchParams: Promise<{ anno?: string; mese?: string }>;
 }) {
   const { anno: annoStr, mese: meseStr } = await searchParams;
+  const locale = await getServerLocale();
   const oggi = new Date();
   const anno = annoStr ? parseInt(annoStr) : oggi.getFullYear();
   const mese = meseStr ? parseInt(meseStr) : oggi.getMonth() + 1;
@@ -95,11 +90,11 @@ export default async function AgendaPage({
 
   return (
     <div>
-      {/* Header sticky */}
-      <header className="sticky top-0 z-30 bg-surface/80 backdrop-blur-xl border-b border-border-subtle px-4 md:px-10 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
+      {/* Header */}
+      <header className="sticky top-0 z-30 bg-surface/80 backdrop-blur-xl border-b border-border-subtle h-16 flex items-center justify-between px-4 md:px-10">
+        <div className="flex items-center gap-4">
           <h1 className="font-heading text-lg font-bold text-primary">Agenda</h1>
-          <p className="text-xs text-on-surface-variant">Pianificazione corse e turni</p>
+          <AgendaNav anno={anno} mese={mese} />
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <AgendaNav anno={anno} mese={mese} />
@@ -114,150 +109,71 @@ export default async function AgendaPage({
         </div>
       </header>
 
-      <div className="px-4 md:px-10 py-8 max-w-[1440px] mx-auto space-y-6">
-        {/* Bento metrics */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="glass-card rounded-2xl p-5 relative overflow-hidden">
-            <div className="absolute top-3 right-3 w-9 h-9 rounded-xl flex items-center justify-center bg-primary/15 text-primary">
-              <CarProfile size={18} weight="fill" />
-            </div>
-            <p className="text-xs text-on-surface-variant uppercase tracking-wider mb-1 pr-10">Servizi nel mese</p>
-            <p className="font-mono text-xl font-semibold mt-1 text-primary">{totServizi}</p>
-          </div>
-
-          <div className="glass-card rounded-2xl p-5 relative overflow-hidden">
-            <div className="absolute top-3 right-3 w-9 h-9 rounded-xl flex items-center justify-center bg-amber-400/15 text-amber-400">
-              <CalendarCheck size={18} weight="fill" />
-            </div>
-            <p className="text-xs text-on-surface-variant uppercase tracking-wider mb-1 pr-10">Incasso stimato</p>
-            <p className="font-mono text-xl font-semibold mt-1 text-amber-400">{euro(totIncasso)}</p>
-          </div>
-
-          <div className="glass-card rounded-2xl p-5 relative overflow-hidden">
-            <div className="absolute top-3 right-3 w-9 h-9 rounded-xl flex items-center justify-center bg-success-emerald/15 text-success-emerald">
-              <CalendarBlank size={18} weight="fill" />
-            </div>
-            <p className="text-xs text-on-surface-variant uppercase tracking-wider mb-1 pr-10">Giorni con servizi</p>
-            <p className="font-mono text-xl font-semibold mt-1 text-success-emerald">{giorniConServizi}</p>
-          </div>
-
-          <div className="glass-card rounded-2xl p-5 relative overflow-hidden">
-            <div className="absolute top-3 right-3 w-9 h-9 rounded-xl flex items-center justify-center bg-tertiary/15 text-tertiary">
-              <Clock size={18} weight="fill" />
-            </div>
-            <p className="text-xs text-on-surface-variant uppercase tracking-wider mb-1 pr-10">Giorni liberi</p>
-            <p className="font-mono text-xl font-semibold mt-1 text-tertiary">{giorniLiberi}</p>
-          </div>
-        </div>
-
-        {/* Legenda pagamenti */}
-        <div className="flex flex-wrap items-center gap-4 text-xs text-on-surface-variant">
-          <span className="font-semibold uppercase tracking-wider">Legenda:</span>
-          {Object.entries(pagamentoLabel).map(([tipo, label]) => (
-            <div key={tipo} className="flex items-center gap-1.5">
-              <span className={cn("w-2.5 h-2.5 rounded-sm", pagamentoSwatch[tipo])} />
-              <span>{label}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Elenco giorni */}
-        <div className="space-y-2">
-          {giorni.map((giorno) => {
-            const dataStr = giorno.toISOString().split("T")[0];
-            const corseGiorno = corsePerGiorno.get(dataStr) ?? [];
-            const isOggi = dataStr === oggiStr;
-            const haServizi = corseGiorno.length > 0;
-
-            if (!haServizi) {
-              return (
-                <div key={dataStr} className={cn(
-                  "flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs text-on-surface-variant/50",
-                  isOggi && "bg-primary/5 text-primary font-medium border border-primary/20"
-                )}>
-                  <span className="w-20 shrink-0 capitalize">
-                    {giorno.toLocaleDateString("it-IT", { weekday: "short", day: "numeric" })}
-                  </span>
-                  {isOggi && <span className="text-xs text-primary">Oggi — nessun servizio</span>}
-                </div>
-              );
-            }
+      <div className="px-4 md:px-10 py-8 space-y-2 max-w-2xl">
+        {giorni.map((giorno) => {
+          const dataStr = giorno.toISOString().split("T")[0];
+          const corseGiorno = corsePerGiorno.get(dataStr) ?? [];
+          const isOggi = dataStr === oggiStr;
+          const haServizi = corseGiorno.length > 0;
 
             return (
               <div key={dataStr} className={cn(
-                "glass-card rounded-2xl overflow-hidden",
-                isOggi && "border-primary/40"
+                "flex items-center gap-3 px-4 py-2 rounded-lg text-xs text-on-surface-variant/50",
+                isOggi && "bg-primary/5 text-primary font-medium"
+              )}>
+                <span className="w-20 shrink-0 capitalize">
+                  {giorno.toLocaleDateString(locale, { weekday: "short", day: "numeric" })}
+                </span>
+                {isOggi && <span className="text-xs text-primary">Oggi — nessun servizio</span>}
+              </div>
+            );
+          }
+
+          return (
+            <div key={dataStr} className={cn(
+              "glass-card rounded-2xl overflow-hidden",
+              isOggi && "border-primary/40"
+            )}>
+              {/* Header giorno */}
+              <div className={cn(
+                "flex items-center justify-between px-4 py-2 border-b border-border-subtle",
+                isOggi ? "bg-primary/10" : "bg-surface-container-low/50"
               )}>
                 {/* Header giorno */}
                 <div className={cn(
                   "flex items-center gap-3 px-4 py-3 border-b border-border-subtle",
                   isOggi ? "bg-primary/10" : "bg-surface-container-low/50"
                 )}>
-                  <div className={cn(
-                    "flex flex-col items-center justify-center w-12 h-12 rounded-xl shrink-0",
-                    isOggi ? "bg-primary text-primary-foreground" : "bg-surface-container-high text-foreground"
-                  )}>
-                    <span className="text-[9px] font-bold uppercase tracking-wider leading-none">
-                      {giorno.toLocaleDateString("it-IT", { weekday: "short" })}
-                    </span>
-                    <span className="text-base font-bold font-mono leading-tight">{giorno.getDate()}</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className={cn(
-                      "text-sm font-semibold capitalize",
-                      isOggi ? "text-primary" : "text-foreground"
-                    )}>
-                      {giorno.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })}
-                    </p>
-                    <p className="text-xs text-on-surface-variant">
-                      {corseGiorno.length} serviz{corseGiorno.length === 1 ? "io" : "i"}
-                    </p>
-                  </div>
-                  {isOggi && (
-                    <span className="text-[10px] font-bold uppercase bg-primary text-primary-foreground px-2 py-0.5 rounded-full shrink-0">
-                      Oggi
-                    </span>
-                  )}
-                </div>
+                  {giorno.toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long" })}
+                  {isOggi && <span className="ml-2 text-xs bg-primary text-primary-foreground px-1.5 py-0.5 rounded-lg">Oggi</span>}
+                </span>
+                <span className="text-xs text-on-surface-variant">{corseGiorno.length} serviz{corseGiorno.length === 1 ? "io" : "i"}</span>
+              </div>
 
-                {/* Servizi del giorno */}
-                <div className="p-3 space-y-2">
-                  {corseGiorno.map((c) => (
-                    <div
-                      key={c.id}
-                      className={cn(
-                        "rounded-lg border-l-4 px-3 py-2.5 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4",
-                        pagamentoBorderStyle[c.tipo_pagamento] ?? pagamentoBorderStyle.uber
+              {/* Servizi del giorno */}
+              <div className="divide-y divide-border-subtle">
+                {corseGiorno.map((c) => (
+                  <div key={c.id} className="px-4 py-3 flex items-start gap-4">
+                    <div className="font-mono text-sm text-on-surface-variant shrink-0 w-20">
+                      {c.ora_partenza.slice(0, 5)}
+                      {c.ora_fine && <><br /><span className="text-xs">→ {c.ora_fine.slice(0, 5)}</span></>}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      {c.cliente_nome && (
+                        <p className="text-sm font-medium text-foreground">{c.cliente_nome}
+                          {c.n_pax && c.n_pax > 1 && <span className="ml-2 text-xs text-on-surface-variant">{c.n_pax} pax</span>}
+                        </p>
                       )}
-                    >
-                      <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-foreground shrink-0 w-24 uppercase tracking-tighter">
-                        <Clock size={12} weight="bold" className="text-on-surface-variant" />
-                        {c.ora_partenza.slice(0, 5)}
-                        {c.ora_fine && <span className="text-on-surface-variant">→ {c.ora_fine.slice(0, 5)}</span>}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        {c.cliente_nome && (
-                          <p className="text-sm font-medium text-foreground truncate">
-                            {c.cliente_nome}
-                            {c.n_pax && c.n_pax > 1 && (
-                              <span className="ml-2 inline-flex items-center gap-1 text-xs text-on-surface-variant">
-                                <UsersThree size={12} weight="bold" />
-                                {c.n_pax}
-                              </span>
-                            )}
-                          </p>
-                        )}
-                        <p className="text-xs text-on-surface-variant truncate">{c.origine} → {c.destinazione}</p>
-                        {c.tipo_servizio && <p className="text-[11px] text-on-surface-variant/60">{c.tipo_servizio}</p>}
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-bold uppercase", pagamentoBadgeStyle[c.tipo_pagamento])}>
-                          {pagamentoLabel[c.tipo_pagamento]}
-                        </span>
-                        <span className="font-mono text-xs font-semibold text-foreground">
-                          {euro(c.importo)}
-                        </span>
-                      </div>
+                      <p className="text-xs text-on-surface-variant truncate">{c.origine} → {c.destinazione}</p>
+                      {c.tipo_servizio && <p className="text-xs text-on-surface-variant/60">{c.tipo_servizio}</p>}
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className={cn("text-xs px-1.5 py-0.5 rounded-lg font-medium", pagamentoBadgeStyle[c.tipo_pagamento])}>
+                        {pagamentoLabel[c.tipo_pagamento]}
+                      </span>
+                      <span className="font-mono text-xs">
+                        {new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(c.importo)}
+                      </span>
                     </div>
                   ))}
                 </div>

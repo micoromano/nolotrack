@@ -39,7 +39,7 @@ export default function NuovoTurnoPage() {
       setCaricamento(false);
       return;
     }
-    const dataFmt = new Date(data + "T12:00:00").toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" });
+    const dataFmt = new Date(data + "T12:00:00").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
     await sendPush({
       title: "Turno registrato",
       body: `${dataFmt} · ${oraInizio}–${oraFine}`,
@@ -51,28 +51,27 @@ export default function NuovoTurnoPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div>
       {/* Header */}
       <header className="sticky top-0 z-30 bg-surface/80 backdrop-blur-xl border-b border-border-subtle h-16 flex items-center gap-3 px-4 md:px-10">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-1.5 text-xs text-on-surface-variant hover:text-foreground transition-colors"
+          className="text-xs text-on-surface-variant hover:text-foreground transition-colors"
         >
           <ArrowLeft size={13} weight="bold" />
           Turni
         </button>
-        <span className="text-on-surface-variant/40 text-xs">/</span>
+        <span className="text-on-surface-variant text-xs">/</span>
         <h1 className="font-heading text-lg font-bold text-primary">Nuovo turno</h1>
       </header>
 
-      <div className="px-4 md:px-10 py-8 max-w-lg mx-auto">
-        <div className="glass-card rounded-2xl p-6">
-          <h2 className="flex items-center gap-2 text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-5">
-            <Clock size={13} weight="bold" className="text-sky-400" />
-            Registra il tuo orario di lavoro
-          </h2>
-          <form onSubmit={salva} className="space-y-4">
-            <Field label="Data" icon={CalendarBlank}>
+      <div className="px-4 md:px-10 py-8">
+        <div className="max-w-3xl glass-card rounded-2xl">
+          <div className="border-b border-border-subtle px-5 py-3">
+            <p className="text-xs text-on-surface-variant">Registra il tuo orario di lavoro</p>
+          </div>
+          <form onSubmit={salva} className="p-5 space-y-4">
+            <Field label="Data">
               <input type="date" value={data} onChange={(e) => setData(e.target.value)} required className={inputClass} />
             </Field>
             <div className="grid grid-cols-2 gap-3">
@@ -125,10 +124,7 @@ export default function NuovoTurnoPage() {
 function Field({ label, icon: Icon, children }: { label: string; icon?: React.ElementType; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
-      <label className="flex items-center gap-1.5 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-        {Icon && <Icon size={11} weight="bold" />}
-        {label}
-      </label>
+      <label className="text-xs font-medium text-on-surface-variant uppercase tracking-wider">{label}</label>
       {children}
     </div>
   );

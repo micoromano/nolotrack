@@ -12,38 +12,37 @@ export default async function AdminUtentiPage() {
   const autisti = autRes.status === "fulfilled" ? autRes.value.data ?? [] : [];
 
   return (
-    <div className="min-h-screen">
+    <div>
       <header className="sticky top-0 z-30 bg-surface/80 backdrop-blur-xl border-b border-border-subtle h-16 flex items-center justify-between px-4 md:px-10">
-        <div className="flex items-center gap-3">
-          <Link
-            href="/dashboard/admin"
-            className="flex items-center gap-1.5 text-xs text-on-surface-variant hover:text-foreground transition-colors"
-          >
-            <ArrowLeft size={13} weight="bold" /> Admin
-          </Link>
-          <span className="text-on-surface-variant text-xs">/</span>
-          <h1 className="font-heading text-lg font-bold text-primary">Autisti</h1>
+        <div>
+          <h1 className="font-heading text-lg font-bold text-primary">Gestione autisti</h1>
+          <p className="text-xs text-on-surface-variant">{autisti.length} autisti registrati</p>
         </div>
-        <Link
-          href="/dashboard/admin/utenti/invita"
-          className={cn(buttonVariants({ size: "sm" }), "gap-1.5 text-xs")}
-        >
-          <UserPlus size={14} weight="bold" />
-          Invita autista
+        <Link href="/dashboard/admin/utenti/invita" className={cn(buttonVariants({ size: "sm" }), "text-xs font-bold uppercase tracking-wide shadow-lg shadow-primary/20")}>
+          + Invita autista
         </Link>
       </header>
-
-      <div className="px-4 md:px-10 py-8 max-w-[1440px] mx-auto space-y-6">
-        <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
-          {autisti.length} autisti registrati
-        </p>
-
+      <div className="px-4 md:px-10 py-8">
         <div className="glass-card rounded-2xl overflow-hidden">
-          <div className="hidden sm:grid grid-cols-3 px-6 py-3 border-b border-border-subtle bg-surface-container-low/50">
-            {["Nome", "Email", "Ruolo"].map((h) => (
-              <span key={h} className="text-[11px] font-bold uppercase tracking-wider text-on-secondary-container">
-                {h}
-              </span>
+          <div className="grid grid-cols-3 px-4 py-2 border-b border-border-subtle bg-surface-container-low/50">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-on-secondary-container">Nome</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-on-secondary-container">Email</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-on-secondary-container">Ruolo</span>
+          </div>
+          <div className="divide-y divide-border-subtle">
+            {autisti.length === 0 && (
+              <div className="px-4 py-8 text-center text-sm text-on-surface-variant">
+                Nessun autista registrato
+              </div>
+            )}
+            {autisti.map((a) => (
+              <div key={a.id} className="grid grid-cols-3 px-4 py-3 items-center hover:bg-surface-variant/20 transition-colors">
+                <span className="text-sm font-medium text-foreground">{a.nome}</span>
+                <span className="text-sm text-on-surface-variant">{a.email}</span>
+                <span className="text-xs bg-muted px-2 py-0.5 rounded w-fit">
+                  {(Array.isArray(a.ruoli) ? (a.ruoli as { nome: string }[])[0]?.nome : (a.ruoli as unknown as { nome: string } | null)?.nome) ?? "autista"}
+                </span>
+              </div>
             ))}
           </div>
 

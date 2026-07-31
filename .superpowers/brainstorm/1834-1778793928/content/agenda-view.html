@@ -1,0 +1,106 @@
+<h2>Agenda mensile — che tipo di vista?</h2>
+<p class="subtitle">Come vuoi visualizzare i servizi del mese?</p>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Griglia mensile (calendario classico)</h3>
+      <p>7 colonne × settimane. Ogni giorno mostra i servizi come "pill" colorate. Click su un giorno → dettaglio. Come Google Calendar mese.</p>
+      <div style="margin-top: 10px; font-family: monospace; font-size: 10px; display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 8px;">
+        <div style="color: #718096; text-align:center; padding: 3px 0; font-size: 9px;">Lun</div>
+        <div style="color: #718096; text-align:center; padding: 3px 0; font-size: 9px;">Mar</div>
+        <div style="color: #718096; text-align:center; padding: 3px 0; font-size: 9px;">Mer</div>
+        <div style="color: #718096; text-align:center; padding: 3px 0; font-size: 9px;">Gio</div>
+        <div style="color: #718096; text-align:center; padding: 3px 0; font-size: 9px;">Ven</div>
+        <div style="color: #718096; text-align:center; padding: 3px 0; font-size: 9px;">Sab</div>
+        <div style="color: #718096; text-align:center; padding: 3px 0; font-size: 9px;">Dom</div>
+
+        <div style="background: rgba(255,255,255,0.04); border-radius: 4px; padding: 4px; min-height: 36px; color: #718096; font-size: 9px;">5</div>
+        <div style="background: rgba(255,255,255,0.04); border-radius: 4px; padding: 4px; min-height: 36px; color: #718096; font-size: 9px;">6</div>
+        <div style="background: rgba(255,255,255,0.04); border-radius: 4px; padding: 4px; min-height: 36px; color: #718096; font-size: 9px;">7</div>
+        <div style="background: rgba(255,255,255,0.04); border-radius: 4px; padding: 4px; min-height: 36px; color: #718096; font-size: 9px;">8<br/><span style="background:#3182ce; border-radius:2px; padding: 1px 3px; font-size: 8px; color: white;">10:00</span><br/><span style="background:#805ad5; border-radius:2px; padding: 1px 3px; font-size: 8px; color: white;">13:10</span></div>
+        <div style="background: rgba(255,255,255,0.04); border-radius: 4px; padding: 4px; min-height: 36px; color: #718096; font-size: 9px;">9</div>
+        <div style="background: rgba(255,255,255,0.04); border-radius: 4px; padding: 4px; min-height: 36px; color: #718096; font-size: 9px;">10</div>
+        <div style="background: rgba(255,255,255,0.04); border-radius: 4px; padding: 4px; min-height: 36px; color: #718096; font-size: 9px;">11</div>
+
+        <div style="background: rgba(255,255,255,0.04); border-radius: 4px; padding: 4px; min-height: 36px; color: #718096; font-size: 9px;">12</div>
+        <div style="background: rgba(99,179,237,0.15); border: 1px solid rgba(99,179,237,0.3); border-radius: 4px; padding: 4px; min-height: 36px; color: #63b3ed; font-size: 9px; font-weight: bold;">14<br/><span style="background:#38a169; border-radius:2px; padding: 1px 3px; font-size: 8px; color: white;">OGGI</span></div>
+        <div style="background: rgba(255,255,255,0.04); border-radius: 4px; padding: 4px; min-height: 36px; color: #718096; font-size: 9px;">15</div>
+        <div style="background: rgba(255,255,255,0.04); border-radius: 4px; padding: 4px; min-height: 36px; color: #718096; font-size: 9px;">16</div>
+        <div style="background: rgba(255,255,255,0.04); border-radius: 4px; padding: 4px; min-height: 36px; color: #718096; font-size: 9px;">17</div>
+        <div style="background: rgba(255,255,255,0.04); border-radius: 4px; padding: 4px; min-height: 36px; color: #718096; font-size: 9px;">18</div>
+        <div style="background: rgba(255,255,255,0.04); border-radius: 4px; padding: 4px; min-height: 36px; color: #718096; font-size: 9px;">19</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Vista settimana con orari</h3>
+      <p>7 colonne × fasce orarie (6:00–23:00). I servizi si posizionano sull'ora. Si vede la durata visivamente. Come Google Calendar settimana.</p>
+      <div style="margin-top: 10px; font-family: monospace; font-size: 10px; display: grid; grid-template-columns: 30px 1fr 1fr 1fr 1fr 1fr 1fr 1fr; gap: 1px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 8px; max-height: 120px; overflow: hidden;">
+        <div style="color:#718096; font-size:8px;"></div>
+        <div style="color:#718096; text-align:center; font-size:8px;">Lun</div>
+        <div style="color:#718096; text-align:center; font-size:8px;">Mar</div>
+        <div style="color:#718096; text-align:center; font-size:8px;">Mer</div>
+        <div style="color:#718096; text-align:center; font-size:8px; color:#63b3ed; font-weight:bold;">Gio</div>
+        <div style="color:#718096; text-align:center; font-size:8px;">Ven</div>
+        <div style="color:#718096; text-align:center; font-size:8px;">Sab</div>
+        <div style="color:#718096; text-align:center; font-size:8px;">Dom</div>
+
+        <div style="color:#718096; font-size:8px;">09</div>
+        <div style="background:rgba(255,255,255,0.03); min-height:20px;"></div>
+        <div style="background:rgba(255,255,255,0.03); min-height:20px;"></div>
+        <div style="background:rgba(255,255,255,0.03); min-height:20px;"></div>
+        <div style="background:rgba(99,179,237,0.08); min-height:20px;"></div>
+        <div style="background:rgba(255,255,255,0.03); min-height:20px;"></div>
+        <div style="background:rgba(255,255,255,0.03); min-height:20px;"></div>
+        <div style="background:rgba(255,255,255,0.03); min-height:20px;"></div>
+
+        <div style="color:#718096; font-size:8px;">10</div>
+        <div style="background: #3182ce; border-radius:3px; min-height:20px; padding:2px; color:white; font-size:7px;">Karen A.<br/>→APT</div>
+        <div style="background:rgba(255,255,255,0.03); min-height:20px;"></div>
+        <div style="background:rgba(255,255,255,0.03); min-height:20px;"></div>
+        <div style="background:rgba(99,179,237,0.08); min-height:20px;"></div>
+        <div style="background:rgba(255,255,255,0.03); min-height:20px;"></div>
+        <div style="background:rgba(255,255,255,0.03); min-height:20px;"></div>
+        <div style="background:rgba(255,255,255,0.03); min-height:20px;"></div>
+
+        <div style="color:#718096; font-size:8px;">13</div>
+        <div style="background: #805ad5; border-radius:3px; min-height:20px; padding:2px; color:white; font-size:7px;">Jerry Z.<br/>FCO→</div>
+        <div style="background:rgba(255,255,255,0.03); min-height:20px;"></div>
+        <div style="background:rgba(255,255,255,0.03); min-height:20px;"></div>
+        <div style="background:rgba(99,179,237,0.08); min-height:20px;"></div>
+        <div style="background:rgba(255,255,255,0.03); min-height:20px;"></div>
+        <div style="background:rgba(255,255,255,0.03); min-height:20px;"></div>
+        <div style="background:rgba(255,255,255,0.03); min-height:20px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Lista per giorno (agenda lineare)</h3>
+      <p>Giorni del mese in colonna. Ogni giorno espandibile con i suoi servizi. Più leggibile su mobile. Meno visivo ma più denso di info.</p>
+      <div style="margin-top: 10px; font-family: monospace; font-size: 10px; display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 8px;">
+        <div style="color: #718096; font-size: 9px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px;">— Mag 2026 —</div>
+        <div style="color: #718096; padding: 3px 0; font-size: 9px;">Lun 5 · nessun servizio</div>
+        <div style="color: #718096; padding: 3px 0; font-size: 9px;">Mar 6 · nessun servizio</div>
+        <div style="background: rgba(99,179,237,0.08); border-left: 2px solid #3182ce; border-radius: 0 4px 4px 0; padding: 4px 6px; font-size: 9px; color: #e2e8f0;">
+          <span style="color:#63b3ed; font-weight:bold;">Gio 8</span> · 4 servizi<br/>
+          <span style="color:#a0aec0;">10:00 Karen A. → FCO</span><br/>
+          <span style="color:#a0aec0;">13:10 Jerry Z. FCO →</span><br/>
+          <span style="color:#a0aec0;">15:30 Klaas T. → FCO</span><br/>
+          <span style="color:#a0aec0;">19:20 Angelo A. → Stadio</span>
+        </div>
+        <div style="color: #718096; padding: 3px 0; font-size: 9px;">Ven 9 · nessun servizio</div>
+        <div style="background: rgba(99,179,237,0.15); border-left: 2px solid #63b3ed; border-radius: 0 4px 4px 0; padding: 4px 6px; font-size: 9px; font-weight:bold; color: #63b3ed;">Mer 14 (OGGI) · 0 servizi</div>
+      </div>
+    </div>
+  </div>
+
+</div>

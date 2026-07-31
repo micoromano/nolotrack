@@ -52,30 +52,30 @@ export default function EditaSpesaPage() {
     router.refresh();
   }
 
-  if (loading) return <div className="p-6 text-sm text-muted-foreground">Caricamento…</div>;
+  if (loading) return <div className="px-4 md:px-10 py-8 text-sm text-on-surface-variant">Caricamento…</div>;
 
   return (
     <div>
-      <div className="border-b border-border px-6 py-3 flex items-center gap-3 bg-card">
-        <button onClick={() => router.back()} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+      <header className="sticky top-0 z-30 bg-surface/80 backdrop-blur-xl border-b border-border-subtle h-16 flex items-center gap-3 px-4 md:px-10">
+        <button onClick={() => router.back()} className="flex items-center gap-1.5 text-xs text-on-surface-variant hover:text-foreground transition-colors">
           <ArrowLeft size={13} weight="bold" /> Spese
         </button>
-        <span className="text-muted-foreground text-xs">/</span>
-        <h1 className="text-sm font-semibold">Modifica spesa</h1>
-      </div>
-      <div className="p-6">
-        <div className="max-w-md bg-card border border-border rounded-lg">
+        <span className="text-on-surface-variant text-xs">/</span>
+        <h1 className="font-heading text-lg font-bold text-primary">Modifica spesa</h1>
+      </header>
+      <div className="px-4 md:px-10 py-8">
+        <div className="max-w-3xl glass-card rounded-2xl">
           <form onSubmit={salva} className="p-5 space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Data</label>
+              <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Data</label>
               <input type="date" value={data} onChange={(e) => setData(e.target.value)} required className={inputClass} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Descrizione</label>
+              <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Descrizione</label>
               <input type="text" value={descrizione} onChange={(e) => setDescrizione(e.target.value)} required className={inputClass} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Importo (€)</label>
+              <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Importo (€)</label>
               <input type="text" inputMode="decimal" value={importo} onChange={(e) => setImporto(e.target.value)} required className={inputClass + " font-mono"} />
             </div>
             {errore && <p className="text-sm text-destructive">{errore}</p>}
