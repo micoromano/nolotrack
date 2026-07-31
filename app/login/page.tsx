@@ -51,15 +51,15 @@ export default function LoginPage() {
 
       {/* Right form panel */}
       <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-sm space-y-6">
+        <div className="w-full max-w-sm glass-card rounded-2xl p-6 space-y-6">
           <div>
-            <h1 className="text-xl font-semibold text-foreground">Accedi a NoloTrack</h1>
-            <p className="text-sm text-muted-foreground mt-1">Inserisci le tue credenziali per continuare.</p>
+            <h1 className="font-heading text-xl font-bold text-primary">Accedi a NoloTrack</h1>
+            <p className="text-sm text-on-surface-variant mt-1">Inserisci le tue credenziali per continuare.</p>
           </div>
 
           <form onSubmit={accedi} className="space-y-4">
             <div className="space-y-1">
-              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Email</label>
+              <label className="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Email</label>
               <input
                 type="email"
                 value={email}
@@ -71,7 +71,7 @@ export default function LoginPage() {
               />
             </div>
             <div className="space-y-1">
-              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Password</label>
+              <label className="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Password</label>
               <input
                 type="password"
                 value={password}
@@ -86,7 +86,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={caricamento}
-              className="w-full bg-primary text-primary-foreground text-sm font-medium py-2.5 rounded-lg transition-colors hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-primary text-primary-foreground text-sm font-medium py-2.5 rounded-lg shadow-lg shadow-primary/20 transition-colors hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {caricamento ? "Accesso in corso…" : "Accedi"}
             </button>
@@ -94,16 +94,16 @@ export default function LoginPage() {
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-border" />
+              <span className="w-full border-t border-border-subtle" />
             </div>
             <div className="relative flex justify-center">
-              <span className="bg-background px-3 text-xs text-muted-foreground">oppure</span>
+              <span className="bg-surface-container px-3 text-xs text-on-surface-variant">oppure</span>
             </div>
           </div>
 
           <button
             onClick={accediConGoogle}
-            className="w-full flex items-center justify-center gap-3 bg-card border border-border text-sm text-foreground font-medium py-2.5 rounded-lg transition-colors hover:bg-muted"
+            className="w-full flex items-center justify-center gap-3 bg-surface-container-low border border-border-subtle text-sm text-foreground font-medium py-2.5 rounded-lg transition-colors hover:bg-muted"
           >
             <GoogleIcon />
             Accedi con Google
