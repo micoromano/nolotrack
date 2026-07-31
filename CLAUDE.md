@@ -89,7 +89,12 @@ ore_lavorate numeric GENERATED, note text
 id uuid PK, autista_id uuid FK autisti, data date, ora_partenza time,
 origine text, destinazione text,
 tipo_pagamento text CHECK IN ('cash','carta','uber','noninc'),
-importo numeric, note text
+importo numeric, note text,
+mancia numeric NOT NULL DEFAULT 0
+-- mancia: importo separato dal tipo_pagamento, ricevuto con qualsiasi metodo.
+-- Riduce sempre il saldo cassa (saldoOggi = saldoPrev + cashOggi - speseOggi - manceOggi)
+-- perché l'autista la trattiene in contanti. Esclusa dal calcolo commissioni stipendio.
+-- SQL in mance_sql.sql
 ```
 
 **`spese`** (RLS)

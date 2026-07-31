@@ -11,6 +11,7 @@ export interface Corsa {
   destinazione: string;
   tipo_pagamento: TipoPagamento;
   importo: number;
+  mancia: number;
   note?: string | null;
   created_at: string;
   // Campi ordine servizio (SP1)
