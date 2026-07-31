@@ -14,6 +14,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import { eurEquivalent } from "@/lib/valuta";
 import {
   Money,
   Percent,
@@ -198,7 +199,7 @@ export default function StipendioPage() {
           .lte("data", fineMese),
         supabase
           .from("corse")
-          .select("data, tipo_pagamento, importo")
+          .select("data, tipo_pagamento, importo, valuta, tasso_cambio")
           .eq("autista_id", user.id)
           .gte("data", inizioMese)
           .lte("data", fineMese),
@@ -231,10 +232,11 @@ export default function StipendioPage() {
       for (const c of corse) {
         if (!map.has(c.data)) map.set(c.data, { ore: 0, cash: 0, carta: 0, uber: 0, noninc: 0 });
         const g = map.get(c.data)!;
-        if (c.tipo_pagamento === "cash") g.cash += c.importo;
-        else if (c.tipo_pagamento === "carta") g.carta += c.importo;
-        else if (c.tipo_pagamento === "uber") g.uber += c.importo;
-        else if (c.tipo_pagamento === "noninc") g.noninc += c.importo;
+        const eur = eurEquivalent(c);
+        if (c.tipo_pagamento === "cash") g.cash += eur;
+        else if (c.tipo_pagamento === "carta") g.carta += eur;
+        else if (c.tipo_pagamento === "uber") g.uber += eur;
+        else if (c.tipo_pagamento === "noninc") g.noninc += eur;
       }
 
       const tarOr = cfg?.tariffa_oraria ?? 0;
