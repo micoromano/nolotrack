@@ -8,6 +8,7 @@ import {
   ChartLineUp, CurrencyEur, CreditCard, Car, Clock, Plus,
   TrendUp, ArrowRight,
 } from "@phosphor-icons/react/dist/ssr";
+import { eurEquivalent, formatValuta } from "@/lib/valuta";
 
 function formatEuro(n: number) {
   return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(n);
@@ -35,12 +36,12 @@ export default async function DashboardPage() {
     supabase.from("autisti").select("nome").eq("id", user!.id).maybeSingle(),
     supabase.from("turni").select("*").eq("autista_id", user!.id).eq("data", oggi).maybeSingle(),
     supabase.from("corse").select("*").eq("autista_id", user!.id).eq("data", oggi),
-    supabase.from("corse").select("importo").eq("autista_id", user!.id).gte("data", meseInizio).lte("data", oggi),
-    supabase.from("corse").select("importo").eq("autista_id", user!.id).gte("data", mesePrecedente).lte("data", mesePrecedenteFine),
+    supabase.from("corse").select("importo, valuta, tasso_cambio").eq("autista_id", user!.id).gte("data", meseInizio).lte("data", oggi),
+    supabase.from("corse").select("importo, valuta, tasso_cambio").eq("autista_id", user!.id).gte("data", mesePrecedente).lte("data", mesePrecedenteFine),
   ]);
 
-  const totMese = corseMese?.reduce((s, c) => s + (c.importo ?? 0), 0) ?? 0;
-  const totMesePrecedente = corseMesePrecedente?.reduce((s, c) => s + (c.importo ?? 0), 0) ?? 0;
+  const totMese = corseMese?.reduce((s, c) => s + eurEquivalent(c), 0) ?? 0;
+  const totMesePrecedente = corseMesePrecedente?.reduce((s, c) => s + eurEquivalent(c), 0) ?? 0;
   const deltaMese = totMesePrecedente > 0
     ? ((totMese - totMesePrecedente) / totMesePrecedente * 100).toFixed(1)
     : null;
@@ -202,7 +203,7 @@ export default async function DashboardPage() {
                         <PagamentoBadge tipo={c.tipo_pagamento} />
                         <span className="text-sm text-foreground truncate">{c.origine}</span>
                         <span className="text-sm text-on-surface-variant truncate">{c.destinazione}</span>
-                        <span className="font-mono text-sm font-bold text-success-emerald">{formatEuro(c.importo)}</span>
+                        <span className="font-mono text-sm font-bold text-success-emerald">{formatImporto(c)}</span>
                         <span className="px-2 py-0.5 rounded-full bg-success-emerald/10 text-success-emerald text-[10px] font-bold uppercase w-fit">
                           OK
                         </span>
@@ -215,7 +216,7 @@ export default async function DashboardPage() {
                           </div>
                           <p className="text-sm text-foreground truncate">{c.origine} → {c.destinazione}</p>
                         </div>
-                        <span className="font-mono text-sm font-bold text-success-emerald shrink-0">{formatEuro(c.importo)}</span>
+                        <span className="font-mono text-sm font-bold text-success-emerald shrink-0">{formatImporto(c)}</span>
                       </div>
                     </Link>
                   ))}
@@ -235,6 +236,10 @@ const pagamentoBadgeConfig: Record<string, { label: string; style: string }> = {
   uber:   { label: "Uber",   style: "bg-slate-400/10 text-slate-400 border border-slate-400/20" },
   noninc: { label: "No Inc", style: "bg-purple-400/10 text-purple-400 border border-purple-400/20" },
 };
+
+function formatImporto(c: { importo: number; valuta: string; tasso_cambio: number }) {
+  return c.valuta === "EUR" ? formatEuro(c.importo) : `${formatValuta(c.importo, c.valuta)} (~${formatEuro(eurEquivalent(c))})`;
+}
 
 function PagamentoBadge({ tipo }: { tipo: string }) {
   const cfg = pagamentoBadgeConfig[tipo] ?? pagamentoBadgeConfig.uber;
