@@ -4,9 +4,24 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { getServerLocale } from "@/lib/locale";
 import { Plus, Car } from "@phosphor-icons/react/dist/ssr";
+import { eurEquivalent, formatValuta } from "@/lib/valuta";
 
 function formatEuro(n: number) {
   return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(n);
+}
+
+function ImportoCella({ c }: { c: { importo: number; valuta: string; tasso_cambio: number } }) {
+  if (c.valuta === "EUR") {
+    return <>{formatEuro(c.importo)}</>;
+  }
+  return (
+    <span className="inline-flex flex-col items-end leading-tight">
+      <span>{formatValuta(c.importo, c.valuta)}</span>
+      <span className="text-[11px] font-normal text-on-surface-variant">
+        ≈ {formatEuro(eurEquivalent(c))}
+      </span>
+    </span>
+  );
 }
 
 const pagamentoBadgeStyle: Record<string, string> = {

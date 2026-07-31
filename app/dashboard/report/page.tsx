@@ -24,6 +24,11 @@ function formatOre(ore: number) {
   return m > 0 ? `${h}h ${m}m` : `${h}h`;
 }
 
+function formatImporto(c: { importo: number; valuta: string; tasso_cambio: number }) {
+  if (c.valuta === "EUR") return euro(c.importo);
+  return `${new Intl.NumberFormat("it-IT", { style: "currency", currency: c.valuta }).format(c.importo)} (~${euro(eurEquivalent(c))})`;
+}
+
 function prevDay(dateStr: string) {
   const d = new Date(dateStr + "T00:00:00");
   d.setDate(d.getDate() - 1);
@@ -79,7 +84,7 @@ export default function ReportPage() {
       supabase.from("turni").select("*").eq("autista_id", user.id).eq("data", dataSelezionata).maybeSingle(),
       supabase.from("corse").select("*").eq("autista_id", user.id).eq("data", dataSelezionata).order("ora_partenza"),
       supabase.from("spese").select("*").eq("autista_id", user.id).eq("data", dataSelezionata).order("created_at"),
-      supabase.from("corse").select("importo, tipo_pagamento").eq("autista_id", user.id).eq("tipo_pagamento", "cash").lt("data", dataSelezionata),
+      supabase.from("corse").select("importo, tipo_pagamento, valuta, tasso_cambio, includi_in_cassa").eq("autista_id", user.id).eq("tipo_pagamento", "cash").lt("data", dataSelezionata),
       supabase.from("spese").select("importo").eq("autista_id", user.id).lt("data", dataSelezionata),
       supabase.from("corse").select("mancia").eq("autista_id", user.id).lt("data", dataSelezionata),
       supabase.from("corse").select("data").eq("autista_id", user.id).lt("data", dataSelezionata).order("data", { ascending: false }).limit(1).maybeSingle(),
@@ -96,16 +101,23 @@ export default function ReportPage() {
     const corseList: Corsa[] = corse ?? [];
     const speseList: SpesaItem[] = (speseGiorno as SpesaItem[] | null) ?? [];
 
-    const totCash = corseList.filter(c => c.tipo_pagamento === "cash").reduce((s, c) => s + c.importo, 0);
-    const totCarte = corseList.filter(c => c.tipo_pagamento === "carta").reduce((s, c) => s + c.importo, 0);
-    const totUber = corseList.filter(c => c.tipo_pagamento === "uber").reduce((s, c) => s + c.importo, 0);
-    const totNonInc = corseList.filter(c => c.tipo_pagamento === "noninc").reduce((s, c) => s + c.importo, 0);
+    // Cash escluso dalla cassa (includi_in_cassa = false) è trattato come noninc: visibile, ma fuori dal saldo.
+    const totCash = corseList
+      .filter(c => contribuisceACassa(c))
+      .reduce((s, c) => s + eurEquivalent(c), 0);
+    const totCarte = corseList.filter(c => c.tipo_pagamento === "carta").reduce((s, c) => s + eurEquivalent(c), 0);
+    const totUber = corseList.filter(c => c.tipo_pagamento === "uber").reduce((s, c) => s + eurEquivalent(c), 0);
+    const totNonInc = corseList
+      .filter(c => c.tipo_pagamento === "noninc" || (c.tipo_pagamento === "cash" && !contribuisceACassa(c)))
+      .reduce((s, c) => s + eurEquivalent(c), 0);
     const totSpese = speseList.reduce((s, sp) => s + sp.importo, 0);
     // Mancia: incassata con qualsiasi metodo, ma sempre trattenuta in contanti,
     // quindi riduce sempre il saldo cassa a prescindere dal tipo_pagamento della corsa.
     const totMance = corseList.reduce((s, c) => s + (c.mancia ?? 0), 0);
 
-    const cashPrecTot = (cashPrec as { importo: number }[] | null)?.reduce((s, c) => s + c.importo, 0) ?? 0;
+    const cashPrecTot = (cashPrec as { importo: number; tipo_pagamento: string; valuta: string; tasso_cambio: number; includi_in_cassa: boolean }[] | null)
+      ?.filter(c => contribuisceACassa(c))
+      .reduce((s, c) => s + eurEquivalent(c), 0) ?? 0;
     const spesePrecTot = (spesePrec as { importo: number }[] | null)?.reduce((s, c) => s + c.importo, 0) ?? 0;
     const mancePrecTot = (mancePrec as { mancia: number }[] | null)?.reduce((s, c) => s + (c.mancia ?? 0), 0) ?? 0;
     const saldoPrev = cashPrecTot - spesePrecTot - mancePrecTot;

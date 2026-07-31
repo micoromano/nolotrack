@@ -1,5 +1,6 @@
 import { pdf, Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import { createClient } from "@/lib/supabase/client";
+import { eurEquivalent, contribuisceACassa } from "@/lib/valuta";
 
 // ─────────────────────────────────────────────────────
 // Helpers
@@ -197,18 +198,19 @@ export async function generaPDFRapportino(
   let saldoCorrente = 0;
 
   const pages = results.map((g, idx) => {
+    // Cash escluso dalla cassa (includi_in_cassa = false) è trattato come noninc: visibile, ma fuori dal saldo.
     const totCash = g.corse
-      .filter((c) => c.tipo_pagamento === "cash")
-      .reduce((s, c) => s + c.importo, 0);
+      .filter((c) => contribuisceACassa(c))
+      .reduce((s, c) => s + eurEquivalent(c), 0);
     const totCarte = g.corse
       .filter((c) => c.tipo_pagamento === "carta")
-      .reduce((s, c) => s + c.importo, 0);
+      .reduce((s, c) => s + eurEquivalent(c), 0);
     const totUber = g.corse
       .filter((c) => c.tipo_pagamento === "uber")
-      .reduce((s, c) => s + c.importo, 0);
+      .reduce((s, c) => s + eurEquivalent(c), 0);
     const totNonInc = g.corse
-      .filter((c) => c.tipo_pagamento === "noninc")
-      .reduce((s, c) => s + c.importo, 0);
+      .filter((c) => c.tipo_pagamento === "noninc" || (c.tipo_pagamento === "cash" && !contribuisceACassa(c)))
+      .reduce((s, c) => s + eurEquivalent(c), 0);
     const totSpese = g.spese.reduce((s, sp) => s + sp.importo, 0);
     // Mancia: incassata con qualsiasi metodo di pagamento, ma sempre trattenuta in
     // contanti dall'autista, quindi riduce sempre il saldo cassa.
@@ -366,7 +368,9 @@ export async function generaPDFRapportino(
                       </Text>
                       {c.importo > 0 && (
                         <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 9, color: "#0078d4" }}>
-                          {euro(c.importo)}
+                          {c.valuta === "EUR"
+                            ? euro(c.importo)
+                            : `${new Intl.NumberFormat("it-IT", { style: "currency", currency: c.valuta }).format(c.importo)} (~${euro(eurEquivalent(c))})`}
                         </Text>
                       )}
                       {!!c.mancia && c.mancia > 0 && (
@@ -520,13 +524,13 @@ export async function generaPDFStipendio(
   // separato e non entra mai in questo calcolo.
   const totCash = corse
     .filter((c: { tipo_pagamento: string }) => c.tipo_pagamento === "cash")
-    .reduce((s: number, c: { importo: number }) => s + c.importo, 0);
+    .reduce((s: number, c: { importo: number; valuta: string; tasso_cambio: number }) => s + eurEquivalent(c), 0);
   const totCarte = corse
     .filter((c: { tipo_pagamento: string }) => c.tipo_pagamento === "carta")
-    .reduce((s: number, c: { importo: number }) => s + c.importo, 0);
+    .reduce((s: number, c: { importo: number; valuta: string; tasso_cambio: number }) => s + eurEquivalent(c), 0);
   const totUber = corse
     .filter((c: { tipo_pagamento: string }) => c.tipo_pagamento === "uber")
-    .reduce((s: number, c: { importo: number }) => s + c.importo, 0);
+    .reduce((s: number, c: { importo: number; valuta: string; tasso_cambio: number }) => s + eurEquivalent(c), 0);
   const oreLavorate = turni.reduce(
     (s: number, t: { ore_lavorate: number }) => s + t.ore_lavorate,
     0

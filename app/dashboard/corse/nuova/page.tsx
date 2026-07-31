@@ -4,7 +4,8 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import type { TipoPagamento } from "@/types";
+import type { TipoPagamento, Valuta } from "@/types";
+import { VALUTE, eurEquivalent, formatValuta } from "@/lib/valuta";
 import {
   CurrencyEur, CreditCard, Car, Tag, MapPin, CalendarBlank, ArrowLeft, CheckCircle,
   Path, Receipt, UserPlus, Buildings,
