@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import type { TipoPagamento } from "@/types";
 import {
   CurrencyEur, CreditCard, Car, Tag, MapPin, Clock,
-  CalendarBlank, ArrowLeft, CheckCircle, Trash,
+  CalendarBlank, ArrowLeft, CheckCircle, Trash, HandCoins,
 } from "@phosphor-icons/react";
 import PlaceAutocomplete from "@/components/place-autocomplete";
 
@@ -40,6 +40,7 @@ export default function EditaCorsaPage() {
   const [destinazione, setDestinazione] = useState("");
   const [tipoPagamento, setTipoPagamento] = useState<TipoPagamento>("cash");
   const [importo, setImporto] = useState("");
+  const [mancia, setMancia] = useState("");
   const [note, setNote] = useState("");
   const [agenzia, setAgenzia] = useState("");
   const [rifAgenzia, setRifAgenzia] = useState("");
@@ -63,6 +64,7 @@ export default function EditaCorsaPage() {
       setDestinazione(corsa.destinazione);
       setTipoPagamento(corsa.tipo_pagamento);
       setImporto(String(corsa.importo));
+      setMancia(corsa.mancia ? String(corsa.mancia) : "");
       setNote(corsa.note ?? "");
       setAgenzia(corsa.agenzia ?? "");
       setRifAgenzia(corsa.rif_agenzia ?? "");
@@ -87,6 +89,7 @@ export default function EditaCorsaPage() {
       destinazione,
       tipo_pagamento: tipoPagamento,
       importo: parseFloat(importo) || 0,
+      mancia: parseFloat(mancia) || 0,
       note: note || null,
       agenzia: agenzia || null,
       rif_agenzia: rifAgenzia || null,
@@ -177,13 +180,22 @@ export default function EditaCorsaPage() {
               </div>
             </Field>
 
-            <Field label="Importo" icon={CurrencyEur}>
-              <div className="relative">
-                <CurrencyEur size={14} weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50 pointer-events-none" />
-                <input type="number" min="0" step="0.01" placeholder="0.00" value={importo}
-                  onChange={(e) => setImporto(e.target.value)} required className={cn(inputClass, "pl-8 font-mono")} />
-              </div>
-            </Field>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Importo" icon={CurrencyEur}>
+                <div className="relative">
+                  <CurrencyEur size={14} weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50 pointer-events-none" />
+                  <input type="number" min="0" step="0.01" placeholder="0.00" value={importo}
+                    onChange={(e) => setImporto(e.target.value)} required className={cn(inputClass, "pl-8 font-mono")} />
+                </div>
+              </Field>
+              <Field label="Mancia (€)" icon={HandCoins} iconClass="text-emerald-400">
+                <div className="relative">
+                  <CurrencyEur size={14} weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50 pointer-events-none" />
+                  <input type="number" min="0" step="0.01" placeholder="0.00" value={mancia}
+                    onChange={(e) => setMancia(e.target.value)} className={cn(inputClass, "pl-8 font-mono")} />
+                </div>
+              </Field>
+            </div>
 
             <Field label="Note (opzionale)">
               <input type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder="es. cliente abituale…" className={inputClass} />

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import type { TipoPagamento } from "@/types";
 import {
-  CurrencyEur, CreditCard, Car, Tag, MapPin, Clock, CalendarBlank, ArrowLeft, CheckCircle,
+  CurrencyEur, CreditCard, Car, Tag, MapPin, Clock, CalendarBlank, ArrowLeft, CheckCircle, HandCoins,
 } from "@phosphor-icons/react";
 import PlaceAutocomplete from "@/components/place-autocomplete";
 import { sendPush } from "@/lib/push";
@@ -55,6 +55,7 @@ export default function NuovaCorsaPage() {
   const [destinazione, setDestinazione] = useState("");
   const [tipoPagamento, setTipoPagamento] = useState<TipoPagamento>("cash");
   const [importo, setImporto] = useState("");
+  const [mancia, setMancia] = useState("");
   const [note, setNote] = useState("");
   const [agenzia, setAgenzia] = useState("");
   const [rifAgenzia, setRifAgenzia] = useState("");
@@ -81,6 +82,7 @@ export default function NuovaCorsaPage() {
       destinazione,
       tipo_pagamento: tipoPagamento,
       importo: parseFloat(importo) || 0,
+      mancia: parseFloat(mancia) || 0,
       note: note || null,
       agenzia:       agenzia || null,
       rif_agenzia:   rifAgenzia || null,
@@ -191,22 +193,38 @@ export default function NuovaCorsaPage() {
               </div>
             </Field>
 
-            {/* Importo */}
-            <Field label="Importo" icon={CurrencyEur}>
-              <div className="relative">
-                <CurrencyEur size={14} weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50 pointer-events-none" />
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="0.00"
-                  value={importo}
-                  onChange={(e) => setImporto(e.target.value)}
-                  required
-                  className={cn(inputClass, "pl-8 font-mono")}
-                />
-              </div>
-            </Field>
+            {/* Importo + Mancia */}
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Importo" icon={CurrencyEur}>
+                <div className="relative">
+                  <CurrencyEur size={14} weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50 pointer-events-none" />
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={importo}
+                    onChange={(e) => setImporto(e.target.value)}
+                    required
+                    className={cn(inputClass, "pl-8 font-mono")}
+                  />
+                </div>
+              </Field>
+              <Field label="Mancia (€)" icon={HandCoins} iconClass="text-emerald-400">
+                <div className="relative">
+                  <CurrencyEur size={14} weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50 pointer-events-none" />
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={mancia}
+                    onChange={(e) => setMancia(e.target.value)}
+                    className={cn(inputClass, "pl-8 font-mono")}
+                  />
+                </div>
+              </Field>
+            </div>
 
             {/* Sezione dettaglio ordine */}
             <div className="border-t border-border-subtle pt-5 space-y-4">
