@@ -64,7 +64,7 @@ export default function EditaSpesaPage() {
         <h1 className="font-heading text-lg font-bold text-primary">Modifica spesa</h1>
       </header>
       <div className="px-4 md:px-10 py-8">
-        <div className="max-w-md glass-card rounded-2xl">
+        <div className="max-w-3xl glass-card rounded-2xl">
           <form onSubmit={salva} className="p-5 space-y-4">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Data</label>

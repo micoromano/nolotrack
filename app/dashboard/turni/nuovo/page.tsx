@@ -38,7 +38,7 @@ export default function NuovoTurnoPage() {
       setCaricamento(false);
       return;
     }
-    const dataFmt = new Date(data + "T12:00:00").toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" });
+    const dataFmt = new Date(data + "T12:00:00").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
     await sendPush({
       title: "Turno registrato",
       body: `${dataFmt} · ${oraInizio}–${oraFine}`,
@@ -64,7 +64,7 @@ export default function NuovoTurnoPage() {
       </header>
 
       <div className="px-4 md:px-10 py-8">
-        <div className="max-w-md glass-card rounded-2xl">
+        <div className="max-w-3xl glass-card rounded-2xl">
           <div className="border-b border-border-subtle px-5 py-3">
             <p className="text-xs text-on-surface-variant">Registra il tuo orario di lavoro</p>
           </div>

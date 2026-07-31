@@ -67,7 +67,7 @@ export default function EditaTurnoPage() {
         <h1 className="font-heading text-lg font-bold text-primary">Modifica turno</h1>
       </header>
       <div className="px-4 md:px-10 py-8">
-        <div className="max-w-md glass-card rounded-2xl">
+        <div className="max-w-3xl glass-card rounded-2xl">
           <div className="border-b border-border-subtle px-5 py-3">
             <p className="text-xs text-on-surface-variant">Modifica l'orario di lavoro</p>
           </div>

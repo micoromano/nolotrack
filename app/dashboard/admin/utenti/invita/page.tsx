@@ -47,7 +47,7 @@ export default function InvitaAutistaPage() {
         <h1 className="font-heading text-lg font-bold text-primary">Invita autista</h1>
       </header>
       <div className="px-4 md:px-10 py-8">
-        <div className="max-w-md glass-card rounded-2xl">
+        <div className="max-w-3xl glass-card rounded-2xl">
           <div className="border-b border-border-subtle px-5 py-3">
             <p className="text-xs text-on-surface-variant">
               L&apos;autista riceverà una email con il link di registrazione.

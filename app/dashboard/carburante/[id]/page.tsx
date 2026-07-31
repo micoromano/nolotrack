@@ -78,7 +78,7 @@ export default function EditaCarburantePage() {
         <h1 className="font-heading text-lg font-bold text-primary">Modifica rifornimento</h1>
       </header>
       <div className="px-4 md:px-10 py-8">
-        <div className="max-w-md glass-card rounded-2xl">
+        <div className="max-w-3xl glass-card rounded-2xl">
           <form onSubmit={salva} className="p-5 space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <Field label="Data"><input type="date" value={data} onChange={(e) => setData(e.target.value)} required className={inputClass} /></Field>
