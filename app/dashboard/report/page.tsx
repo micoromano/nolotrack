@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
+import { eurEquivalent, contribuisceACassa } from "@/lib/valuta";
 
 const PDFButton = dynamic(() => import("./pdf"), { ssr: false });
 
@@ -15,6 +16,11 @@ function formatOre(ore: number) {
   const h = Math.floor(ore);
   const m = Math.round((ore - h) * 60);
   return m > 0 ? `${h}h ${m}m` : `${h}h`;
+}
+
+function formatImporto(c: { importo: number; valuta: string; tasso_cambio: number }) {
+  if (c.valuta === "EUR") return euro(c.importo);
+  return `${new Intl.NumberFormat("it-IT", { style: "currency", currency: c.valuta }).format(c.importo)} (~${euro(eurEquivalent(c))})`;
 }
 
 function prevDay(dateStr: string) {
@@ -29,6 +35,9 @@ interface Corsa {
   destinazione: string;
   tipo_pagamento: string;
   importo: number;
+  valuta: string;
+  tasso_cambio: number;
+  includi_in_cassa: boolean;
   note?: string | null;
 }
 
@@ -70,7 +79,7 @@ export default function ReportPage() {
       supabase.from("turni").select("*").eq("autista_id", user.id).eq("data", dataSelezionata).maybeSingle(),
       supabase.from("corse").select("*").eq("autista_id", user.id).eq("data", dataSelezionata).order("ora_partenza"),
       supabase.from("spese").select("*").eq("autista_id", user.id).eq("data", dataSelezionata).order("created_at"),
-      supabase.from("corse").select("importo, tipo_pagamento").eq("autista_id", user.id).eq("tipo_pagamento", "cash").lt("data", dataSelezionata),
+      supabase.from("corse").select("importo, tipo_pagamento, valuta, tasso_cambio, includi_in_cassa").eq("autista_id", user.id).eq("tipo_pagamento", "cash").lt("data", dataSelezionata),
       supabase.from("spese").select("importo").eq("autista_id", user.id).lt("data", dataSelezionata),
       supabase.from("corse").select("data").eq("autista_id", user.id).lt("data", dataSelezionata).order("data", { ascending: false }).limit(1).maybeSingle(),
     ]);
@@ -85,13 +94,20 @@ export default function ReportPage() {
     const corseList: Corsa[] = corse ?? [];
     const speseList: SpesaItem[] = (speseGiorno as SpesaItem[] | null) ?? [];
 
-    const totCash = corseList.filter(c => c.tipo_pagamento === "cash").reduce((s, c) => s + c.importo, 0);
-    const totCarte = corseList.filter(c => c.tipo_pagamento === "carta").reduce((s, c) => s + c.importo, 0);
-    const totUber = corseList.filter(c => c.tipo_pagamento === "uber").reduce((s, c) => s + c.importo, 0);
-    const totNonInc = corseList.filter(c => c.tipo_pagamento === "noninc").reduce((s, c) => s + c.importo, 0);
+    // Cash escluso dalla cassa (includi_in_cassa = false) è trattato come noninc: visibile, ma fuori dal saldo.
+    const totCash = corseList
+      .filter(c => contribuisceACassa(c))
+      .reduce((s, c) => s + eurEquivalent(c), 0);
+    const totCarte = corseList.filter(c => c.tipo_pagamento === "carta").reduce((s, c) => s + eurEquivalent(c), 0);
+    const totUber = corseList.filter(c => c.tipo_pagamento === "uber").reduce((s, c) => s + eurEquivalent(c), 0);
+    const totNonInc = corseList
+      .filter(c => c.tipo_pagamento === "noninc" || (c.tipo_pagamento === "cash" && !contribuisceACassa(c)))
+      .reduce((s, c) => s + eurEquivalent(c), 0);
     const totSpese = speseList.reduce((s, sp) => s + sp.importo, 0);
 
-    const cashPrecTot = (cashPrec as { importo: number }[] | null)?.reduce((s, c) => s + c.importo, 0) ?? 0;
+    const cashPrecTot = (cashPrec as { importo: number; valuta: string; tasso_cambio: number; includi_in_cassa: boolean }[] | null)
+      ?.filter(c => contribuisceACassa(c))
+      .reduce((s, c) => s + eurEquivalent(c), 0) ?? 0;
     const spesePrecTot = (spesePrec as { importo: number }[] | null)?.reduce((s, c) => s + c.importo, 0) ?? 0;
     const saldoPrev = cashPrecTot - spesePrecTot;
     const saldoOggi = saldoPrev + totCash - totSpese;
@@ -269,7 +285,7 @@ export default function ReportPage() {
                         <PagamentoBadge tipo={c.tipo_pagamento} />
                         <span className="text-sm text-foreground truncate">{c.origine}</span>
                         <span className="text-sm text-on-surface-variant truncate">{c.destinazione}</span>
-                        <span className="font-mono text-sm font-bold text-right text-success-emerald">{euro(c.importo)}</span>
+                        <span className="font-mono text-sm font-bold text-right text-success-emerald">{formatImporto(c)}</span>
                       </div>
                     ))}
                     {rapportino.corse.map((c, i) => (
@@ -281,7 +297,7 @@ export default function ReportPage() {
                           </div>
                           <p className="text-sm text-foreground truncate">{c.origine} → {c.destinazione}</p>
                         </div>
-                        <span className="font-mono text-sm font-bold text-success-emerald shrink-0">{euro(c.importo)}</span>
+                        <span className="font-mono text-sm font-bold text-success-emerald shrink-0">{formatImporto(c)}</span>
                       </div>
                     ))}
                   </div>

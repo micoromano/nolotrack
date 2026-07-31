@@ -148,6 +148,13 @@ function euro(n: number) {
   return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(n);
 }
 
+function formatImporto(c: { importo: number; valuta: string; tasso_cambio: number }) {
+  if (c.valuta === "EUR") return euro(c.importo);
+  const originale = new Intl.NumberFormat("it-IT", { style: "currency", currency: c.valuta }).format(c.importo);
+  const eq = euro(c.valuta === "EUR" ? c.importo : c.importo * c.tasso_cambio);
+  return `${originale} (~${eq})`;
+}
+
 function formatOre(ore: number) {
   const h = Math.floor(ore);
   const m = Math.round((ore - h) * 60);
@@ -174,6 +181,8 @@ interface Corsa {
   destinazione: string;
   tipo_pagamento: string;
   importo: number;
+  valuta: string;
+  tasso_cambio: number;
   note?: string | null;
 }
 
@@ -322,7 +331,7 @@ export function RapportinoDoc({
                       </Text>
                       {c.importo > 0 && (
                         <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 9, color: "#0078d4" }}>
-                          {euro(c.importo)}
+                          {formatImporto(c)}
                         </Text>
                       )}
                     </View>
