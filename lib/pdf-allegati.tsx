@@ -146,6 +146,7 @@ export async function generaPDFRapportino(
       destinazione: string;
       tipo_pagamento: string;
       importo: number;
+      mancia?: number | null;
       note?: string | null;
     }>;
     spese: Array<{ descrizione: string; importo: number }>;
@@ -209,10 +210,13 @@ export async function generaPDFRapportino(
       .filter((c) => c.tipo_pagamento === "noninc")
       .reduce((s, c) => s + c.importo, 0);
     const totSpese = g.spese.reduce((s, sp) => s + sp.importo, 0);
+    // Mancia: incassata con qualsiasi metodo di pagamento, ma sempre trattenuta in
+    // contanti dall'autista, quindi riduce sempre il saldo cassa.
+    const totMance = g.corse.reduce((s, c) => s + (c.mancia ?? 0), 0);
 
     const saldoPrev = saldoCorrente;
     const dataPrev = idx === 0 ? g.data : results[idx - 1].data;
-    saldoCorrente = saldoPrev + totCash - totSpese;
+    saldoCorrente = saldoPrev + totCash - totSpese - totMance;
     const saldoOggi = saldoCorrente;
 
     const dataFmt = new Date(g.data + "T00:00:00").toLocaleDateString("it-IT", {
@@ -273,6 +277,12 @@ export async function generaPDFRapportino(
             <Text style={styles.label}>Uscite (spese)</Text>
             <Text style={styles.value}>− {euro(totSpese)}</Text>
           </View>
+          {totMance > 0 && (
+            <View style={styles.row}>
+              <Text style={styles.label}>Mance trattenute</Text>
+              <Text style={styles.value}>− {euro(totMance)}</Text>
+            </View>
+          )}
           <View style={styles.accentBox}>
             <Text style={{ fontFamily: "Helvetica-Bold", color: "#0078d4" }}>
               Cassa al {new Date(g.data + "T00:00:00").toLocaleDateString("it-IT")}
@@ -357,6 +367,11 @@ export async function generaPDFRapportino(
                       {c.importo > 0 && (
                         <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 9, color: "#0078d4" }}>
                           {euro(c.importo)}
+                        </Text>
+                      )}
+                      {!!c.mancia && c.mancia > 0 && (
+                        <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 9, color: "#059669" }}>
+                          + {euro(c.mancia)} mancia
                         </Text>
                       )}
                     </View>
@@ -501,6 +516,8 @@ export async function generaPDFStipendio(
   const config: ConfigSalario | null =
     configRes.status === "fulfilled" ? configRes.value.data : null;
 
+  // Commissioni calcolate solo su importo per tipo_pagamento: la mancia è un campo
+  // separato e non entra mai in questo calcolo.
   const totCash = corse
     .filter((c: { tipo_pagamento: string }) => c.tipo_pagamento === "cash")
     .reduce((s: number, c: { importo: number }) => s + c.importo, 0);
