@@ -205,6 +205,7 @@ export default function StipendioPage() {
           .eq("autista_id", user.id)
           .gte("data", inizioMese)
           .lte("data", fineMese),
+        // Solo tipo_pagamento/importo: la mancia è esclusa di proposito dal calcolo commissioni.
         supabase
           .from("corse")
           .select("data, tipo_pagamento, importo")

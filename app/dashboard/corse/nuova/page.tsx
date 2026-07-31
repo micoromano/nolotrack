@@ -67,6 +67,7 @@ export default function NuovaCorsaPage() {
   const [destinazione, setDestinazione] = useState("");
   const [tipoPagamento, setTipoPagamento] = useState<TipoPagamento>("cash");
   const [importo, setImporto] = useState("");
+  const [mancia, setMancia] = useState("");
   const [note, setNote] = useState("");
   const [agenzia, setAgenzia] = useState("");
   const [rifAgenzia, setRifAgenzia] = useState("");
@@ -93,6 +94,7 @@ export default function NuovaCorsaPage() {
       destinazione,
       tipo_pagamento: tipoPagamento,
       importo: parseFloat(importo) || 0,
+      mancia: parseFloat(mancia) || 0,
       note: note || null,
       agenzia:       agenzia || null,
       rif_agenzia:   rifAgenzia || null,

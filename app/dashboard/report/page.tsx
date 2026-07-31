@@ -36,6 +36,7 @@ interface Corsa {
   destinazione: string;
   tipo_pagamento: string;
   importo: number;
+  mancia?: number | null;
   note?: string | null;
 }
 
@@ -54,6 +55,7 @@ interface Rapportino {
   totUber: number;
   totNonInc: number;
   totSpese: number;
+  totMance: number;
   saldoPrev: number;
   saldoOggi: number;
   ultimoGiornoLavorativo: string | null;
@@ -73,12 +75,13 @@ export default function ReportPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const [turnoRes, corseRes, speseGiornoRes, cashPrecRes, spesePrecRes, ultimoGiornoRes] = await Promise.allSettled([
+    const [turnoRes, corseRes, speseGiornoRes, cashPrecRes, spesePrecRes, mancePrecRes, ultimoGiornoRes] = await Promise.allSettled([
       supabase.from("turni").select("*").eq("autista_id", user.id).eq("data", dataSelezionata).maybeSingle(),
       supabase.from("corse").select("*").eq("autista_id", user.id).eq("data", dataSelezionata).order("ora_partenza"),
       supabase.from("spese").select("*").eq("autista_id", user.id).eq("data", dataSelezionata).order("created_at"),
       supabase.from("corse").select("importo, tipo_pagamento").eq("autista_id", user.id).eq("tipo_pagamento", "cash").lt("data", dataSelezionata),
       supabase.from("spese").select("importo").eq("autista_id", user.id).lt("data", dataSelezionata),
+      supabase.from("corse").select("mancia").eq("autista_id", user.id).lt("data", dataSelezionata),
       supabase.from("corse").select("data").eq("autista_id", user.id).lt("data", dataSelezionata).order("data", { ascending: false }).limit(1).maybeSingle(),
     ]);
 
@@ -87,6 +90,7 @@ export default function ReportPage() {
     const speseGiorno = speseGiornoRes.status === "fulfilled" ? speseGiornoRes.value.data : null;
     const cashPrec = cashPrecRes.status === "fulfilled" ? cashPrecRes.value.data : null;
     const spesePrec = spesePrecRes.status === "fulfilled" ? spesePrecRes.value.data : null;
+    const mancePrec = mancePrecRes.status === "fulfilled" ? mancePrecRes.value.data : null;
     const ultimoGiorno = ultimoGiornoRes.status === "fulfilled" ? ultimoGiornoRes.value.data?.data ?? null : null;
 
     const corseList: Corsa[] = corse ?? [];
@@ -97,17 +101,21 @@ export default function ReportPage() {
     const totUber = corseList.filter(c => c.tipo_pagamento === "uber").reduce((s, c) => s + c.importo, 0);
     const totNonInc = corseList.filter(c => c.tipo_pagamento === "noninc").reduce((s, c) => s + c.importo, 0);
     const totSpese = speseList.reduce((s, sp) => s + sp.importo, 0);
+    // Mancia: incassata con qualsiasi metodo, ma sempre trattenuta in contanti,
+    // quindi riduce sempre il saldo cassa a prescindere dal tipo_pagamento della corsa.
+    const totMance = corseList.reduce((s, c) => s + (c.mancia ?? 0), 0);
 
     const cashPrecTot = (cashPrec as { importo: number }[] | null)?.reduce((s, c) => s + c.importo, 0) ?? 0;
     const spesePrecTot = (spesePrec as { importo: number }[] | null)?.reduce((s, c) => s + c.importo, 0) ?? 0;
-    const saldoPrev = cashPrecTot - spesePrecTot;
-    const saldoOggi = saldoPrev + totCash - totSpese;
+    const mancePrecTot = (mancePrec as { mancia: number }[] | null)?.reduce((s, c) => s + (c.mancia ?? 0), 0) ?? 0;
+    const saldoPrev = cashPrecTot - spesePrecTot - mancePrecTot;
+    const saldoOggi = saldoPrev + totCash - totSpese - totMance;
 
     setRapportino({
       turno: turno ?? null,
       corse: corseList,
       spese: speseList,
-      totCash, totCarte, totUber, totNonInc, totSpese,
+      totCash, totCarte, totUber, totNonInc, totSpese, totMance,
       saldoPrev, saldoOggi,
       ultimoGiornoLavorativo: ultimoGiorno,
     });
@@ -172,6 +180,7 @@ export default function ReportPage() {
               totUber={rapportino.totUber}
               totNonInc={rapportino.totNonInc}
               totSpese={rapportino.totSpese}
+              totMance={rapportino.totMance}
               saldoPrev={rapportino.saldoPrev}
               saldoOggi={rapportino.saldoOggi}
               dataPrev={dataPrev}
