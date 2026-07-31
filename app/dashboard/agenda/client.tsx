@@ -11,7 +11,7 @@ export function AgendaNav({ anno, mese }: { anno: number; mese: number }) {
     router.push(`/dashboard/agenda?anno=${d.getFullYear()}&mese=${d.getMonth() + 1}`);
   }
 
-  const label = new Date(anno, mese - 1).toLocaleDateString("it-IT", { month: "long", year: "numeric" });
+  const label = new Date(anno, mese - 1).toLocaleDateString(undefined, { month: "long", year: "numeric" });
 
   return (
     <div className="flex items-center gap-3">

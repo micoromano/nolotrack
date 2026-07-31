@@ -100,7 +100,7 @@ export default function SpesePage() {
           <option value="">Tutti i periodi</option>
           {mesiDisponibili.map(m => {
             const [anno, mes] = m.split("-");
-            const label = new Date(+anno, +mes - 1).toLocaleDateString("it-IT", { month: "long", year: "numeric" });
+            const label = new Date(+anno, +mes - 1).toLocaleDateString(undefined, { month: "long", year: "numeric" });
             return <option key={m} value={m}>{label}</option>;
           })}
         </select>
@@ -193,7 +193,7 @@ export default function SpesePage() {
               <div key={s.id}>
                 <div className="hidden sm:grid grid-cols-4 px-6 py-4 hover:bg-surface-variant/20 transition-colors items-center">
                   <span className="text-sm text-on-surface-variant">
-                    {new Date(s.data + "T00:00:00").toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" })}
+                    {new Date(s.data + "T00:00:00").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}
                   </span>
                   <span className="text-sm text-foreground font-medium">{s.descrizione}</span>
                   <span className="font-mono text-sm text-destructive text-right font-bold">− {euro(s.importo)}</span>
@@ -219,7 +219,7 @@ export default function SpesePage() {
                   <div className="min-w-0">
                     <p className="text-sm text-foreground font-medium truncate">{s.descrizione}</p>
                     <p className="text-xs text-on-surface-variant mt-0.5">
-                      {new Date(s.data + "T00:00:00").toLocaleDateString("it-IT", { day: "numeric", month: "short", year: "numeric" })}
+                      {new Date(s.data + "T00:00:00").toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}
                     </p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">

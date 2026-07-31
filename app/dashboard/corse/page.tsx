@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { getServerLocale } from "@/lib/locale";
 import { Plus, Car } from "@phosphor-icons/react/dist/ssr";
 
 function formatEuro(n: number) {
@@ -23,6 +24,7 @@ const pagamentoLabel: Record<string, string> = {
 };
 
 export default async function CorsePage() {
+  const locale = await getServerLocale();
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -71,7 +73,7 @@ export default async function CorsePage() {
                 <div className="hidden sm:grid grid-cols-[120px_100px_80px_1fr_1fr_100px] px-6 py-4 items-center gap-2">
                   <div>
                     <p className="font-mono text-xs text-on-surface-variant">
-                      {new Date(c.data).toLocaleDateString("it-IT", { day: "2-digit", month: "short" })}
+                      {new Date(c.data).toLocaleDateString(locale, { day: "2-digit", month: "short" })}
                     </p>
                     <p className="font-mono text-xs font-semibold text-foreground">{c.ora_partenza.slice(0, 5)}</p>
                   </div>
@@ -96,7 +98,7 @@ export default async function CorsePage() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="font-mono text-xs text-on-surface-variant">
-                        {new Date(c.data).toLocaleDateString("it-IT", { day: "numeric", month: "short" })} · {c.ora_partenza.slice(0, 5)}
+                        {new Date(c.data).toLocaleDateString(locale, { day: "numeric", month: "short" })} · {c.ora_partenza.slice(0, 5)}
                       </span>
                       <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-bold uppercase", pagamentoBadgeStyle[c.tipo_pagamento])}>
                         {pagamentoLabel[c.tipo_pagamento] ?? c.tipo_pagamento}

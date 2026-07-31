@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { getServerLocale } from "@/lib/locale";
 import {
   ChartLineUp, CurrencyEur, CreditCard, Car, Clock, Plus,
   TrendUp, ArrowRight,
@@ -13,6 +14,7 @@ function formatEuro(n: number) {
 }
 
 export default async function DashboardPage() {
+  const locale = await getServerLocale();
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -45,7 +47,7 @@ export default async function DashboardPage() {
 
   const nomeUtente = autista?.nome?.split(" ")[0] ?? "Marco";
 
-  const dataOggi = new Date().toLocaleDateString("it-IT", {
+  const dataOggi = new Date().toLocaleDateString(locale, {
     weekday: "long", day: "numeric", month: "long",
   });
 

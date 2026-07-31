@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { AgendaNav, IcalButton, GoogleCalendarButton } from "./client";
 import { cn } from "@/lib/utils";
+import { getServerLocale } from "@/lib/locale";
 
 const pagamentoBadgeStyle: Record<string, string> = {
   cash: "bg-amber-400/10 text-amber-400",
@@ -19,6 +20,7 @@ export default async function AgendaPage({
   searchParams: Promise<{ anno?: string; mese?: string }>;
 }) {
   const { anno: annoStr, mese: meseStr } = await searchParams;
+  const locale = await getServerLocale();
   const oggi = new Date();
   const anno = annoStr ? parseInt(annoStr) : oggi.getFullYear();
   const mese = meseStr ? parseInt(meseStr) : oggi.getMonth() + 1;
@@ -98,7 +100,7 @@ export default async function AgendaPage({
                 isOggi && "bg-primary/5 text-primary font-medium"
               )}>
                 <span className="w-20 shrink-0 capitalize">
-                  {giorno.toLocaleDateString("it-IT", { weekday: "short", day: "numeric" })}
+                  {giorno.toLocaleDateString(locale, { weekday: "short", day: "numeric" })}
                 </span>
                 {isOggi && <span className="text-xs text-primary">Oggi — nessun servizio</span>}
               </div>
@@ -119,7 +121,7 @@ export default async function AgendaPage({
                   "text-sm font-semibold capitalize",
                   isOggi ? "text-primary" : "text-foreground"
                 )}>
-                  {giorno.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" })}
+                  {giorno.toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long" })}
                   {isOggi && <span className="ml-2 text-xs bg-primary text-primary-foreground px-1.5 py-0.5 rounded-lg">Oggi</span>}
                 </span>
                 <span className="text-xs text-on-surface-variant">{corseGiorno.length} serviz{corseGiorno.length === 1 ? "io" : "i"}</span>

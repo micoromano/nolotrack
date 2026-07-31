@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { getServerLocale } from "@/lib/locale";
 import { Plus, Clock } from "@phosphor-icons/react/dist/ssr";
 
 function formatOre(ore: number) {
@@ -11,6 +12,7 @@ function formatOre(ore: number) {
 }
 
 export default async function TurniPage() {
+  const locale = await getServerLocale();
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -88,7 +90,7 @@ export default async function TurniPage() {
                 className="grid grid-cols-4 px-6 py-4 hover:bg-surface-variant/20 transition-colors cursor-pointer items-center"
               >
                 <span className="text-sm font-medium capitalize text-foreground">
-                  {new Date(t.data).toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" })}
+                  {new Date(t.data).toLocaleDateString(locale, { weekday: "short", day: "numeric", month: "short" })}
                 </span>
                 <span className="font-mono text-sm text-foreground">{t.ora_inizio.slice(0, 5)}</span>
                 <span className="font-mono text-sm text-foreground">{t.ora_fine.slice(0, 5)}</span>

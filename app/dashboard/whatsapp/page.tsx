@@ -338,7 +338,7 @@ export default function WhatsappPage() {
                 <option value="">Seleziona una corsa…</option>
                 {corse.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {new Date(c.data + "T00:00:00").toLocaleDateString("it-IT", { day: "2-digit", month: "short" })} · {c.ora_partenza.slice(0, 5)} · {c.origine} → {c.destinazione}
+                    {new Date(c.data + "T00:00:00").toLocaleDateString(undefined, { day: "2-digit", month: "short" })} · {c.ora_partenza.slice(0, 5)} · {c.origine} → {c.destinazione}
                   </option>
                 ))}
               </select>
@@ -404,7 +404,7 @@ export default function WhatsappPage() {
                 <option value="">Seleziona una corsa…</option>
                 {corse.filter((c) => c.cliente_tel).map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.cliente_nome ?? "Cliente"} · {new Date(c.data + "T00:00:00").toLocaleDateString("it-IT", { day: "2-digit", month: "short" })} · {c.origine} → {c.destinazione}
+                    {c.cliente_nome ?? "Cliente"} · {new Date(c.data + "T00:00:00").toLocaleDateString(undefined, { day: "2-digit", month: "short" })} · {c.origine} → {c.destinazione}
                   </option>
                 ))}
               </select>
@@ -552,7 +552,7 @@ export default function WhatsappPage() {
                   <p className="text-xs text-on-surface-variant truncate">{m.contenuto ?? "—"}</p>
                 </div>
                 <span className="text-xs text-on-surface-variant shrink-0">
-                  {new Date(m.created_at).toLocaleString("it-IT", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
+                  {new Date(m.created_at).toLocaleString(undefined, { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
                 </span>
               </div>
             ))}

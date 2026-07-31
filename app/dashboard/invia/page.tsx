@@ -111,8 +111,8 @@ export default function InviaPage() {
       .join(", ");
     const periodoFmt =
       dataInizio === dataFine
-        ? new Date(dataInizio + "T00:00:00").toLocaleDateString("it-IT")
-        : `${new Date(dataInizio + "T00:00:00").toLocaleDateString("it-IT")} – ${new Date(dataFine + "T00:00:00").toLocaleDateString("it-IT")}`;
+        ? new Date(dataInizio + "T00:00:00").toLocaleDateString(undefined)
+        : `${new Date(dataInizio + "T00:00:00").toLocaleDateString(undefined)} – ${new Date(dataFine + "T00:00:00").toLocaleDateString(undefined)}`;
     setOggettoEmail(docs ? `[NoloTrack] ${docs} — ${periodoFmt}` : "");
   }, [documentiSelezionati, dataInizio, dataFine]);
 
@@ -210,7 +210,7 @@ export default function InviaPage() {
 
     const record: InvioRecord = {
       id: Date.now().toString(),
-      timestamp: new Date().toLocaleString("it-IT"),
+      timestamp: new Date().toLocaleString(undefined),
       to: destinatario,
       subject: oggettoEmail,
       documenti: DOCUMENTI_DISPONIBILI.filter((d) => documentiSelezionati.has(d.id)).map((d) => d.label),
