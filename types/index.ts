@@ -1,5 +1,7 @@
 export type TipoPagamento = "cash" | "carta" | "uber" | "noninc";
 
+export type Valuta = "EUR" | "USD" | "GBP" | "CHF";
+
 export type StatoServizio = "da_iniziare" | "in_corso" | "attesa_pagamento" | "pagato" | "completato";
 
 export interface Corsa {
@@ -13,6 +15,10 @@ export interface Corsa {
   importo: number;
   note?: string | null;
   created_at: string;
+  // Casse in valute diverse
+  valuta: Valuta;
+  tasso_cambio: number;
+  includi_in_cassa: boolean;
   // Campi ordine servizio (SP1)
   n_ordine?: number | null;
   anno_ordine?: number | null;
