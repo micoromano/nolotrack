@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { Wallet, CurrencyEur, CreditCard, Receipt, Plus } from "@phosphor-icons/react";
+import { eurEquivalent, contribuisceACassa } from "@/lib/valuta";
 
 function euro(n: number) {
   return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(n);
@@ -34,7 +35,7 @@ export default function CassaPage() {
       if (!user) return;
 
       const [corseRes, speseRes] = await Promise.all([
-        supabase.from("corse").select("data, tipo_pagamento, importo").eq("autista_id", user.id).order("data"),
+        supabase.from("corse").select("data, tipo_pagamento, importo, valuta, tasso_cambio, includi_in_cassa").eq("autista_id", user.id).order("data"),
         supabase.from("spese").select("data, importo").eq("autista_id", user.id).order("data"),
       ]);
 
@@ -46,10 +47,15 @@ export default function CassaPage() {
       for (const c of corse) {
         if (!giorni.has(c.data)) giorni.set(c.data, { data: c.data, cash: 0, carte: 0, uber: 0, noninc: 0, spese: 0, saldo: 0 });
         const g = giorni.get(c.data)!;
-        if (c.tipo_pagamento === "cash") g.cash += c.importo;
-        else if (c.tipo_pagamento === "carta") g.carte += c.importo;
-        else if (c.tipo_pagamento === "uber") g.uber += c.importo;
-        else if (c.tipo_pagamento === "noninc") g.noninc += c.importo;
+        const eur = eurEquivalent(c);
+        if (c.tipo_pagamento === "cash") {
+          // Cash escluso dalla cassa (includi_in_cassa = false) è trattato come noninc: visibile, ma fuori dal saldo.
+          if (contribuisceACassa(c)) g.cash += eur;
+          else g.noninc += eur;
+        }
+        else if (c.tipo_pagamento === "carta") g.carte += eur;
+        else if (c.tipo_pagamento === "uber") g.uber += eur;
+        else if (c.tipo_pagamento === "noninc") g.noninc += eur;
       }
 
       for (const s of spese) {
