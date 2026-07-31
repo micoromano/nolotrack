@@ -105,7 +105,7 @@ export default function ReportPage() {
       .reduce((s, c) => s + eurEquivalent(c), 0);
     const totSpese = speseList.reduce((s, sp) => s + sp.importo, 0);
 
-    const cashPrecTot = (cashPrec as { importo: number; valuta: string; tasso_cambio: number; includi_in_cassa: boolean }[] | null)
+    const cashPrecTot = (cashPrec as { importo: number; tipo_pagamento: string; valuta: string; tasso_cambio: number; includi_in_cassa: boolean }[] | null)
       ?.filter(c => contribuisceACassa(c))
       .reduce((s, c) => s + eurEquivalent(c), 0) ?? 0;
     const spesePrecTot = (spesePrec as { importo: number }[] | null)?.reduce((s, c) => s + c.importo, 0) ?? 0;
