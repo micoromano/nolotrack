@@ -8,7 +8,7 @@ import type { TipoPagamento, Valuta } from "@/types";
 import { VALUTE, eurEquivalent, formatValuta } from "@/lib/valuta";
 import {
   CurrencyEur, CreditCard, Car, Tag, MapPin, Clock,
-  CalendarBlank, ArrowLeft, CheckCircle, Trash, Wallet,
+  CalendarBlank, ArrowLeft, CheckCircle, Trash, HandCoins,
 } from "@phosphor-icons/react";
 import PlaceAutocomplete from "@/components/place-autocomplete";
 
@@ -41,9 +41,7 @@ export default function EditaCorsaPage() {
   const [destinazione, setDestinazione] = useState("");
   const [tipoPagamento, setTipoPagamento] = useState<TipoPagamento>("cash");
   const [importo, setImporto] = useState("");
-  const [valuta, setValuta] = useState<Valuta>("EUR");
-  const [tassoCambio, setTassoCambio] = useState("");
-  const [includiInCassa, setIncludiInCassa] = useState(true);
+  const [mancia, setMancia] = useState("");
   const [note, setNote] = useState("");
   const [agenzia, setAgenzia] = useState("");
   const [rifAgenzia, setRifAgenzia] = useState("");
@@ -67,9 +65,7 @@ export default function EditaCorsaPage() {
       setDestinazione(corsa.destinazione);
       setTipoPagamento(corsa.tipo_pagamento);
       setImporto(String(corsa.importo));
-      setValuta((corsa.valuta ?? "EUR") as Valuta);
-      setTassoCambio(corsa.valuta && corsa.valuta !== "EUR" ? String(corsa.tasso_cambio) : "");
-      setIncludiInCassa(corsa.includi_in_cassa ?? true);
+      setMancia(corsa.mancia ? String(corsa.mancia) : "");
       setNote(corsa.note ?? "");
       setAgenzia(corsa.agenzia ?? "");
       setRifAgenzia(corsa.rif_agenzia ?? "");
@@ -94,9 +90,7 @@ export default function EditaCorsaPage() {
       destinazione,
       tipo_pagamento: tipoPagamento,
       importo: parseFloat(importo) || 0,
-      valuta,
-      tasso_cambio: valuta === "EUR" ? 1 : parseFloat(tassoCambio) || 0,
-      includi_in_cassa: includiInCassa,
+      mancia: parseFloat(mancia) || 0,
       note: note || null,
       agenzia: agenzia || null,
       rif_agenzia: rifAgenzia || null,
@@ -187,7 +181,7 @@ export default function EditaCorsaPage() {
               </div>
             </Field>
 
-            <div className="grid grid-cols-[1fr_100px] gap-3">
+            <div className="grid grid-cols-2 gap-3">
               <Field label="Importo" icon={CurrencyEur}>
                 <div className="relative">
                   <CurrencyEur size={14} weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50 pointer-events-none" />
@@ -195,55 +189,14 @@ export default function EditaCorsaPage() {
                     onChange={(e) => setImporto(e.target.value)} required className={cn(inputClass, "pl-8 font-mono")} />
                 </div>
               </Field>
-              <Field label="Valuta">
-                <select
-                  value={valuta}
-                  onChange={(e) => {
-                    const nuovaValuta = e.target.value as Valuta;
-                    setValuta(nuovaValuta);
-                    if (nuovaValuta === "EUR") setTassoCambio("");
-                  }}
-                  className={cn(inputClass, "font-mono")}
-                >
-                  {VALUTE.map((v) => (
-                    <option key={v} value={v}>{v}</option>
-                  ))}
-                </select>
+              <Field label="Mancia (€)" icon={HandCoins} iconClass="text-emerald-400">
+                <div className="relative">
+                  <CurrencyEur size={14} weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50 pointer-events-none" />
+                  <input type="number" min="0" step="0.01" placeholder="0.00" value={mancia}
+                    onChange={(e) => setMancia(e.target.value)} className={cn(inputClass, "pl-8 font-mono")} />
+                </div>
               </Field>
             </div>
-
-            {valuta !== "EUR" && (
-              <Field label="Tasso di cambio">
-                <input
-                  type="number"
-                  min="0"
-                  step="0.0001"
-                  placeholder={`es. 1 ${valuta} = 0.92 EUR`}
-                  value={tassoCambio}
-                  onChange={(e) => setTassoCambio(e.target.value)}
-                  required
-                  className={cn(inputClass, "font-mono")}
-                />
-                {tassoCambio && importo && (
-                  <p className="text-xs text-on-surface-variant font-mono mt-1">
-                    ≈ {formatValuta(eurEquivalent({ importo: parseFloat(importo) || 0, valuta, tasso_cambio: parseFloat(tassoCambio) || 0 }), "EUR")}
-                  </p>
-                )}
-              </Field>
-            )}
-
-            <label className="flex items-center gap-2.5 cursor-pointer w-fit">
-              <input
-                type="checkbox"
-                checked={includiInCassa}
-                onChange={(e) => setIncludiInCassa(e.target.checked)}
-                className="w-4 h-4 rounded border-border accent-primary"
-              />
-              <span className="flex items-center gap-1.5 text-sm text-foreground">
-                <Wallet size={14} weight="bold" className="text-muted-foreground" />
-                Includi in cassa
-              </span>
-            </label>
 
             <Field label="Note (opzionale)">
               <input type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder="es. cliente abituale…" className={inputClass} />

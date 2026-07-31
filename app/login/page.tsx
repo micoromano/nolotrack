@@ -3,6 +3,10 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { Car, EnvelopeSimple, Lock, ArrowRight, Warning } from "@phosphor-icons/react";
+
+const inputClass =
+  "w-full bg-surface-container-lowest border border-border-subtle text-sm text-foreground placeholder:text-on-surface-variant/50 pl-10 pr-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -56,7 +60,14 @@ export default function LoginPage() {
             <h1 className="font-heading text-xl font-bold text-primary">Accedi a NoloTrack</h1>
             <p className="text-sm text-on-surface-variant mt-1">Inserisci le tue credenziali per continuare.</p>
           </div>
+          <h1 className="font-heading text-3xl font-black text-primary leading-none">NoloTrack</h1>
+          <p className="text-xs text-on-surface-variant uppercase tracking-widest mt-2">
+            Gestione flotta &amp; servizio NCC
+          </p>
+        </div>
 
+        {/* Form card */}
+        <div className="glass-card rounded-2xl p-6">
           <form onSubmit={accedi} className="space-y-4">
             <div className="space-y-1">
               <label className="text-xs font-medium text-on-surface-variant uppercase tracking-wider">Email</label>
@@ -82,17 +93,25 @@ export default function LoginPage() {
                 className={inputClass}
               />
             </div>
-            {errore && <p className="text-sm text-destructive">{errore}</p>}
+
+            {errore && (
+              <p className="flex items-center gap-1.5 text-sm text-destructive">
+                <Warning size={14} weight="fill" /> {errore}
+              </p>
+            )}
+
             <button
               type="submit"
               disabled={caricamento}
               className="w-full bg-primary text-primary-foreground text-sm font-medium py-2.5 rounded-lg shadow-lg shadow-primary/20 transition-colors hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {caricamento ? "Accesso in corso…" : "Accedi"}
+              {caricamento ? "Accesso in corso…" : (
+                <>Accedi <ArrowRight size={15} weight="bold" /></>
+              )}
             </button>
           </form>
 
-          <div className="relative">
+          <div className="relative my-5">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-border-subtle" />
             </div>
@@ -109,16 +128,11 @@ export default function LoginPage() {
             Accedi con Google
           </button>
         </div>
-      </div>
-    </div>
-  );
-}
 
-function FeatureRow({ icon, text }: { icon: string; text: string }) {
-  return (
-    <div className="flex items-center gap-3">
-      <span className="text-lg">{icon}</span>
-      <span className="text-sm text-muted-foreground">{text}</span>
+        <p className="text-center text-xs text-on-surface-variant/60 mt-6">
+          © {new Date().getFullYear()} NoloTrack
+        </p>
+      </div>
     </div>
   );
 }
@@ -133,6 +147,3 @@ function GoogleIcon() {
     </svg>
   );
 }
-
-const inputClass =
-  "w-full bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all";

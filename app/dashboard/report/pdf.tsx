@@ -181,8 +181,7 @@ interface Corsa {
   destinazione: string;
   tipo_pagamento: string;
   importo: number;
-  valuta: string;
-  tasso_cambio: number;
+  mancia?: number | null;
   note?: string | null;
 }
 
@@ -201,6 +200,7 @@ export interface Props {
   totUber: number;
   totNonInc: number;
   totSpese: number;
+  totMance: number;
   saldoPrev: number;
   saldoOggi: number;
   dataPrev: string;
@@ -208,7 +208,7 @@ export interface Props {
 
 export function RapportinoDoc({
   data, turno, corse, spese,
-  totCash, totCarte, totUber, totNonInc, totSpese,
+  totCash, totCarte, totUber, totNonInc, totSpese, totMance,
   saldoPrev, saldoOggi, dataPrev,
 }: Props) {
   const dataFmt = new Date(data + "T00:00:00").toLocaleDateString("it-IT", {
@@ -267,6 +267,12 @@ export function RapportinoDoc({
             <Text style={styles.label}>Uscite (spese)</Text>
             <Text style={styles.value}>− {euro(totSpese)}</Text>
           </View>
+          {totMance > 0 && (
+            <View style={styles.row}>
+              <Text style={styles.label}>Mance trattenute</Text>
+              <Text style={styles.value}>− {euro(totMance)}</Text>
+            </View>
+          )}
           <View style={styles.saldoBox}>
             <Text style={{ fontFamily: "Helvetica-Bold", color: "#0078d4" }}>
               Cassa al {new Date(data + "T00:00:00").toLocaleDateString("it-IT")}
@@ -332,6 +338,11 @@ export function RapportinoDoc({
                       {c.importo > 0 && (
                         <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 9, color: "#0078d4" }}>
                           {formatImporto(c)}
+                        </Text>
+                      )}
+                      {!!c.mancia && c.mancia > 0 && (
+                        <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 9, color: "#059669" }}>
+                          + {euro(c.mancia)} mancia
                         </Text>
                       )}
                     </View>

@@ -89,13 +89,12 @@ ore_lavorate numeric GENERATED, note text
 id uuid PK, autista_id uuid FK autisti, data date, ora_partenza time,
 origine text, destinazione text,
 tipo_pagamento text CHECK IN ('cash','carta','uber','noninc'),
-importo numeric, note text
--- Multivaluta (SQL in multivaluta_sql.sql):
--- valuta text NOT NULL DEFAULT 'EUR' CHECK IN ('EUR','USD','GBP','CHF')
--- tasso_cambio numeric NOT NULL DEFAULT 1   -- 1 unità di `valuta` in EUR, inserito manualmente
--- includi_in_cassa boolean NOT NULL DEFAULT true  -- se true l'equivalente EUR entra nel saldo cassa
--- `importo` resta nella valuta originale; l'equivalente EUR si calcola con importo * tasso_cambio
--- (tasso_cambio = 1 se valuta = EUR) tramite lib/valuta.ts → eurEquivalent()
+importo numeric, note text,
+mancia numeric NOT NULL DEFAULT 0
+-- mancia: importo separato dal tipo_pagamento, ricevuto con qualsiasi metodo.
+-- Riduce sempre il saldo cassa (saldoOggi = saldoPrev + cashOggi - speseOggi - manceOggi)
+-- perché l'autista la trattiene in contanti. Esclusa dal calcolo commissioni stipendio.
+-- SQL in mance_sql.sql
 ```
 
 **`spese`** (RLS)

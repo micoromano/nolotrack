@@ -105,7 +105,12 @@ export default async function CorsePage() {
                   </span>
                   <span className="text-sm text-foreground truncate">{c.origine}</span>
                   <span className="text-sm text-on-surface-variant truncate">{c.destinazione}</span>
-                  <span className="font-mono text-sm font-bold text-right text-success-emerald"><ImportoCella c={c} /></span>
+                  <div className="text-right">
+                    <p className="font-mono text-sm font-bold text-success-emerald">{formatEuro(c.importo)}</p>
+                    {c.mancia > 0 && (
+                      <p className="font-mono text-[11px] font-semibold text-emerald-400">+ {formatEuro(c.mancia)} mancia</p>
+                    )}
+                  </div>
                 </div>
 
                 {/* Mobile row */}
@@ -121,7 +126,12 @@ export default async function CorsePage() {
                     </div>
                     <p className="text-sm text-foreground truncate">{c.origine} → {c.destinazione}</p>
                   </div>
-                  <span className="font-mono text-sm font-bold text-success-emerald shrink-0">{formatEuro(c.importo)}</span>
+                  <div className="text-right shrink-0">
+                    <p className="font-mono text-sm font-bold text-success-emerald">{formatEuro(c.importo)}</p>
+                    {c.mancia > 0 && (
+                      <p className="font-mono text-[11px] font-semibold text-emerald-400">+ {formatEuro(c.mancia)}</p>
+                    )}
+                  </div>
                 </div>
               </Link>
             ))}

@@ -4,7 +4,13 @@ import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
-import { eurEquivalent, contribuisceACassa } from "@/lib/valuta";
+import {
+  Clock,
+  Wallet,
+  Car,
+  Receipt,
+  CalendarBlank,
+} from "@phosphor-icons/react";
 
 const PDFButton = dynamic(() => import("./pdf"), { ssr: false });
 
@@ -35,9 +41,7 @@ interface Corsa {
   destinazione: string;
   tipo_pagamento: string;
   importo: number;
-  valuta: string;
-  tasso_cambio: number;
-  includi_in_cassa: boolean;
+  mancia?: number | null;
   note?: string | null;
 }
 
@@ -56,6 +60,7 @@ interface Rapportino {
   totUber: number;
   totNonInc: number;
   totSpese: number;
+  totMance: number;
   saldoPrev: number;
   saldoOggi: number;
   ultimoGiornoLavorativo: string | null;
@@ -75,12 +80,13 @@ export default function ReportPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const [turnoRes, corseRes, speseGiornoRes, cashPrecRes, spesePrecRes, ultimoGiornoRes] = await Promise.allSettled([
+    const [turnoRes, corseRes, speseGiornoRes, cashPrecRes, spesePrecRes, mancePrecRes, ultimoGiornoRes] = await Promise.allSettled([
       supabase.from("turni").select("*").eq("autista_id", user.id).eq("data", dataSelezionata).maybeSingle(),
       supabase.from("corse").select("*").eq("autista_id", user.id).eq("data", dataSelezionata).order("ora_partenza"),
       supabase.from("spese").select("*").eq("autista_id", user.id).eq("data", dataSelezionata).order("created_at"),
       supabase.from("corse").select("importo, tipo_pagamento, valuta, tasso_cambio, includi_in_cassa").eq("autista_id", user.id).eq("tipo_pagamento", "cash").lt("data", dataSelezionata),
       supabase.from("spese").select("importo").eq("autista_id", user.id).lt("data", dataSelezionata),
+      supabase.from("corse").select("mancia").eq("autista_id", user.id).lt("data", dataSelezionata),
       supabase.from("corse").select("data").eq("autista_id", user.id).lt("data", dataSelezionata).order("data", { ascending: false }).limit(1).maybeSingle(),
     ]);
 
@@ -89,6 +95,7 @@ export default function ReportPage() {
     const speseGiorno = speseGiornoRes.status === "fulfilled" ? speseGiornoRes.value.data : null;
     const cashPrec = cashPrecRes.status === "fulfilled" ? cashPrecRes.value.data : null;
     const spesePrec = spesePrecRes.status === "fulfilled" ? spesePrecRes.value.data : null;
+    const mancePrec = mancePrecRes.status === "fulfilled" ? mancePrecRes.value.data : null;
     const ultimoGiorno = ultimoGiornoRes.status === "fulfilled" ? ultimoGiornoRes.value.data?.data ?? null : null;
 
     const corseList: Corsa[] = corse ?? [];
@@ -104,19 +111,23 @@ export default function ReportPage() {
       .filter(c => c.tipo_pagamento === "noninc" || (c.tipo_pagamento === "cash" && !contribuisceACassa(c)))
       .reduce((s, c) => s + eurEquivalent(c), 0);
     const totSpese = speseList.reduce((s, sp) => s + sp.importo, 0);
+    // Mancia: incassata con qualsiasi metodo, ma sempre trattenuta in contanti,
+    // quindi riduce sempre il saldo cassa a prescindere dal tipo_pagamento della corsa.
+    const totMance = corseList.reduce((s, c) => s + (c.mancia ?? 0), 0);
 
     const cashPrecTot = (cashPrec as { importo: number; tipo_pagamento: string; valuta: string; tasso_cambio: number; includi_in_cassa: boolean }[] | null)
       ?.filter(c => contribuisceACassa(c))
       .reduce((s, c) => s + eurEquivalent(c), 0) ?? 0;
     const spesePrecTot = (spesePrec as { importo: number }[] | null)?.reduce((s, c) => s + c.importo, 0) ?? 0;
-    const saldoPrev = cashPrecTot - spesePrecTot;
-    const saldoOggi = saldoPrev + totCash - totSpese;
+    const mancePrecTot = (mancePrec as { mancia: number }[] | null)?.reduce((s, c) => s + (c.mancia ?? 0), 0) ?? 0;
+    const saldoPrev = cashPrecTot - spesePrecTot - mancePrecTot;
+    const saldoOggi = saldoPrev + totCash - totSpese - totMance;
 
     setRapportino({
       turno: turno ?? null,
       corse: corseList,
       spese: speseList,
-      totCash, totCarte, totUber, totNonInc, totSpese,
+      totCash, totCarte, totUber, totNonInc, totSpese, totMance,
       saldoPrev, saldoOggi,
       ultimoGiornoLavorativo: ultimoGiorno,
     });
@@ -161,12 +172,15 @@ export default function ReportPage() {
           <p className="text-xs text-on-surface-variant capitalize">{dataFmt}</p>
         </div>
         <div className="flex items-center gap-3">
-          <input
-            type="date"
-            value={data}
-            onChange={e => setData(e.target.value)}
-            className="bg-surface-container-lowest border border-border-subtle text-sm text-foreground px-3 py-1.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
-          />
+          <div className="relative">
+            <CalendarBlank size={13} weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50 pointer-events-none" />
+            <input
+              type="date"
+              value={data}
+              onChange={e => setData(e.target.value)}
+              className="bg-surface-container-lowest border border-border-subtle text-sm text-foreground pl-8 pr-3 py-1.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
+            />
+          </div>
           {rapportino && !caricamento && (
             <PDFButton
               data={data}
@@ -178,6 +192,7 @@ export default function ReportPage() {
               totUber={rapportino.totUber}
               totNonInc={rapportino.totNonInc}
               totSpese={rapportino.totSpese}
+              totMance={rapportino.totMance}
               saldoPrev={rapportino.saldoPrev}
               saldoOggi={rapportino.saldoOggi}
               dataPrev={dataPrev}
@@ -193,50 +208,161 @@ export default function ReportPage() {
 
         {rapportino && !caricamento && (
           <>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Orari */}
-              <section className="glass-card rounded-2xl overflow-hidden">
-                <div className="border-b border-border-subtle px-5 py-3">
-                  <p className="text-[11px] font-bold text-on-secondary-container uppercase tracking-widest">Orari</p>
-                </div>
-                {rapportino.turno ? (
-                  <div className="px-5 py-4 space-y-3">
-                    <Row label="Inizio" value={rapportino.turno.ora_inizio.slice(0, 5)} mono />
-                    <Row label="Fine" value={rapportino.turno.ora_fine.slice(0, 5)} mono />
-                    <Row label="Totale ore" value={formatOre(rapportino.turno.ore_lavorate)} mono accent />
+            {/* Bento: Orari + Flussi (featured, sinistra) / Servizi (destra, largo) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div className="lg:col-span-4 space-y-6">
+                {/* Orari */}
+                <section className="glass-card rounded-2xl overflow-hidden">
+                  <div className="border-b border-border-subtle px-5 py-3 flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-sky-400/15 text-sky-400 shrink-0">
+                      <Clock size={14} weight="fill" />
+                    </div>
+                    <p className="text-[11px] font-bold text-on-secondary-container uppercase tracking-widest">Orari</p>
                   </div>
-                ) : (
-                  <p className="px-5 py-4 text-sm text-on-surface-variant">Nessun turno registrato.</p>
-                )}
-              </section>
+                  {rapportino.turno ? (
+                    <div className="px-5 py-4 space-y-3">
+                      <Row label="Inizio" value={rapportino.turno.ora_inizio.slice(0, 5)} mono />
+                      <Row label="Fine" value={rapportino.turno.ora_fine.slice(0, 5)} mono />
+                      <Row label="Totale ore" value={formatOre(rapportino.turno.ore_lavorate)} mono accent />
+                    </div>
+                  ) : (
+                    <p className="px-5 py-4 text-sm text-on-surface-variant">Nessun turno registrato.</p>
+                  )}
+                </section>
 
-              {/* Flussi */}
-              <section className="glass-card rounded-2xl overflow-hidden">
-                <div className="border-b border-border-subtle px-5 py-3">
-                  <p className="text-[11px] font-bold text-on-secondary-container uppercase tracking-widest">Flussi cassa</p>
-                </div>
-                <div className="px-5 py-4 space-y-3">
-                  <Row label={`Cassa al ${new Date(dataPrev + "T00:00:00").toLocaleDateString("it-IT")}`} value={euro(rapportino.saldoPrev)} mono />
-                  <Row label="+ Entrate cash" value={euro(rapportino.totCash)} mono />
-                  <Row label="− Uscite (spese)" value={euro(rapportino.totSpese)} mono />
-                  <div className="border-t border-border-subtle pt-3 mt-1">
-                    <Row label={`Cassa al ${new Date(data + "T00:00:00").toLocaleDateString("it-IT")}`} value={euro(rapportino.saldoOggi)} mono accent />
+                {/* Flussi */}
+                <section className="glass-card rounded-2xl overflow-hidden">
+                  <div className="border-b border-border-subtle px-5 py-3 flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-amber-400/15 text-amber-400 shrink-0">
+                      <Wallet size={14} weight="fill" />
+                    </div>
+                    <p className="text-[11px] font-bold text-on-secondary-container uppercase tracking-widest">Flussi cassa</p>
                   </div>
-                  <div className="border-t border-border-subtle pt-3 mt-1 space-y-3">
-                    <Row label="Carte" value={euro(rapportino.totCarte)} mono />
-                    <Row label="Uber" value={euro(rapportino.totUber)} mono />
-                    {rapportino.totNonInc > 0 && (
-                      <Row label="Non incassato" value={euro(rapportino.totNonInc)} mono />
-                    )}
+                  <div className="px-5 py-4 space-y-3">
+                    <Row label={`Cassa al ${new Date(dataPrev + "T00:00:00").toLocaleDateString("it-IT")}`} value={euro(rapportino.saldoPrev)} mono />
+                    <Row label="+ Entrate cash" value={euro(rapportino.totCash)} mono />
+                    <Row label="− Uscite (spese)" value={euro(rapportino.totSpese)} mono />
+                    <div className="border-t border-border-subtle pt-3 mt-1">
+                      <Row label={`Cassa al ${new Date(data + "T00:00:00").toLocaleDateString("it-IT")}`} value={euro(rapportino.saldoOggi)} mono accent />
+                    </div>
+                    <div className="border-t border-border-subtle pt-3 mt-1 space-y-3">
+                      <Row label="Carte" value={euro(rapportino.totCarte)} mono />
+                      <Row label="Uber" value={euro(rapportino.totUber)} mono />
+                      {rapportino.totNonInc > 0 && (
+                        <Row label="Non incassato" value={euro(rapportino.totNonInc)} mono />
+                      )}
+                    </div>
                   </div>
-                </div>
-              </section>
+                </section>
+              </div>
+
+              {/* Servizi */}
+              <div className="lg:col-span-8">
+                <section className="glass-card rounded-2xl overflow-hidden h-full flex flex-col">
+                  <div className="border-b border-border-subtle px-5 py-3 flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-emerald-400/15 text-emerald-400 shrink-0">
+                      <Car size={14} weight="fill" />
+                    </div>
+                    <p className="text-[11px] font-bold text-on-secondary-container uppercase tracking-widest">
+                      Dettaglio servizi ({rapportino.corse.length})
+                    </p>
+                  </div>
+                  {rapportino.corse.length === 0 ? (
+                    <p className="px-5 py-4 text-sm text-on-surface-variant">Nessuna corsa registrata.</p>
+                  ) : (
+                    <div>
+                      <div className="hidden sm:grid grid-cols-5 px-5 py-3 bg-surface-container-low/50 border-b border-border-subtle">
+                        {["Ora", "Tipo", "Partenza", "Destinazione", "Importo"].map(h => (
+                          <span key={h} className={cn("text-[11px] font-bold uppercase tracking-wider text-on-secondary-container", h === "Importo" && "text-right")}>{h}</span>
+                        ))}
+                      </div>
+                      <div className="divide-y divide-border-subtle">
+                        {rapportino.corse.map((c, i) => (
+                          <div key={i} className="px-5 py-3 hidden sm:grid grid-cols-5 items-center gap-2 hover:bg-surface-variant/20 transition-colors">
+                            <span className="font-mono text-xs text-on-surface-variant">{c.ora_partenza.slice(0, 5)}</span>
+                            <PagamentoBadge tipo={c.tipo_pagamento} />
+                            <span className="text-sm text-foreground truncate">{c.origine}</span>
+                            <span className="text-sm text-on-surface-variant truncate">{c.destinazione}</span>
+                            <span className="font-mono text-sm font-bold text-right text-success-emerald">{euro(c.importo)}</span>
+                          </div>
+                        ))}
+                        {rapportino.corse.map((c, i) => (
+                          <div key={`m-${i}`} className="sm:hidden px-4 py-3 flex items-center justify-between gap-3">
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-mono text-xs text-on-surface-variant">{c.ora_partenza.slice(0, 5)}</span>
+                                <PagamentoBadge tipo={c.tipo_pagamento} />
+                              </div>
+                              <p className="text-sm text-foreground truncate">{c.origine} → {c.destinazione}</p>
+                            </div>
+                            <span className="font-mono text-sm font-bold text-success-emerald shrink-0">{euro(c.importo)}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="px-5 py-3 border-t border-border-subtle bg-surface-container-low/50 hidden sm:grid grid-cols-5 mt-auto">
+                        <span className="col-span-4 text-[11px] font-bold uppercase tracking-wider text-on-secondary-container">Totali</span>
+                        <span className="font-mono text-sm font-bold text-right text-primary">{euro(rapportino.totCash + rapportino.totCarte + rapportino.totUber + rapportino.totNonInc)}</span>
+                      </div>
+                    </div>
+                  )}
+                </section>
+              </div>
             </div>
+
+            {/* Riepilogo — tile metriche */}
+            <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="glass-card p-6 rounded-2xl relative overflow-hidden group hover:border-primary/50 transition-all duration-300">
+                <div className="absolute -right-4 -top-4 w-24 h-24 bg-sky-400/5 rounded-full blur-3xl group-hover:bg-sky-400/10 transition-colors" />
+                <div className="flex justify-between items-start mb-4">
+                  <div className="p-2.5 bg-sky-400/10 rounded-xl">
+                    <Clock size={20} weight="fill" className="text-sky-400" />
+                  </div>
+                  {rapportino.turno && (
+                    <span className="font-mono text-xs text-on-surface-variant">
+                      {rapportino.turno.ora_inizio.slice(0, 5)}–{rapportino.turno.ora_fine.slice(0, 5)}
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs font-bold uppercase tracking-widest text-on-secondary-container mb-1">Ore lavorate</p>
+                <p className="font-mono text-3xl font-bold text-foreground tracking-tighter">
+                  {rapportino.turno ? formatOre(rapportino.turno.ore_lavorate) : "—"}
+                </p>
+              </div>
+
+              <div className="glass-card p-6 rounded-2xl relative overflow-hidden group hover:border-primary/50 transition-all duration-300">
+                <div className="absolute -right-4 -top-4 w-24 h-24 bg-amber-400/5 rounded-full blur-3xl group-hover:bg-amber-400/10 transition-colors" />
+                <div className="flex justify-between items-start mb-4">
+                  <div className="p-2.5 bg-amber-400/10 rounded-xl">
+                    <Wallet size={20} weight="fill" className="text-amber-400" />
+                  </div>
+                  <span className="font-mono text-xs text-on-surface-variant">al {new Date(data + "T00:00:00").toLocaleDateString("it-IT")}</span>
+                </div>
+                <p className="text-xs font-bold uppercase tracking-widest text-on-secondary-container mb-1">Cassa aggiornata</p>
+                <p className="font-mono text-3xl font-bold text-primary tracking-tighter">{euro(rapportino.saldoOggi)}</p>
+              </div>
+
+              <div className="glass-card p-6 rounded-2xl relative overflow-hidden group hover:border-primary/50 transition-all duration-300">
+                <div className="absolute -right-4 -top-4 w-24 h-24 bg-rose-400/5 rounded-full blur-3xl group-hover:bg-rose-400/10 transition-colors" />
+                <div className="flex justify-between items-start mb-4">
+                  <div className="p-2.5 bg-rose-400/10 rounded-xl">
+                    <Receipt size={20} weight="fill" className="text-rose-400" />
+                  </div>
+                  <span className="font-mono text-xs text-on-surface-variant">{rapportino.spese.length} voci</span>
+                </div>
+                <p className="text-xs font-bold uppercase tracking-widest text-on-secondary-container mb-1">Totale spese</p>
+                <p className="font-mono text-3xl font-bold text-rose-400 tracking-tighter">{euro(rapportino.totSpese)}</p>
+              </div>
+            </section>
 
             {/* Spese */}
             <section className="glass-card rounded-2xl overflow-hidden">
               <div className="border-b border-border-subtle px-5 py-3 flex items-center justify-between">
-                <p className="text-[11px] font-bold text-on-secondary-container uppercase tracking-widest">Spese</p>
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-rose-400/15 text-rose-400 shrink-0">
+                    <Receipt size={14} weight="fill" />
+                  </div>
+                  <p className="text-[11px] font-bold text-on-secondary-container uppercase tracking-widest">Spese</p>
+                </div>
                 <p className="font-mono text-xs font-bold text-destructive">{euro(rapportino.totSpese)}</p>
               </div>
               <div className="divide-y divide-border-subtle">
@@ -260,53 +386,6 @@ export default function ReportPage() {
                   + Aggiungi
                 </button>
               </form>
-            </section>
-
-            {/* Servizi */}
-            <section className="glass-card rounded-2xl overflow-hidden">
-              <div className="border-b border-border-subtle px-5 py-3">
-                <p className="text-[11px] font-bold text-on-secondary-container uppercase tracking-widest">
-                  Dettaglio servizi ({rapportino.corse.length})
-                </p>
-              </div>
-              {rapportino.corse.length === 0 ? (
-                <p className="px-5 py-4 text-sm text-on-surface-variant">Nessuna corsa registrata.</p>
-              ) : (
-                <div>
-                  <div className="hidden sm:grid grid-cols-5 px-5 py-3 bg-surface-container-low/50 border-b border-border-subtle">
-                    {["Ora", "Tipo", "Partenza", "Destinazione", "Importo"].map(h => (
-                      <span key={h} className={cn("text-[11px] font-bold uppercase tracking-wider text-on-secondary-container", h === "Importo" && "text-right")}>{h}</span>
-                    ))}
-                  </div>
-                  <div className="divide-y divide-border-subtle">
-                    {rapportino.corse.map((c, i) => (
-                      <div key={i} className="px-5 py-3 hidden sm:grid grid-cols-5 items-center gap-2 hover:bg-surface-variant/20 transition-colors">
-                        <span className="font-mono text-xs text-on-surface-variant">{c.ora_partenza.slice(0, 5)}</span>
-                        <PagamentoBadge tipo={c.tipo_pagamento} />
-                        <span className="text-sm text-foreground truncate">{c.origine}</span>
-                        <span className="text-sm text-on-surface-variant truncate">{c.destinazione}</span>
-                        <span className="font-mono text-sm font-bold text-right text-success-emerald">{formatImporto(c)}</span>
-                      </div>
-                    ))}
-                    {rapportino.corse.map((c, i) => (
-                      <div key={`m-${i}`} className="sm:hidden px-4 py-3 flex items-center justify-between gap-3">
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-mono text-xs text-on-surface-variant">{c.ora_partenza.slice(0, 5)}</span>
-                            <PagamentoBadge tipo={c.tipo_pagamento} />
-                          </div>
-                          <p className="text-sm text-foreground truncate">{c.origine} → {c.destinazione}</p>
-                        </div>
-                        <span className="font-mono text-sm font-bold text-success-emerald shrink-0">{formatImporto(c)}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="px-5 py-3 border-t border-border-subtle bg-surface-container-low/50 hidden sm:grid grid-cols-5">
-                    <span className="col-span-4 text-[11px] font-bold uppercase tracking-wider text-on-secondary-container">Totali</span>
-                    <span className="font-mono text-sm font-bold text-right text-primary">{euro(rapportino.totCash + rapportino.totCarte + rapportino.totUber + rapportino.totNonInc)}</span>
-                  </div>
-                </div>
-              )}
             </section>
           </>
         )}

@@ -13,6 +13,7 @@ export interface Corsa {
   destinazione: string;
   tipo_pagamento: TipoPagamento;
   importo: number;
+  mancia: number;
   note?: string | null;
   created_at: string;
   // Casse in valute diverse
