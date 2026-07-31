@@ -26,6 +26,7 @@ import {
   FloppyDisk,
   Warning,
   CalendarBlank,
+  Download,
 } from "@phosphor-icons/react";
 
 // ---------------------------------------------------------------------------
@@ -143,6 +144,7 @@ export default function StipendioPage() {
   const [erroreConfig, setErroreConfig] = useState<string | null>(null);
   const [configSalvata, setConfigSalvata] = useState(false);
   const [mostraConfig, setMostraConfig] = useState(false);
+  const [scaricandoPDF, setScaricandoPDF] = useState(false);
 
   // ---------------------------------------------------------------------------
   // Load config
@@ -327,6 +329,38 @@ export default function StipendioPage() {
   }
 
   // ---------------------------------------------------------------------------
+  // Download PDF riepilogo mensile
+  // ---------------------------------------------------------------------------
+  async function scaricaPDF() {
+    setScaricandoPDF(true);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      setScaricandoPDF(false);
+      return;
+    }
+    const [anno, m] = mese.split("-").map(Number);
+    const dataInizio = `${mese}-01`;
+    const dataFine = new Date(anno, m, 0).toISOString().split("T")[0];
+
+    const { generaPDFStipendio } = await import("@/lib/pdf-allegati");
+    const { filename, content } = await generaPDFStipendio(user.id, dataInizio, dataFine);
+
+    const byteChars = atob(content);
+    const byteNumbers = new Array(byteChars.length);
+    for (let i = 0; i < byteChars.length; i++) byteNumbers[i] = byteChars.charCodeAt(i);
+    const blob = new Blob([new Uint8Array(byteNumbers)], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+    setScaricandoPDF(false);
+  }
+
+  // ---------------------------------------------------------------------------
   // Totali mese
   // ---------------------------------------------------------------------------
   const tot = giorni.reduce(
@@ -383,6 +417,14 @@ export default function StipendioPage() {
               );
             })}
           </select>
+          <button
+            onClick={scaricaPDF}
+            disabled={scaricandoPDF}
+            className="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg border border-border-subtle bg-surface-container text-on-surface-variant hover:text-foreground transition-colors uppercase tracking-wide disabled:opacity-50"
+          >
+            <Download size={13} weight="bold" />
+            {scaricandoPDF ? "Generazione…" : "PDF"}
+          </button>
           <button
             onClick={() => setMostraConfig((v) => !v)}
             className={cn(
