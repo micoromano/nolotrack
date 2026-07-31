@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
-import { Wallet, CurrencyEur, CreditCard, Receipt, Plus } from "@phosphor-icons/react";
+import { Wallet, CurrencyEur, CreditCard, Receipt, Plus, HandCoins } from "@phosphor-icons/react";
 
 function euro(n: number) {
   return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(n);
@@ -18,6 +18,7 @@ interface GiornoLedger {
   uber: number;
   noninc: number;
   spese: number;
+  mance: number;
   saldo: number;
 }
 
@@ -34,7 +35,7 @@ export default function CassaPage() {
       if (!user) return;
 
       const [corseRes, speseRes] = await Promise.all([
-        supabase.from("corse").select("data, tipo_pagamento, importo").eq("autista_id", user.id).order("data"),
+        supabase.from("corse").select("data, tipo_pagamento, importo, mancia").eq("autista_id", user.id).order("data"),
         supabase.from("spese").select("data, importo").eq("autista_id", user.id).order("data"),
       ]);
 
@@ -44,23 +45,25 @@ export default function CassaPage() {
       const giorni = new Map<string, GiornoLedger>();
 
       for (const c of corse) {
-        if (!giorni.has(c.data)) giorni.set(c.data, { data: c.data, cash: 0, carte: 0, uber: 0, noninc: 0, spese: 0, saldo: 0 });
+        if (!giorni.has(c.data)) giorni.set(c.data, { data: c.data, cash: 0, carte: 0, uber: 0, noninc: 0, spese: 0, mance: 0, saldo: 0 });
         const g = giorni.get(c.data)!;
         if (c.tipo_pagamento === "cash") g.cash += c.importo;
         else if (c.tipo_pagamento === "carta") g.carte += c.importo;
         else if (c.tipo_pagamento === "uber") g.uber += c.importo;
         else if (c.tipo_pagamento === "noninc") g.noninc += c.importo;
+        // La mancia riduce sempre la cassa, a prescindere dal metodo di pagamento della corsa.
+        g.mance += c.mancia ?? 0;
       }
 
       for (const s of spese) {
-        if (!giorni.has(s.data)) giorni.set(s.data, { data: s.data, cash: 0, carte: 0, uber: 0, noninc: 0, spese: 0, saldo: 0 });
+        if (!giorni.has(s.data)) giorni.set(s.data, { data: s.data, cash: 0, carte: 0, uber: 0, noninc: 0, spese: 0, mance: 0, saldo: 0 });
         giorni.get(s.data)!.spese += s.importo;
       }
 
       const sorted = [...giorni.values()].sort((a, b) => a.data.localeCompare(b.data));
       let saldoCorr = 0;
       for (const g of sorted) {
-        saldoCorr += g.cash - g.spese;
+        saldoCorr += g.cash - g.spese - g.mance;
         g.saldo = saldoCorr;
       }
 
@@ -80,8 +83,9 @@ export default function CassaPage() {
       uber: acc.uber + g.uber,
       noninc: acc.noninc + g.noninc,
       spese: acc.spese + g.spese,
+      mance: acc.mance + g.mance,
     }),
-    { cash: 0, carte: 0, uber: 0, noninc: 0, spese: 0 }
+    { cash: 0, carte: 0, uber: 0, noninc: 0, spese: 0, mance: 0 }
   );
 
   const mesiDisponibili = [...new Set(ledger.map(g => g.data.slice(0, 7)))].sort().reverse();
@@ -116,7 +120,7 @@ export default function CassaPage() {
 
       <div className="px-4 md:px-10 py-8 max-w-[1440px] mx-auto space-y-6">
         {/* Summary cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
           <div className="glass-card rounded-2xl p-5 relative overflow-hidden col-span-2 sm:col-span-1 border-primary/30">
             <div className="absolute -right-3 -top-3 w-20 h-20 bg-primary/5 rounded-full blur-2xl" />
             <div className="p-2.5 bg-primary/10 rounded-xl w-fit mb-3">
@@ -142,6 +146,13 @@ export default function CassaPage() {
             <p className="font-mono text-xl font-bold text-blue-400">{euro(totMese.carte)}</p>
           </div>
           <div className="glass-card rounded-2xl p-5 relative overflow-hidden">
+            <div className="p-2.5 bg-emerald-400/10 rounded-xl w-fit mb-3">
+              <HandCoins size={18} weight="fill" className="text-emerald-400" />
+            </div>
+            <p className="text-[11px] font-bold uppercase tracking-widest text-on-secondary-container mb-1">Mance mese</p>
+            <p className="font-mono text-xl font-bold text-emerald-400">{euro(totMese.mance)}</p>
+          </div>
+          <div className="glass-card rounded-2xl p-5 relative overflow-hidden">
             <div className="p-2.5 bg-rose-400/10 rounded-xl w-fit mb-3">
               <Receipt size={18} weight="fill" className="text-rose-400" />
             </div>
@@ -152,8 +163,8 @@ export default function CassaPage() {
 
         {/* Ledger table */}
         <div className="glass-card rounded-2xl overflow-hidden">
-          <div className="hidden sm:grid grid-cols-7 px-6 py-3 border-b border-border-subtle bg-surface-container-low/50">
-            {["Data", "Cash", "Carte", "Uber", "No Inc", "Spese", "Saldo"].map(h => (
+          <div className="hidden sm:grid grid-cols-8 px-6 py-3 border-b border-border-subtle bg-surface-container-low/50">
+            {["Data", "Cash", "Carte", "Uber", "No Inc", "Mance", "Spese", "Saldo"].map(h => (
               <span key={h} className={cn("text-[11px] font-bold uppercase tracking-wider text-on-secondary-container", h === "Saldo" && "text-right")}>{h}</span>
             ))}
           </div>
@@ -169,7 +180,7 @@ export default function CassaPage() {
           <div className="divide-y divide-border-subtle">
             {[...ledgerFiltrato].reverse().map(g => (
               <div key={g.data}>
-                <div className="hidden sm:grid grid-cols-7 px-6 py-4 hover:bg-surface-variant/20 transition-colors items-center">
+                <div className="hidden sm:grid grid-cols-8 px-6 py-4 hover:bg-surface-variant/20 transition-colors items-center">
                   <span className="text-sm font-medium capitalize text-foreground">
                     {new Date(g.data + "T00:00:00").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}
                   </span>
@@ -184,6 +195,9 @@ export default function CassaPage() {
                   </span>
                   <span className={cn("font-mono text-sm", g.noninc > 0 ? "text-purple-400" : "text-on-surface-variant/30")}>
                     {g.noninc > 0 ? euro(g.noninc) : "—"}
+                  </span>
+                  <span className={cn("font-mono text-sm", g.mance > 0 ? "text-emerald-400" : "text-on-surface-variant/30")}>
+                    {g.mance > 0 ? `− ${euro(g.mance)}` : "—"}
                   </span>
                   <span className={cn("font-mono text-sm", g.spese > 0 ? "text-destructive" : "text-on-surface-variant/30")}>
                     {g.spese > 0 ? `− ${euro(g.spese)}` : "—"}
@@ -206,6 +220,7 @@ export default function CassaPage() {
                     {g.cash > 0 && <span className="text-amber-400">C {euro(g.cash)}</span>}
                     {g.carte > 0 && <span className="text-blue-400">CC {euro(g.carte)}</span>}
                     {g.uber > 0 && <span className="text-foreground">U {euro(g.uber)}</span>}
+                    {g.mance > 0 && <span className="text-emerald-400">− {euro(g.mance)}</span>}
                     {g.spese > 0 && <span className="text-destructive">− {euro(g.spese)}</span>}
                   </div>
                 </div>
@@ -214,14 +229,15 @@ export default function CassaPage() {
           </div>
 
           {ledgerFiltrato.length > 0 && (
-            <div className="hidden sm:grid grid-cols-7 px-6 py-4 border-t border-border-subtle bg-surface-container-low/50">
+            <div className="hidden sm:grid grid-cols-8 px-6 py-4 border-t border-border-subtle bg-surface-container-low/50">
               <span className="text-xs font-bold uppercase tracking-wider text-on-secondary-container">Totale mese</span>
               <span className="font-mono text-sm font-bold text-amber-400">{euro(totMese.cash)}</span>
               <span className="font-mono text-sm font-bold text-blue-400">{euro(totMese.carte)}</span>
               <span className="font-mono text-sm font-bold text-foreground">{euro(totMese.uber)}</span>
               <span className="font-mono text-sm font-bold text-purple-400">{euro(totMese.noninc)}</span>
+              <span className="font-mono text-sm font-bold text-emerald-400">− {euro(totMese.mance)}</span>
               <span className="font-mono text-sm font-bold text-destructive">− {euro(totMese.spese)}</span>
-              <span className="font-mono text-sm font-bold text-right text-primary">{euro(totMese.cash - totMese.spese)}</span>
+              <span className="font-mono text-sm font-bold text-right text-primary">{euro(totMese.cash - totMese.spese - totMese.mance)}</span>
             </div>
           )}
         </div>
