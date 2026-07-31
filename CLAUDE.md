@@ -309,6 +309,14 @@ Obiettivo: dare a Meta/WhatsApp Business API un sito vetrina reale, statico, sen
 - Header di sicurezza globali (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`) impostati in `next.config.ts` per l'intera app.
 - Contenuti (telefono, email, città, licenza NCC) centralizzati in `lib/site-config.ts`: i campi opzionali spariscono dalla UI finché la relativa env var non è impostata, per non pubblicare dati inventati.
 
+---
+
+## App mobile
+
+Guscio nativo Capacitor (Android/iOS) che carica il deploy web esistente via
+`server.url` — vedi [`docs/app-mobile.md`](docs/app-mobile.md) per
+architettura, build locale e requisiti di pubblicazione sugli store.
+
 ## Pattern da rispettare
 
 ```tsx
