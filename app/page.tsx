@@ -48,7 +48,7 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <header className="border-b border-border">
+      <header className="border-b border-border-subtle">
         <div className="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between">
           <span className="font-heading italic text-primary text-2xl">{siteConfig.nome}</span>
           <Link href="/login" className={cn(buttonVariants({ size: "sm" }), "text-xs")}>
@@ -62,7 +62,7 @@ export default function HomePage() {
           <div className="w-14 h-14 rounded-xl bg-primary/15 text-primary flex items-center justify-center mx-auto mb-5">
             <Car size={28} weight="fill" />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">
+          <h1 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
             Noleggio Con Conducente a {siteConfig.citta}
           </h1>
           <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
@@ -74,21 +74,21 @@ export default function HomePage() {
         <section className="max-w-5xl mx-auto px-6 pb-16">
           <div className="grid sm:grid-cols-3 gap-4">
             {servizi.map(({ icon: Icon, titolo, desc }) => (
-              <div key={titolo} className="bg-card border border-border rounded-lg p-5">
+              <div key={titolo} className="glass-card rounded-2xl p-5 hover:border-primary/50 transition-all duration-300">
                 <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-primary/15 text-primary mb-3">
                   <Icon size={18} weight="fill" />
                 </div>
-                <h2 className="text-sm font-medium">{titolo}</h2>
-                <p className="text-sm text-muted-foreground mt-1">{desc}</p>
+                <h2 className="font-heading text-sm font-semibold text-foreground">{titolo}</h2>
+                <p className="text-sm text-on-surface-variant mt-1">{desc}</p>
               </div>
             ))}
           </div>
         </section>
 
         <section className="max-w-5xl mx-auto px-6 pb-16">
-          <div className="bg-card border border-border rounded-lg p-6 sm:p-8">
-            <h2 className="text-lg font-semibold">Come prenotare</h2>
-            <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
+          <div className="glass-card rounded-2xl p-6 sm:p-8">
+            <h2 className="font-heading text-lg font-bold text-foreground">Come prenotare</h2>
+            <p className="text-sm text-on-surface-variant mt-1 max-w-2xl">
               Le corse si organizzano solo su richiesta diretta: nessuna registrazione o
               prenotazione automatica online. Contattaci telefonicamente, via email o su
               WhatsApp e concorderemo insieme data, orario e tratta.
@@ -118,12 +118,12 @@ export default function HomePage() {
               </a>
             </div>
 
-            <div className="mt-5 flex items-center gap-2 text-xs text-muted-foreground">
+            <div className="mt-5 flex items-center gap-2 text-xs text-on-surface-variant">
               <MapPin size={14} />
               <span>Zona di servizio: {siteConfig.citta}</span>
             </div>
             {siteConfig.licenzaNcc && (
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1 text-xs text-on-surface-variant">
                 Licenza NCC n. {siteConfig.licenzaNcc}
               </p>
             )}
@@ -131,8 +131,8 @@ export default function HomePage() {
         </section>
       </main>
 
-      <footer className="border-t border-border">
-        <div className="max-w-5xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
+      <footer className="border-t border-border-subtle">
+        <div className="max-w-5xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-on-surface-variant">
           <span>© {new Date().getFullYear()} {siteConfig.nome} — {siteConfig.titolare}</span>
           <div className="flex gap-4">
             <Link href="/privacy" className="hover:text-foreground">Privacy</Link>
