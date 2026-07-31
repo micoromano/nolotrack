@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">NoloTrack</string>
+    <string name="title_activity_main">NoloTrack</string>
+    <string name="package_name">com.nolotrack.app</string>
+    <string name="custom_url_scheme">com.nolotrack.app</string>
+</resources>
