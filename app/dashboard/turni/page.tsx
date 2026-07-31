@@ -23,6 +23,9 @@ export default async function TurniPage() {
     .order("data", { ascending: false })
     .limit(30);
 
+  const oggi = new Date().toISOString().split("T")[0];
+  const turnoOggi = turni?.find((t) => t.data === oggi);
+
   const totOre = turni?.reduce((acc, t) => acc + Number(t.ore_lavorate), 0) ?? 0;
 
   return (
@@ -40,39 +43,55 @@ export default async function TurniPage() {
       </header>
 
       <div className="px-4 md:px-10 py-8 max-w-[1440px] mx-auto space-y-6">
-        {/* Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          <div className="glass-card rounded-2xl p-5 relative overflow-hidden">
-            <div className="p-2.5 bg-sky-400/10 rounded-xl w-fit mb-3">
-              <Clock size={18} weight="fill" className="text-sky-400" />
+        {/* Bento metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+          <div className="glass-card p-6 rounded-2xl relative overflow-hidden group hover:border-primary/50 transition-all duration-300">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-sky-400/5 rounded-full blur-3xl group-hover:bg-sky-400/10 transition-colors" />
+            <div className="p-2.5 bg-sky-400/10 rounded-xl w-fit mb-4">
+              <CalendarCheck size={20} weight="fill" className="text-sky-400" />
             </div>
-            <p className="text-[11px] font-bold uppercase tracking-widest text-on-secondary-container mb-1">Turni totali</p>
-            <p className="font-mono text-2xl font-bold text-foreground">{turni?.length ?? 0}</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-on-secondary-container mb-1">Turni totali</p>
+            <p className="font-mono text-3xl font-bold text-foreground tracking-tighter">{turni?.length ?? 0}</p>
           </div>
-          <div className="glass-card rounded-2xl p-5 relative overflow-hidden">
-            <div className="p-2.5 bg-primary/10 rounded-xl w-fit mb-3">
-              <Clock size={18} weight="fill" className="text-primary" />
+
+          <div className="glass-card p-6 rounded-2xl relative overflow-hidden group hover:border-primary/50 transition-all duration-300">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors" />
+            <div className="p-2.5 bg-primary/10 rounded-xl w-fit mb-4">
+              <Clock size={20} weight="fill" className="text-primary" />
             </div>
-            <p className="text-[11px] font-bold uppercase tracking-widest text-on-secondary-container mb-1">Ore totali</p>
-            <p className="font-mono text-2xl font-bold text-foreground">{formatOre(totOre)}</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-on-secondary-container mb-1">Ore totali</p>
+            <p className="font-mono text-3xl font-bold text-foreground tracking-tighter">{formatOre(totOre)}</p>
           </div>
-          <div className="glass-card rounded-2xl p-5 relative overflow-hidden hidden sm:block">
-            <div className="p-2.5 bg-tertiary/10 rounded-xl w-fit mb-3">
-              <Clock size={18} weight="fill" className="text-tertiary" />
+
+          <div className="glass-card p-6 rounded-2xl relative overflow-hidden group hover:border-primary/50 transition-all duration-300">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-tertiary/5 rounded-full blur-3xl group-hover:bg-tertiary/10 transition-colors" />
+            <div className="p-2.5 bg-tertiary/10 rounded-xl w-fit mb-4">
+              <ChartLineUp size={20} weight="fill" className="text-tertiary" />
             </div>
-            <p className="text-[11px] font-bold uppercase tracking-widest text-on-secondary-container mb-1">Media ore / turno</p>
-            <p className="font-mono text-2xl font-bold text-foreground">
+            <p className="text-xs font-bold uppercase tracking-widest text-on-secondary-container mb-1">Media ore / turno</p>
+            <p className="font-mono text-3xl font-bold text-foreground tracking-tighter">
               {turni?.length ? formatOre(totOre / turni.length) : "0h"}
             </p>
           </div>
         </div>
 
-        {/* Table */}
+        {/* Cronologia turni */}
         <div className="glass-card rounded-2xl overflow-hidden">
-          <div className="grid grid-cols-4 px-6 py-3 border-b border-border-subtle bg-surface-container-low/50">
-            {["Data", "Inizio", "Fine", "Ore"].map(h => (
-              <span key={h} className={cn("text-[11px] font-bold uppercase tracking-wider text-on-secondary-container", h === "Ore" && "text-right")}>{h}</span>
-            ))}
+          <div className="p-5 sm:p-6 border-b border-border-subtle flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-sky-400/10 flex items-center justify-center text-sky-400 shrink-0">
+                <CalendarCheck size={18} weight="fill" />
+              </div>
+              <span className="font-semibold text-sm text-foreground">Cronologia turni</span>
+            </div>
+            {turnoOggi ? (
+              <span className="flex items-center gap-2 font-bold text-[11px] uppercase tracking-widest text-success-emerald">
+                <span className="w-2 h-2 rounded-full bg-success-emerald animate-pulse" />
+                Oggi: {turnoOggi.ora_inizio.slice(0, 5)}–{turnoOggi.ora_fine.slice(0, 5)}
+              </span>
+            ) : (
+              <span className="text-[11px] uppercase tracking-widest text-on-surface-variant">Nessun turno oggi</span>
+            )}
           </div>
 
           {!turni?.length && (

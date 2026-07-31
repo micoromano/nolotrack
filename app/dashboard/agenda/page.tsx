@@ -4,15 +4,30 @@ import { cn } from "@/lib/utils";
 import { getServerLocale } from "@/lib/locale";
 
 const pagamentoBadgeStyle: Record<string, string> = {
-  cash: "bg-amber-400/10 text-amber-400",
-  carta: "bg-blue-400/10 text-blue-400",
-  uber: "bg-muted text-muted-foreground",
-  noninc: "bg-purple-400/10 text-purple-400",
+  cash: "bg-amber-400/10 text-amber-400 border border-amber-400/20",
+  carta: "bg-blue-400/10 text-blue-400 border border-blue-400/20",
+  uber: "bg-slate-400/10 text-slate-400 border border-slate-400/20",
+  noninc: "bg-purple-400/10 text-purple-400 border border-purple-400/20",
+};
+
+const pagamentoBorderStyle: Record<string, string> = {
+  cash: "border-amber-400 bg-amber-400/10",
+  carta: "border-blue-400 bg-blue-400/10",
+  uber: "border-slate-400 bg-slate-400/10",
+  noninc: "border-purple-400 bg-purple-400/10",
 };
 
 const pagamentoLabel: Record<string, string> = {
   cash: "Cash", carta: "Carta", uber: "Uber", noninc: "No Inc",
 };
+
+const pagamentoSwatch: Record<string, string> = {
+  cash: "bg-amber-400", carta: "bg-blue-400", uber: "bg-slate-400", noninc: "bg-purple-400",
+};
+
+function euro(n: number) {
+  return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(n);
+}
 
 export default async function AgendaPage({
   searchParams,
@@ -67,6 +82,12 @@ export default async function AgendaPage({
 
   const oggiStr = oggi.toISOString().split("T")[0];
 
+  // Metriche derivate dal mese caricato
+  const totServizi = corse.length;
+  const totIncasso = corse.reduce((s, c) => s + (c.tipo_pagamento !== "noninc" ? c.importo : 0), 0);
+  const giorniConServizi = corsePerGiorno.size;
+  const giorniLiberi = giorni.length - giorniConServizi;
+
   return (
     <div>
       {/* Header */}
@@ -75,11 +96,13 @@ export default async function AgendaPage({
           <h1 className="font-heading text-lg font-bold text-primary">Agenda</h1>
           <AgendaNav anno={anno} mese={mese} />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <AgendaNav anno={anno} mese={mese} />
           <IcalButton anno={anno} mese={mese} />
           {!integrazioneConnessa && <GoogleCalendarButton />}
           {integrazioneConnessa && (
-            <span className="text-xs text-green-400 border border-green-400/30 rounded-lg px-2 py-1">
+            <span className="flex items-center gap-1.5 text-xs font-semibold text-success-emerald border border-success-emerald/30 bg-success-emerald/10 rounded-lg px-3 py-1.5">
+              <CalendarCheck size={13} weight="fill" />
               Google Calendar connesso
             </span>
           )}
@@ -93,7 +116,6 @@ export default async function AgendaPage({
           const isOggi = dataStr === oggiStr;
           const haServizi = corseGiorno.length > 0;
 
-          if (!haServizi) {
             return (
               <div key={dataStr} className={cn(
                 "flex items-center gap-3 px-4 py-2 rounded-lg text-xs text-on-surface-variant/50",
@@ -117,9 +139,10 @@ export default async function AgendaPage({
                 "flex items-center justify-between px-4 py-2 border-b border-border-subtle",
                 isOggi ? "bg-primary/10" : "bg-surface-container-low/50"
               )}>
-                <span className={cn(
-                  "text-sm font-semibold capitalize",
-                  isOggi ? "text-primary" : "text-foreground"
+                {/* Header giorno */}
+                <div className={cn(
+                  "flex items-center gap-3 px-4 py-3 border-b border-border-subtle",
+                  isOggi ? "bg-primary/10" : "bg-surface-container-low/50"
                 )}>
                   {giorno.toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long" })}
                   {isOggi && <span className="ml-2 text-xs bg-primary text-primary-foreground px-1.5 py-0.5 rounded-lg">Oggi</span>}
@@ -152,12 +175,12 @@ export default async function AgendaPage({
                         {new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(c.importo)}
                       </span>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );

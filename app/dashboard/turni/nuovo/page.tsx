@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { sendPush } from "@/lib/push";
+import { ArrowLeft, CalendarBlank, Clock, NotePencil, CheckCircle } from "@phosphor-icons/react";
 
 export default function NuovoTurnoPage() {
   const oggi = new Date().toISOString().split("T")[0];
@@ -57,7 +58,8 @@ export default function NuovoTurnoPage() {
           onClick={() => router.back()}
           className="text-xs text-on-surface-variant hover:text-foreground transition-colors"
         >
-          ← Indietro
+          <ArrowLeft size={13} weight="bold" />
+          Turni
         </button>
         <span className="text-on-surface-variant text-xs">/</span>
         <h1 className="font-heading text-lg font-bold text-primary">Nuovo turno</h1>
@@ -73,29 +75,41 @@ export default function NuovoTurnoPage() {
               <input type="date" value={data} onChange={(e) => setData(e.target.value)} required className={inputClass} />
             </Field>
             <div className="grid grid-cols-2 gap-3">
-              <Field label="Ora inizio">
+              <Field label="Ora inizio" icon={Clock}>
                 <input type="time" value={oraInizio} onChange={(e) => setOraInizio(e.target.value)} required className={cn(inputClass, "font-mono")} />
               </Field>
-              <Field label="Ora fine">
+              <Field label="Ora fine" icon={Clock}>
                 <input type="time" value={oraFine} onChange={(e) => setOraFine(e.target.value)} required className={cn(inputClass, "font-mono")} />
               </Field>
             </div>
-            <Field label="Note (opzionale)">
+            <Field label="Note (opzionale)" icon={NotePencil}>
               <input type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder="es. aeroporto, evento…" className={inputClass} />
             </Field>
-            {errore && <p className="text-sm text-destructive">{errore}</p>}
+            {errore && (
+              <p className="text-sm text-destructive flex items-center gap-2">
+                <span className="w-4 h-4 rounded-full bg-destructive/20 flex items-center justify-center text-xs shrink-0">!</span>
+                {errore}
+              </p>
+            )}
             <div className="flex gap-2 pt-2">
               <button
                 type="submit"
                 disabled={caricamento}
-                className="bg-primary text-primary-foreground text-xs font-medium px-4 py-2 rounded-lg transition-colors hover:opacity-90 disabled:opacity-50"
+                className="flex items-center gap-1.5 bg-primary text-on-primary text-sm font-semibold px-5 py-2.5 rounded-lg transition-opacity hover:opacity-90 disabled:opacity-50 shadow-lg shadow-primary/20"
               >
-                {caricamento ? "Salvataggio…" : "Salva turno"}
+                {caricamento ? (
+                  "Salvataggio…"
+                ) : (
+                  <>
+                    <CheckCircle size={15} weight="fill" />
+                    Salva turno
+                  </>
+                )}
               </button>
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="bg-muted text-foreground text-xs font-medium px-4 py-2 rounded-lg transition-colors hover:bg-muted/70"
+                className="bg-surface-container text-on-surface-variant text-sm font-medium px-4 py-2.5 rounded-lg border border-border-subtle transition-colors hover:bg-surface-variant/50"
               >
                 Annulla
               </button>
@@ -107,7 +121,7 @@ export default function NuovoTurnoPage() {
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, icon: Icon, children }: { label: string; icon?: React.ElementType; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
       <label className="text-xs font-medium text-on-surface-variant uppercase tracking-wider">{label}</label>
@@ -117,4 +131,4 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 const inputClass =
-  "w-full bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all";
+  "w-full bg-surface-container-lowest border border-border-subtle text-sm text-foreground placeholder:text-on-surface-variant/50 px-3 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all";

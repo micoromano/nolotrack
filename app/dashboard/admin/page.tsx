@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Users, Shield } from "@phosphor-icons/react/dist/ssr";
+import { Users, Shield, ArrowRight } from "@phosphor-icons/react/dist/ssr";
 
 export default function AdminPage() {
   return (
