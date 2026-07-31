@@ -65,7 +65,7 @@ export default function HomePage() {
           <h1 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
             Noleggio Con Conducente a {siteConfig.citta}
           </h1>
-          <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
+          <p className="mt-4 text-on-surface-variant max-w-2xl mx-auto">
             {siteConfig.nome} è il servizio NCC di {siteConfig.titolare}: transfer aeroportuali,
             spostamenti business ed eventi, sempre su prenotazione diretta.
           </p>
