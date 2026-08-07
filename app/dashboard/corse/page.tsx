@@ -1,9 +1,10 @@
+import React from "react";
 import { createClient } from "@/lib/supabase/server";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { getServerLocale } from "@/lib/locale";
-import { Plus, Car } from "@phosphor-icons/react/dist/ssr";
+import { Plus, Car, CurrencyEur, CreditCard, ProhibitInset } from "@phosphor-icons/react/dist/ssr";
 import { eurEquivalent, formatValuta } from "@/lib/valuta";
 
 function formatEuro(n: number) {
@@ -37,6 +38,25 @@ const pagamentoLabel: Record<string, string> = {
   uber:   "Uber",
   noninc: "No Inc",
 };
+
+const pagamentoIcon: Record<string, React.ElementType> = {
+  cash:   CurrencyEur,
+  carta:  CreditCard,
+  uber:   Car,
+  noninc: ProhibitInset,
+};
+
+function PagamentoBadge({ tipo, full = false }: { tipo: string; full?: boolean }) {
+  const style = pagamentoBadgeStyle[tipo] ?? pagamentoBadgeStyle.uber;
+  const label = pagamentoLabel[tipo] ?? tipo;
+  const IconComp = pagamentoIcon[tipo] ?? Car;
+  return (
+    <span className={cn("inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase w-fit", style, full && "")}>
+      <IconComp size={9} weight="bold" />
+      {label}
+    </span>
+  );
+}
 
 export default async function CorsePage() {
   const locale = await getServerLocale();
@@ -77,13 +97,17 @@ export default async function CorsePage() {
           {!corse?.length && (
             <div className="px-6 py-16 text-center">
               <Car size={32} weight="light" className="text-on-surface-variant mx-auto mb-3" />
-              <p className="text-sm text-on-surface-variant">Nessuna corsa registrata.</p>
+              <p className="text-sm text-on-surface-variant mb-4">Nessuna corsa registrata.</p>
+              <Link href="/dashboard/corse/nuova" className={cn(buttonVariants({ size: "sm" }), "gap-1.5 text-xs font-bold uppercase tracking-wide shadow-lg shadow-primary/20")}>
+                <Plus size={13} weight="bold" />
+                Registra la prima corsa
+              </Link>
             </div>
           )}
 
           <div className="divide-y divide-border-subtle">
             {corse?.map((c) => (
-              <Link key={c.id} href={`/dashboard/corse/${c.id}`} className="block hover:bg-surface-variant/20 transition-colors cursor-pointer">
+              <Link key={c.id} href={`/dashboard/corse/${c.id}`} className="block hover:bg-surface-variant/30 border-l-2 border-transparent hover:border-primary transition-all cursor-pointer">
                 {/* Desktop row */}
                 <div className="hidden sm:grid grid-cols-[120px_100px_80px_1fr_1fr_100px] px-6 py-4 items-center gap-2">
                   <div>
@@ -100,9 +124,7 @@ export default async function CorsePage() {
                       <p className="text-xs text-on-surface-variant">{c.n_pax} pax</p>
                     )}
                   </div>
-                  <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-bold uppercase w-fit", pagamentoBadgeStyle[c.tipo_pagamento])}>
-                    {pagamentoLabel[c.tipo_pagamento] ?? c.tipo_pagamento}
-                  </span>
+                  <PagamentoBadge tipo={c.tipo_pagamento} />
                   <span className="text-sm text-foreground truncate">{c.origine}</span>
                   <span className="text-sm text-on-surface-variant truncate">{c.destinazione}</span>
                   <div className="text-right">
@@ -120,9 +142,7 @@ export default async function CorsePage() {
                       <span className="font-mono text-xs text-on-surface-variant">
                         {new Date(c.data).toLocaleDateString(locale, { day: "numeric", month: "short" })} · {c.ora_partenza.slice(0, 5)}
                       </span>
-                      <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-bold uppercase", pagamentoBadgeStyle[c.tipo_pagamento])}>
-                        {pagamentoLabel[c.tipo_pagamento] ?? c.tipo_pagamento}
-                      </span>
+                      <PagamentoBadge tipo={c.tipo_pagamento} />
                     </div>
                     <p className="text-sm text-foreground truncate">{c.origine} → {c.destinazione}</p>
                   </div>

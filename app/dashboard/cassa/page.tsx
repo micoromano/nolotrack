@@ -119,17 +119,42 @@ export default function CassaPage() {
       </header>
 
       <div className="px-4 md:px-10 py-8 max-w-[1440px] mx-auto space-y-6">
-        {/* Summary cards */}
+        {/* Skeleton state */}
+        {caricamento && (
+          <div className="space-y-6 animate-pulse">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+              <div className="glass-card rounded-2xl p-5 h-28 col-span-2 sm:col-span-1">
+                <div className="w-10 h-10 rounded-xl bg-surface-container-high mb-3" />
+                <div className="h-3 w-20 bg-surface-container-high rounded mb-2" />
+                <div className="h-6 w-24 bg-surface-container-high rounded" />
+              </div>
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="glass-card rounded-2xl p-5 h-28">
+                  <div className="w-10 h-10 rounded-xl bg-surface-container-high mb-3" />
+                  <div className="h-3 w-20 bg-surface-container-high rounded mb-2" />
+                  <div className="h-6 w-24 bg-surface-container-high rounded" />
+                </div>
+              ))}
+            </div>
+            <div className="glass-card rounded-2xl h-64" />
+          </div>
+        )}
+
+        {/* Content */}
+        {!caricamento && (<>
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
-          <div className="glass-card rounded-2xl p-5 relative overflow-hidden col-span-2 sm:col-span-1 border-primary/30">
+          <div className={cn("glass-card rounded-2xl p-5 relative overflow-hidden col-span-2 sm:col-span-1", saldoAttuale >= 0 ? "border-primary/30" : "border-destructive/30 bg-destructive/5")}>
             <div className="absolute -right-3 -top-3 w-20 h-20 bg-primary/5 rounded-full blur-2xl" />
             <div className="p-2.5 bg-primary/10 rounded-xl w-fit mb-3">
-              <Wallet size={18} weight="fill" className="text-primary" />
+              <Wallet size={18} weight="fill" className={saldoAttuale >= 0 ? "text-primary" : "text-destructive"} />
             </div>
             <p className="text-[11px] font-bold uppercase tracking-widest text-on-secondary-container mb-1">Saldo attuale</p>
             <p className={cn("font-mono text-2xl font-bold", saldoAttuale >= 0 ? "text-primary" : "text-destructive")}>
               {euro(saldoAttuale)}
             </p>
+            {saldoAttuale < 0 && (
+              <p className="text-[10px] text-destructive/70 font-semibold mt-1 uppercase tracking-wider">⚠ Saldo negativo</p>
+            )}
           </div>
           <div className="glass-card rounded-2xl p-5 relative overflow-hidden">
             <div className="p-2.5 bg-amber-400/10 rounded-xl w-fit mb-3">
@@ -169,10 +194,6 @@ export default function CassaPage() {
             ))}
           </div>
 
-          {caricamento && (
-            <p className="px-6 py-8 text-sm text-on-surface-variant text-center">Caricamento…</p>
-          )}
-
           {!caricamento && ledgerFiltrato.length === 0 && (
             <p className="px-6 py-8 text-sm text-on-surface-variant text-center">Nessun dato per questo periodo.</p>
           )}
@@ -180,7 +201,7 @@ export default function CassaPage() {
           <div className="divide-y divide-border-subtle">
             {[...ledgerFiltrato].reverse().map(g => (
               <div key={g.data}>
-                <div className="hidden sm:grid grid-cols-8 px-6 py-4 hover:bg-surface-variant/20 transition-colors items-center">
+                <div className="hidden sm:grid grid-cols-8 px-6 py-4 hover:bg-surface-variant/30 border-l-2 border-transparent hover:border-primary transition-all items-center">
                   <span className="text-sm font-medium capitalize text-foreground">
                     {new Date(g.data + "T00:00:00").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}
                   </span>
@@ -241,6 +262,7 @@ export default function CassaPage() {
             </div>
           )}
         </div>
+        </>)}
       </div>
     </div>
   );
