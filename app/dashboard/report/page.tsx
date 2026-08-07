@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
+import { eurEquivalent, contribuisceACassa } from "@/lib/valuta";
 import {
   Clock,
   Wallet,
@@ -41,6 +42,9 @@ interface Corsa {
   destinazione: string;
   tipo_pagamento: string;
   importo: number;
+  valuta: string;
+  tasso_cambio: number;
+  includi_in_cassa: boolean;
   mancia?: number | null;
   note?: string | null;
 }

@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { AgendaNav, IcalButton, GoogleCalendarButton } from "./client";
 import { cn } from "@/lib/utils";
 import { getServerLocale } from "@/lib/locale";
+import { CalendarCheck } from "@phosphor-icons/react/dist/ssr";
 
 const pagamentoBadgeStyle: Record<string, string> = {
   cash: "bg-amber-400/10 text-amber-400 border border-amber-400/20",

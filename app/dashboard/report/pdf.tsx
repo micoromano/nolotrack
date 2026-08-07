@@ -181,6 +181,8 @@ interface Corsa {
   destinazione: string;
   tipo_pagamento: string;
   importo: number;
+  valuta: string;
+  tasso_cambio: number;
   mancia?: number | null;
   note?: string | null;
 }

@@ -137,6 +137,15 @@ export default function LoginPage() {
   );
 }
 
+function FeatureRow({ icon, text }: { icon: string; text: string }) {
+  return (
+    <div className="flex items-center gap-3 text-sm text-on-surface-variant">
+      <span className="text-lg leading-none">{icon}</span>
+      <span>{text}</span>
+    </div>
+  );
+}
+
 function GoogleIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24">

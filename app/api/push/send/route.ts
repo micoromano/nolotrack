@@ -2,13 +2,18 @@ import { createClient } from "@/lib/supabase/server";
 import webpush from "web-push";
 import { NextResponse } from "next/server";
 
-webpush.setVapidDetails(
-  "mailto:" + (process.env.GMAIL_USER ?? "admin@nolotrack.app"),
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
-);
-
 export async function POST(req: Request) {
+  const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+  const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
+  if (!vapidPublicKey || !vapidPrivateKey) {
+    return NextResponse.json({ error: "Push notifications non configurate" }, { status: 503 });
+  }
+  webpush.setVapidDetails(
+    "mailto:" + (process.env.GMAIL_USER ?? "admin@nolotrack.app"),
+    vapidPublicKey,
+    vapidPrivateKey
+  );
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Non autenticato" }, { status: 401 });
