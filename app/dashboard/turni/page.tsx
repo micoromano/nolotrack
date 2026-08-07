@@ -3,7 +3,7 @@ import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { getServerLocale } from "@/lib/locale";
-import { Plus, Clock } from "@phosphor-icons/react/dist/ssr";
+import { Plus, Clock, CalendarCheck, ChartLineUp } from "@phosphor-icons/react/dist/ssr";
 
 function formatOre(ore: number) {
   const h = Math.floor(ore);

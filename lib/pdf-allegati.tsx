@@ -147,6 +147,9 @@ export async function generaPDFRapportino(
       destinazione: string;
       tipo_pagamento: string;
       importo: number;
+      valuta: string;
+      tasso_cambio: number;
+      includi_in_cassa: boolean;
       mancia?: number | null;
       note?: string | null;
     }>;
