@@ -81,19 +81,22 @@ export default function NavBar({ userEmail, permessi }: { userEmail: string; per
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 group relative",
                   active
-                    ? "bg-primary text-on-primary shadow-md shadow-primary/20"
+                    ? "bg-primary/10 text-primary"
                     : "text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30"
                 )}
               >
+                {active && (
+                  <span className="absolute left-0 top-1 bottom-1 w-0.5 bg-primary rounded-r" />
+                )}
                 <span className={cn(
                   "flex items-center justify-center shrink-0 transition-all",
-                  active ? "text-on-primary" : color
+                  active ? "text-primary" : color
                 )}>
                   <Icon size={17} weight={active ? "fill" : "regular"} />
                 </span>
                 <span className={cn(
                   "text-xs font-semibold tracking-wide uppercase",
-                  active ? "text-on-primary" : "text-on-surface-variant group-hover:text-on-surface"
+                  active ? "text-primary" : "text-on-surface-variant group-hover:text-on-surface"
                 )}>
                   {label}
                 </span>
@@ -171,9 +174,9 @@ export default function NavBar({ userEmail, permessi }: { userEmail: string; per
                   "flex items-center justify-center w-9 h-9 rounded-xl transition-all",
                   active ? cn("bg-primary/10", color) : ""
                 )}>
-                  <Icon size={20} weight={active ? "fill" : "regular"} />
+                  <Icon size={20} weight={active ? "fill" : "regular"} className={active ? color : ""} />
                 </span>
-                <span className={cn("text-[10px] font-semibold leading-none uppercase tracking-wide", active ? "text-foreground" : "text-muted-foreground/70")}>
+                <span className={cn("text-[10px] font-semibold leading-none uppercase tracking-wide", active ? color : "text-muted-foreground/70")}>
                   {label}
                 </span>
               </Link>

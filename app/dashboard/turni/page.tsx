@@ -97,7 +97,11 @@ export default async function TurniPage() {
           {!turni?.length && (
             <div className="px-6 py-16 text-center">
               <Clock size={32} weight="light" className="text-on-surface-variant mx-auto mb-3" />
-              <p className="text-sm text-on-surface-variant">Nessun turno registrato.</p>
+              <p className="text-sm text-on-surface-variant mb-4">Nessun turno registrato.</p>
+              <Link href="/dashboard/turni/nuovo" className={cn(buttonVariants({ size: "sm" }), "gap-1.5 text-xs font-bold uppercase tracking-wide shadow-lg shadow-primary/20")}>
+                <Plus size={13} weight="bold" />
+                Registra il primo turno
+              </Link>
             </div>
           )}
 
@@ -106,7 +110,7 @@ export default async function TurniPage() {
               <Link
                 key={t.id}
                 href={`/dashboard/turni/${t.id}`}
-                className="grid grid-cols-4 px-6 py-4 hover:bg-surface-variant/20 transition-colors cursor-pointer items-center"
+                className="grid grid-cols-4 px-6 py-4 hover:bg-surface-variant/30 border-l-2 border-transparent hover:border-primary transition-all cursor-pointer items-center"
               >
                 <span className="text-sm font-medium capitalize text-foreground">
                   {new Date(t.data).toLocaleDateString(locale, { weekday: "short", day: "numeric", month: "short" })}

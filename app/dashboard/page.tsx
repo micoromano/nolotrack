@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { getServerLocale } from "@/lib/locale";
 import {
   ChartLineUp, CurrencyEur, CreditCard, Car, Clock, Plus,
-  TrendUp, ArrowRight,
+  TrendUp, ArrowRight, ProhibitInset,
 } from "@phosphor-icons/react/dist/ssr";
 import { eurEquivalent, formatValuta } from "@/lib/valuta";
 
@@ -57,17 +57,8 @@ export default async function DashboardPage() {
       {/* Sticky glassmorphic header */}
       <header className="sticky top-0 z-30 bg-surface/80 backdrop-blur-xl border-b border-border-subtle h-16 flex items-center justify-between px-4 md:px-10">
         <h2 className="font-heading text-lg font-bold text-primary">Overview</h2>
-        <div className="flex items-center gap-3">
-          <div className="relative hidden sm:block">
-            <input
-              type="text"
-              placeholder="Cerca corse..."
-              className="bg-surface-container-lowest border border-border-subtle rounded-full px-4 py-1.5 text-sm text-foreground placeholder:text-on-surface-variant focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 w-48 transition-all"
-            />
-          </div>
-          <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold border border-primary/20">
-            {nomeUtente.slice(0, 2).toUpperCase()}
-          </div>
+        <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold border border-primary/20">
+          {nomeUtente.slice(0, 2).toUpperCase()}
         </div>
       </header>
 
@@ -197,7 +188,7 @@ export default async function DashboardPage() {
                 </div>
                 <div className="divide-y divide-border-subtle">
                   {corseOggi.map((c) => (
-                    <Link key={c.id} href={`/dashboard/corse/${c.id}`} className="block hover:bg-surface-variant/20 transition-colors cursor-pointer">
+                    <Link key={c.id} href={`/dashboard/corse/${c.id}`} className="block hover:bg-surface-variant/30 border-l-2 border-transparent hover:border-primary transition-all cursor-pointer">
                       <div className="hidden sm:grid grid-cols-[100px_80px_1fr_1fr_100px_80px] px-6 py-4 items-center gap-2">
                         <span className="font-mono text-xs text-on-surface-variant">{c.ora_partenza.slice(0, 5)}</span>
                         <PagamentoBadge tipo={c.tipo_pagamento} />
@@ -230,11 +221,11 @@ export default async function DashboardPage() {
   );
 }
 
-const pagamentoBadgeConfig: Record<string, { label: string; style: string }> = {
-  cash:   { label: "Cash",   style: "bg-amber-400/10 text-amber-400 border border-amber-400/20" },
-  carta:  { label: "Carta",  style: "bg-blue-400/10 text-blue-400 border border-blue-400/20" },
-  uber:   { label: "Uber",   style: "bg-slate-400/10 text-slate-400 border border-slate-400/20" },
-  noninc: { label: "No Inc", style: "bg-purple-400/10 text-purple-400 border border-purple-400/20" },
+const pagamentoBadgeConfig: Record<string, { label: string; style: string; icon: React.ElementType }> = {
+  cash:   { label: "Cash",   style: "bg-amber-400/10 text-amber-400 border border-amber-400/20",   icon: CurrencyEur },
+  carta:  { label: "Carta",  style: "bg-blue-400/10 text-blue-400 border border-blue-400/20",     icon: CreditCard },
+  uber:   { label: "Uber",   style: "bg-slate-400/10 text-slate-400 border border-slate-400/20",  icon: Car },
+  noninc: { label: "No Inc", style: "bg-purple-400/10 text-purple-400 border border-purple-400/20", icon: ProhibitInset },
 };
 
 function formatImporto(c: { importo: number; valuta: string; tasso_cambio: number }) {
@@ -243,8 +234,10 @@ function formatImporto(c: { importo: number; valuta: string; tasso_cambio: numbe
 
 function PagamentoBadge({ tipo }: { tipo: string }) {
   const cfg = pagamentoBadgeConfig[tipo] ?? pagamentoBadgeConfig.uber;
+  const IconComp = cfg.icon;
   return (
-    <span className={cn("inline-flex items-center text-[10px] px-2 py-0.5 rounded-full font-bold uppercase shrink-0 w-fit", cfg.style)}>
+    <span className={cn("inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase shrink-0 w-fit", cfg.style)}>
+      <IconComp size={9} weight="bold" />
       {cfg.label}
     </span>
   );

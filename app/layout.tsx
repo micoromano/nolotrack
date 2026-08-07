@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans, Inter, JetBrains_Mono } from "next/font/google";
+import { IBM_Plex_Sans, Inter, JetBrains_Mono, DM_Serif_Display } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
@@ -21,6 +21,12 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
+const dmSerifDisplay = DM_Serif_Display({
+  variable: "--font-dm-serif",
+  weight: ["400"],
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   title: "NoloTrack",
   description: "Gestione NCC — Noleggio Con Conducente",
@@ -32,7 +38,7 @@ export default function RootLayout({
   return (
     <html
       lang="it"
-      className={`${ibmSans.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${ibmSans.variable} ${inter.variable} ${jetbrainsMono.variable} ${dmSerifDisplay.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">

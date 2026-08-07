@@ -184,14 +184,21 @@ export default function SpesePage() {
           {!caricamento && speseFiltrate.length === 0 && (
             <div className="px-6 py-16 text-center">
               <Receipt size={32} weight="light" className="text-on-surface-variant mx-auto mb-3" />
-              <p className="text-sm text-on-surface-variant">Nessuna spesa per questo periodo.</p>
+              <p className="text-sm text-on-surface-variant mb-4">Nessuna spesa per questo periodo.</p>
+              <button
+                onClick={() => document.querySelector<HTMLInputElement>('input[type="text"]')?.focus()}
+                className="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-lg hover:bg-primary/20 transition-colors uppercase tracking-wide"
+              >
+                <Plus size={13} weight="bold" />
+                Aggiungi una spesa
+              </button>
             </div>
           )}
 
           <div className="divide-y divide-border-subtle">
             {speseFiltrate.map(s => (
               <div key={s.id}>
-                <div className="hidden sm:grid grid-cols-4 px-6 py-4 hover:bg-surface-variant/20 transition-colors items-center">
+                <div className="hidden sm:grid grid-cols-4 px-6 py-4 hover:bg-surface-variant/30 border-l-2 border-transparent hover:border-rose-400 transition-all items-center">
                   <span className="text-sm text-on-surface-variant">
                     {new Date(s.data + "T00:00:00").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}
                   </span>

@@ -664,7 +664,11 @@ export default function StipendioPage() {
             </div>
 
             {datiCaricamento && (
-              <p className="py-16 text-sm text-on-surface-variant text-center">Caricamento…</p>
+              <div className="py-8 px-4 animate-pulse space-y-2">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="h-8 rounded bg-surface-container-high" style={{ opacity: 1 - i * 0.15 }} />
+                ))}
+              </div>
             )}
             {!datiCaricamento && giorni.length === 0 && (
               <p className="py-16 text-sm text-on-surface-variant text-center">Nessun dato per {meseFmt}.</p>
@@ -765,7 +769,11 @@ export default function StipendioPage() {
           </div>
 
           {datiCaricamento && (
-            <p className="px-5 py-8 text-sm text-on-surface-variant text-center">Caricamento…</p>
+            <div className="px-5 py-6 animate-pulse space-y-3">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-10 rounded-lg bg-surface-container-high" style={{ opacity: 1 - i * 0.2 }} />
+              ))}
+            </div>
           )}
 
           {!datiCaricamento && giorni.length === 0 && (
@@ -775,7 +783,7 @@ export default function StipendioPage() {
           <div className="divide-y divide-border-subtle">
             {[...giorni].reverse().map((g) => (
               <div key={g.data}>
-                <div className="hidden sm:grid grid-cols-8 px-5 py-4 hover:bg-surface-variant/20 transition-colors items-center">
+                <div className="hidden sm:grid grid-cols-8 px-5 py-4 hover:bg-surface-variant/30 border-l-2 border-transparent hover:border-primary transition-all items-center">
                   <span className="text-sm font-medium capitalize text-foreground">
                     {new Date(g.data + "T00:00:00").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}
                   </span>
