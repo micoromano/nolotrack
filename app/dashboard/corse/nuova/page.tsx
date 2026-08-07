@@ -137,13 +137,6 @@ export default function NuovaCorsaPage() {
         <h1 className="font-heading text-lg font-bold text-primary">Nuova corsa</h1>
       </header>
 
-      <div className="px-4 md:px-10 py-8">
-        <div className="max-w-3xl glass-card rounded-2xl">
-          <div className="border-b border-border-subtle px-5 py-3">
-            <p className="text-xs text-on-surface-variant">Inserisci i dettagli della corsa</p>
-          </div>
-          <form onSubmit={salva} className="p-5 space-y-5">
-
       <div className="px-4 md:px-10 py-8 max-w-[1440px] mx-auto">
         <form onSubmit={salva} className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Colonna sinistra: sezioni form */}
@@ -271,7 +264,7 @@ export default function NuovaCorsaPage() {
                   </Field>
                 </div>
               </div>
-            </Field>
+            </section>
 
             {/* Sezione dettaglio ordine */}
             <div className="border-t border-border-subtle pt-5 space-y-4">
@@ -328,6 +321,7 @@ export default function NuovaCorsaPage() {
                 </Field>
               </div>
             </section>
+            </div>
           </div>
 
           {/* Colonna destra: riepilogo + azioni */}

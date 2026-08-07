@@ -116,6 +116,7 @@ export default async function AgendaPage({
           const isOggi = dataStr === oggiStr;
           const haServizi = corseGiorno.length > 0;
 
+          if (!haServizi) {
             return (
               <div key={dataStr} className={cn(
                 "flex items-center gap-3 px-4 py-2 rounded-lg text-xs text-on-surface-variant/50",
@@ -136,17 +137,13 @@ export default async function AgendaPage({
             )}>
               {/* Header giorno */}
               <div className={cn(
-                "flex items-center justify-between px-4 py-2 border-b border-border-subtle",
+                "flex items-center justify-between px-4 py-3 border-b border-border-subtle",
                 isOggi ? "bg-primary/10" : "bg-surface-container-low/50"
               )}>
-                {/* Header giorno */}
-                <div className={cn(
-                  "flex items-center gap-3 px-4 py-3 border-b border-border-subtle",
-                  isOggi ? "bg-primary/10" : "bg-surface-container-low/50"
-                )}>
+                <div className="flex items-center gap-3">
                   {giorno.toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long" })}
                   {isOggi && <span className="ml-2 text-xs bg-primary text-primary-foreground px-1.5 py-0.5 rounded-lg">Oggi</span>}
-                </span>
+                </div>
                 <span className="text-xs text-on-surface-variant">{corseGiorno.length} serviz{corseGiorno.length === 1 ? "io" : "i"}</span>
               </div>
 
@@ -175,13 +172,13 @@ export default async function AgendaPage({
                         {new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(c.importo)}
                       </span>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
+            </div>
             );
           })}
         </div>
       </div>
-    </div>
   );
 }
