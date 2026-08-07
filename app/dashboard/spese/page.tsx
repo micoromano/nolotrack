@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
@@ -29,6 +29,7 @@ export default function SpesePage() {
   });
   const [salvando, setSalvando] = useState(false);
   const [errore, setErrore] = useState<string | null>(null);
+  const descrizioneRef = useRef<HTMLInputElement>(null);
 
   const supabase = createClient();
 
@@ -139,6 +140,7 @@ export default function SpesePage() {
             <div className="relative flex-1">
               <Tag size={13} weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50 pointer-events-none" />
               <input
+                ref={descrizioneRef}
                 type="text"
                 placeholder="Descrizione"
                 value={form.descrizione}
@@ -186,7 +188,7 @@ export default function SpesePage() {
               <Receipt size={32} weight="light" className="text-on-surface-variant mx-auto mb-3" />
               <p className="text-sm text-on-surface-variant mb-4">Nessuna spesa per questo periodo.</p>
               <button
-                onClick={() => document.querySelector<HTMLInputElement>('input[type="text"]')?.focus()}
+                onClick={() => descrizioneRef.current?.focus()}
                 className="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-lg hover:bg-primary/20 transition-colors uppercase tracking-wide"
               >
                 <Plus size={13} weight="bold" />

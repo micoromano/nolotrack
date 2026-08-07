@@ -123,8 +123,13 @@ export default function CassaPage() {
         {caricamento && (
           <div className="space-y-6 animate-pulse">
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className={cn("glass-card rounded-2xl p-5 h-28", i === 0 && "col-span-2 sm:col-span-1")}>
+              <div className="glass-card rounded-2xl p-5 h-28 col-span-2 sm:col-span-1">
+                <div className="w-10 h-10 rounded-xl bg-surface-container-high mb-3" />
+                <div className="h-3 w-20 bg-surface-container-high rounded mb-2" />
+                <div className="h-6 w-24 bg-surface-container-high rounded" />
+              </div>
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="glass-card rounded-2xl p-5 h-28">
                   <div className="w-10 h-10 rounded-xl bg-surface-container-high mb-3" />
                   <div className="h-3 w-20 bg-surface-container-high rounded mb-2" />
                   <div className="h-6 w-24 bg-surface-container-high rounded" />

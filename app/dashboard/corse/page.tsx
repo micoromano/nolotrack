@@ -46,6 +46,18 @@ const pagamentoIcon: Record<string, React.ElementType> = {
   noninc: ProhibitInset,
 };
 
+function PagamentoBadge({ tipo, full = false }: { tipo: string; full?: boolean }) {
+  const style = pagamentoBadgeStyle[tipo] ?? pagamentoBadgeStyle.uber;
+  const label = pagamentoLabel[tipo] ?? tipo;
+  const IconComp = pagamentoIcon[tipo] ?? Car;
+  return (
+    <span className={cn("inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase w-fit", style, full && "")}>
+      <IconComp size={9} weight="bold" />
+      {label}
+    </span>
+  );
+}
+
 export default async function CorsePage() {
   const locale = await getServerLocale();
   const supabase = await createClient();
@@ -112,12 +124,7 @@ export default async function CorsePage() {
                       <p className="text-xs text-on-surface-variant">{c.n_pax} pax</p>
                     )}
                   </div>
-                  {(() => { const IconComp = pagamentoIcon[c.tipo_pagamento] ?? Car; return (
-                    <span className={cn("inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase w-fit", pagamentoBadgeStyle[c.tipo_pagamento])}>
-                      <IconComp size={9} weight="bold" />
-                      {pagamentoLabel[c.tipo_pagamento] ?? c.tipo_pagamento}
-                    </span>
-                  ); })()}
+                  <PagamentoBadge tipo={c.tipo_pagamento} />
                   <span className="text-sm text-foreground truncate">{c.origine}</span>
                   <span className="text-sm text-on-surface-variant truncate">{c.destinazione}</span>
                   <div className="text-right">
@@ -135,12 +142,7 @@ export default async function CorsePage() {
                       <span className="font-mono text-xs text-on-surface-variant">
                         {new Date(c.data).toLocaleDateString(locale, { day: "numeric", month: "short" })} · {c.ora_partenza.slice(0, 5)}
                       </span>
-                      {(() => { const IconComp = pagamentoIcon[c.tipo_pagamento] ?? Car; return (
-                        <span className={cn("inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase", pagamentoBadgeStyle[c.tipo_pagamento])}>
-                          <IconComp size={9} weight="bold" />
-                          {pagamentoLabel[c.tipo_pagamento] ?? c.tipo_pagamento}
-                        </span>
-                      ); })()}
+                      <PagamentoBadge tipo={c.tipo_pagamento} />
                     </div>
                     <p className="text-sm text-foreground truncate">{c.origine} → {c.destinazione}</p>
                   </div>
