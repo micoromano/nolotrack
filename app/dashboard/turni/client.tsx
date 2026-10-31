@@ -9,12 +9,22 @@ import { Download } from "@phosphor-icons/react";
 /** Valore speciale della drop-down: nessun filtro (ultimi 30 turni). */
 const TUTTI = "tutti";
 
-function labelMese(m: string) {
+// locale passato dal server (Accept-Language): server e browser devono produrre
+// lo stesso testo, altrimenti React segnala un errore di idratazione.
+function labelMese(m: string, locale?: string) {
   const [anno, mes] = m.split("-");
-  return new Date(+anno, +mes - 1).toLocaleDateString(undefined, { month: "long", year: "numeric" });
+  return new Date(+anno, +mes - 1).toLocaleDateString(locale, { month: "long", year: "numeric" });
 }
 
-export function MeseSelect({ mese, mesiDisponibili }: { mese: string; mesiDisponibili: string[] }) {
+export function MeseSelect({
+  mese,
+  mesiDisponibili,
+  locale,
+}: {
+  mese: string;
+  mesiDisponibili: string[];
+  locale?: string;
+}) {
   const router = useRouter();
   const opzioni = mese !== TUTTI && !mesiDisponibili.includes(mese) ? [mese, ...mesiDisponibili] : mesiDisponibili;
 
@@ -30,7 +40,7 @@ export function MeseSelect({ mese, mesiDisponibili }: { mese: string; mesiDispon
       <option value={TUTTI}>Ultimi 30 turni</option>
       {opzioni.map((m) => (
         <option key={m} value={m}>
-          {labelMese(m)}
+          {labelMese(m, locale)}
         </option>
       ))}
     </select>
