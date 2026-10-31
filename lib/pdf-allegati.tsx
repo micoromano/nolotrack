@@ -1,4 +1,5 @@
 import { pdf, Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
+import { isoDataLocale } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { eurEquivalent, contribuisceACassa } from "@/lib/valuta";
 
@@ -133,7 +134,7 @@ export async function generaPDFRapportino(
   const cur = new Date(dataInizio + "T00:00:00");
   const end = new Date(dataFine + "T00:00:00");
   while (cur <= end) {
-    giorni.push(cur.toISOString().split("T")[0]);
+    giorni.push(isoDataLocale(cur));
     cur.setDate(cur.getDate() + 1);
   }
 
@@ -899,6 +900,119 @@ export async function generaPDFCarburante(
   const blob = await pdf(doc).toBlob();
   const content = await blobToBase64(blob);
   const filename = `carburante_${dataInizio}_${dataFine}.pdf`;
+
+  return { filename, content };
+}
+
+// ─────────────────────────────────────────────────────
+// 4. Registro turni (export mensile da /dashboard/turni)
+// ─────────────────────────────────────────────────────
+export async function generaPDFTurni(
+  userId: string,
+  dataInizio: string,
+  dataFine: string
+): Promise<{ filename: string; content: string }> {
+  const supabase = createClient();
+
+  const { data } = await supabase
+    .from("turni")
+    .select("data, ora_inizio, ora_fine, ore_lavorate, note")
+    .eq("autista_id", userId)
+    .gte("data", dataInizio)
+    .lte("data", dataFine)
+    .order("data");
+
+  const turni: Array<{
+    data: string;
+    ora_inizio: string;
+    ora_fine: string;
+    ore_lavorate: number;
+    note?: string | null;
+  }> = data ?? [];
+
+  const totOre = turni.reduce((s, t) => s + Number(t.ore_lavorate), 0);
+  const mediaOre = turni.length > 0 ? totOre / turni.length : 0;
+  const periodoFmt = `${dataitIT(dataInizio)} – ${dataitIT(dataFine)}`;
+  const s = sharedStyles;
+
+  const giornoSett = (iso: string) =>
+    new Date(iso + "T00:00:00").toLocaleDateString("it-IT", { weekday: "short" });
+
+  const doc = (
+    <Document>
+      <Page size="A4" style={s.page}>
+        <View style={s.header}>
+          <View>
+            <Text style={s.headerTitle}>Registro Turni</Text>
+            <Text style={s.headerSub}>NoloTrack — Gestione NCC</Text>
+          </View>
+          <Text style={{ fontSize: 9, color: "#666" }}>{periodoFmt}</Text>
+        </View>
+
+        <View style={s.section}>
+          <Text style={s.sectionTitle}>Riepilogo periodo</Text>
+          <View style={s.row}>
+            <Text style={s.label}>Turni registrati</Text>
+            <Text style={s.value}>{turni.length}</Text>
+          </View>
+          <View style={s.row}>
+            <Text style={s.label}>Media ore / turno</Text>
+            <Text style={s.value}>{formatOre(mediaOre)}</Text>
+          </View>
+          <View style={s.accentBox}>
+            <Text style={{ fontFamily: "Helvetica-Bold", color: "#0078d4" }}>Ore lavorate totali</Text>
+            <Text style={{ fontSize: 13, fontFamily: "Helvetica-Bold", color: "#0078d4" }}>{formatOre(totOre)}</Text>
+          </View>
+        </View>
+
+        <View style={s.section}>
+          <Text style={s.sectionTitle}>Dettaglio turni</Text>
+          {turni.length === 0 ? (
+            <Text style={s.label}>Nessun turno registrato nel periodo.</Text>
+          ) : (
+            <View style={s.table}>
+              <View style={s.tableHeader} fixed>
+                <Text style={[{ width: "12%" }, s.th]}>Giorno</Text>
+                <Text style={[{ width: "16%" }, s.th]}>Data</Text>
+                <Text style={[{ width: "12%", textAlign: "right" }, s.th]}>Inizio</Text>
+                <Text style={[{ width: "12%", textAlign: "right" }, s.th]}>Fine</Text>
+                <Text style={[{ width: "14%", textAlign: "right" }, s.th]}>Ore</Text>
+                <Text style={[{ flex: 1, paddingLeft: 10 }, s.th]}>Note</Text>
+              </View>
+              {turni.map((t, i) => (
+                <View key={t.data} style={i < turni.length - 1 ? s.tableRow : s.tableRowLast} wrap={false}>
+                  <Text style={{ width: "12%", textTransform: "capitalize" }}>{giornoSett(t.data)}</Text>
+                  <Text style={{ width: "16%" }}>{dataitIT(t.data)}</Text>
+                  <Text style={{ width: "12%", textAlign: "right" }}>{t.ora_inizio.slice(0, 5)}</Text>
+                  <Text style={{ width: "12%", textAlign: "right" }}>{t.ora_fine.slice(0, 5)}</Text>
+                  <Text style={{ width: "14%", textAlign: "right", fontFamily: "Helvetica-Bold" }}>
+                    {formatOre(Number(t.ore_lavorate))}
+                  </Text>
+                  <Text style={{ flex: 1, paddingLeft: 10, color: "#555" }}>{t.note ?? ""}</Text>
+                </View>
+              ))}
+              <View style={s.totaleRow}>
+                <Text style={{ fontFamily: "Helvetica-Bold" }}>Totale</Text>
+                <Text style={{ fontFamily: "Helvetica-Bold", color: "#0078d4" }}>{formatOre(totOre)}</Text>
+              </View>
+            </View>
+          )}
+        </View>
+
+        <View style={s.footer} fixed>
+          <Text style={s.footerText}>NoloTrack — Registro turni</Text>
+          <Text
+            style={s.footerText}
+            render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`}
+          />
+        </View>
+      </Page>
+    </Document>
+  );
+
+  const blob = await pdf(doc).toBlob();
+  const content = await blobToBase64(blob);
+  const filename = `turni_${dataInizio}_${dataFine}.pdf`;
 
   return { filename, content };
 }

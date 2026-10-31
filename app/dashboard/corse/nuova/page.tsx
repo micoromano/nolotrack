@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { cn, isoDataLocale } from "@/lib/utils";
 import type { TipoPagamento, Valuta } from "@/types";
 import { VALUTE, eurEquivalent, formatValuta } from "@/lib/valuta";
 import {
@@ -59,7 +59,7 @@ function formatEuro(n: number) {
 }
 
 export default function NuovaCorsaPage() {
-  const oggi = new Date().toISOString().split("T")[0];
+  const oggi = isoDataLocale();
   const oraAdesso = new Date().toTimeString().slice(0, 5);
 
   const [data, setData] = useState(oggi);

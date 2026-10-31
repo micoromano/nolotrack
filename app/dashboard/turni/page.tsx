@@ -1,9 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn, isoDataLocale, rangeMese } from "@/lib/utils";
 import { getServerLocale } from "@/lib/locale";
 import { Plus, Clock, CalendarCheck, ChartLineUp } from "@phosphor-icons/react/dist/ssr";
+import { MeseSelect, PdfTurniButton } from "./client";
 
 function formatOre(ore: number) {
   const h = Math.floor(ore);
@@ -11,19 +12,49 @@ function formatOre(ore: number) {
   return `${h}h ${m}m`;
 }
 
-export default async function TurniPage() {
+export default async function TurniPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ mese?: string }>;
+}) {
+  const { mese: meseParam } = await searchParams;
   const locale = await getServerLocale();
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const { data: turni } = await supabase
+  const oggi = isoDataLocale();
+  // Senza parametro → mese corrente; "?mese=tutti" → ultimi 30 turni (vista precedente)
+  const mese = meseParam === "tutti"
+    ? "tutti"
+    : meseParam && /^\d{4}-(0[1-9]|1[0-2])$/.test(meseParam)
+      ? meseParam
+      : oggi.slice(0, 7);
+
+  let query = supabase
     .from("turni")
     .select("*")
     .eq("autista_id", user!.id)
-    .order("data", { ascending: false })
-    .limit(30);
+    .order("data", { ascending: false });
+  if (mese === "tutti") {
+    query = query.limit(30);
+  } else {
+    const { inizio, fine } = rangeMese(mese);
+    query = query.gte("data", inizio).lte("data", fine);
+  }
 
-  const oggi = new Date().toISOString().split("T")[0];
+  const [{ data: turni }, { data: tutteLeDate }] = await Promise.all([
+    query,
+    supabase.from("turni").select("data").eq("autista_id", user!.id),
+  ]);
+
+  const mesiDisponibili = [...new Set((tutteLeDate ?? []).map((t) => t.data.slice(0, 7)))]
+    .sort()
+    .reverse();
+
+  const meseFmt = mese === "tutti"
+    ? "Ultimi 30 turni registrati"
+    : new Date(+mese.slice(0, 4), +mese.slice(5, 7) - 1).toLocaleDateString(locale, { month: "long", year: "numeric" });
+
   const turnoOggi = turni?.find((t) => t.data === oggi);
 
   const totOre = turni?.reduce((acc, t) => acc + Number(t.ore_lavorate), 0) ?? 0;
@@ -34,12 +65,16 @@ export default async function TurniPage() {
       <header className="sticky top-0 z-30 bg-surface/80 backdrop-blur-xl border-b border-border-subtle h-16 flex items-center justify-between px-4 md:px-10">
         <div>
           <h1 className="font-heading text-lg font-bold text-primary">Turni</h1>
-          <p className="text-xs text-on-surface-variant">Ultimi 30 turni registrati</p>
+          <p className="text-xs text-on-surface-variant capitalize">{meseFmt}</p>
         </div>
+        <div className="flex items-center gap-2 sm:gap-3">
+        <MeseSelect mese={mese} mesiDisponibili={mesiDisponibili} />
+        <PdfTurniButton mese={mese} />
         <Link href="/dashboard/turni/nuovo" className={cn(buttonVariants({ size: "sm" }), "gap-1.5 text-xs font-bold uppercase tracking-wide shadow-lg shadow-primary/20")}>
           <Plus size={14} weight="bold" />
-          Nuovo turno
+          <span className="hidden sm:inline">Nuovo turno</span>
         </Link>
+        </div>
       </header>
 
       <div className="px-4 md:px-10 py-8 max-w-[1440px] mx-auto space-y-6">
@@ -97,7 +132,9 @@ export default async function TurniPage() {
           {!turni?.length && (
             <div className="px-6 py-16 text-center">
               <Clock size={32} weight="light" className="text-on-surface-variant mx-auto mb-3" />
-              <p className="text-sm text-on-surface-variant mb-4">Nessun turno registrato.</p>
+              <p className="text-sm text-on-surface-variant mb-4">
+                {mese === "tutti" ? "Nessun turno registrato." : `Nessun turno registrato in ${meseFmt}.`}
+              </p>
               <Link href="/dashboard/turni/nuovo" className={cn(buttonVariants({ size: "sm" }), "gap-1.5 text-xs font-bold uppercase tracking-wide shadow-lg shadow-primary/20")}>
                 <Plus size={13} weight="bold" />
                 Registra il primo turno

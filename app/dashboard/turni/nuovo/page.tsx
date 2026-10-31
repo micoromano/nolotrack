@@ -3,12 +3,12 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { cn, isoDataLocale } from "@/lib/utils";
 import { sendPush } from "@/lib/push";
 import { ArrowLeft, CalendarBlank, Clock, NotePencil, CheckCircle } from "@phosphor-icons/react";
 
 export default function NuovoTurnoPage() {
-  const oggi = new Date().toISOString().split("T")[0];
+  const oggi = isoDataLocale();
   const [data, setData] = useState(oggi);
   const [oraInizio, setOraInizio] = useState("");
   const [oraFine, setOraFine] = useState("");

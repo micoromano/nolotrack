@@ -13,7 +13,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { cn } from "@/lib/utils";
+import { cn, rangeMese } from "@/lib/utils";
 import { eurEquivalent } from "@/lib/valuta";
 import {
   Money,
@@ -195,9 +195,8 @@ export default function StipendioPage() {
       } = await supabase.auth.getUser();
       if (!user) return;
 
-      const inizioMese = `${meseSel}-01`;
-      const [anno, m] = meseSel.split("-").map(Number);
-      const fineMese = new Date(anno, m, 0).toISOString().split("T")[0]; // ultimo giorno del mese
+      // Range 1 → ultimo giorno del mese (incluso), calcolato senza passare per UTC
+      const { inizio: inizioMese, fine: fineMese } = rangeMese(meseSel);
 
       const [turniRes, corseRes] = await Promise.all([
         supabase
@@ -352,9 +351,7 @@ export default function StipendioPage() {
       setScaricandoPDF(false);
       return;
     }
-    const [anno, m] = mese.split("-").map(Number);
-    const dataInizio = `${mese}-01`;
-    const dataFine = new Date(anno, m, 0).toISOString().split("T")[0];
+    const { inizio: dataInizio, fine: dataFine } = rangeMese(mese);
 
     const { generaPDFStipendio } = await import("@/lib/pdf-allegati");
     const { filename, content } = await generaPDFStipendio(user.id, dataInizio, dataFine);
