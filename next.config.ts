@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Build Docker/self-hosting: server Node autonomo in .next/standalone
+  // (attivato dal Dockerfile con BUILD_STANDALONE=1; su Vercel resta il default).
+  output: process.env.BUILD_STANDALONE === "1" ? "standalone" : undefined,
   async headers() {
     return [
       {

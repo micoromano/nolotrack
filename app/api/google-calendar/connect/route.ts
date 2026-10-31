@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
+import { originRichiesta } from "@/lib/request-origin";
 
 export async function GET(req: Request) {
-  const origin = new URL(req.url).origin;
+  const origin = originRichiesta(req);
   const redirectUri = `${origin}/api/google-calendar/callback`;
 
   const oauth2Client = new google.auth.OAuth2(

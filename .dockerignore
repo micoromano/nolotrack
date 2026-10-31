@@ -1,0 +1,25 @@
+# Non serve nell'immagine (velocizza la build, evita di copiare segreti)
+.git
+.github
+.claude
+.superpowers
+.next
+node_modules
+android
+ios
+tests
+coverage
+backups
+docs
+database
+docker
+*.md
+!README.md
+*.tsbuildinfo
+next-env.d.ts
+.env
+.env.*
+Dockerfile
+docker-compose*.yml
+playwright-report
+test-results

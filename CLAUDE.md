@@ -318,6 +318,33 @@ Obiettivo: dare a Meta/WhatsApp Business API un sito vetrina reale, statico, sen
 
 ---
 
+## Self-hosting (Docker, senza Vercel né Supabase cloud)
+
+Branch `claude/docker-self-hosting`. Documentazione per l'utente in
+[`docs/self-hosting/`](docs/self-hosting/README.md), manuale d'uso in
+[`docs/MANUALE-UTENTE.md`](docs/MANUALE-UTENTE.md).
+
+- `docker-compose.yml`: `db` (supabase/postgres 15) · `auth` (GoTrue) · `migrate`
+  (one-shot) · `rest` (PostgREST) · `app` (Next.js standalone) · `gateway` (nginx,
+  unica origine: `/auth/v1` → GoTrue, `/rest/v1` → PostgREST, resto → app) ·
+  `caddy` (HTTPS, `--profile https`).
+- **Schema DB**: fonte di verità in `database/ddl` + `database/dml` (idempotenti,
+  applicati a ogni avvio da `docker/migrate/migrate.sh`). Ogni modifica di schema
+  va aggiunta lì come nuovo file numerato idempotente, con RLS e policy. I vecchi
+  `*_sql.sql` / `supabase/migrations` sono solo storico.
+- `lib/supabase/config.ts`: lato server usa `SUPABASE_INTERNAL_URL` se presente
+  (Docker: `http://gateway`), nel browser `NEXT_PUBLIC_SUPABASE_URL`; nome del cookie
+  di sessione sempre derivato dall'URL pubblico. Nei nuovi client Supabase usare
+  `supabaseServerUrl()` / `supabaseCookieOptions`, mai `process.env.NEXT_PUBLIC_SUPABASE_URL` diretto.
+- `lib/request-origin.ts` → `originRichiesta(req)`: origine pubblica per redirect e
+  redirect_uri OAuth nei route handler (`new URL(req.url).origin` dietro proxy /
+  in standalone restituisce l'indirizzo interno).
+- `next.config.ts`: `output: "standalone"` solo con `BUILD_STANDALONE=1` (Dockerfile).
+- `NEXT_PUBLIC_*` sono build arg del Dockerfile: se cambiano serve rebuild.
+- Script: `scripts/genera-env.mjs` (segreti + JWT anon/service), `crea-admin.mjs`
+  (gira nel container app), `backup.sh` / `ripristina.sh` (solo dati public+auth,
+  ripristino transazionale), `importa-da-supabase.sh` (utenti + dati dal cloud).
+
 ## App mobile
 
 Guscio nativo Capacitor (Android/iOS) che carica il deploy web esistente via

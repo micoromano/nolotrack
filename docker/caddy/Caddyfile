@@ -1,0 +1,7 @@
+# HTTPS automatico (Let's Encrypt) davanti al gateway.
+# Attivo solo con: docker compose --profile https up -d
+# Richiede DOMAIN puntato (record DNS A/AAAA) all'IP del server e porte 80/443 aperte.
+{$DOMAIN} {
+	encode zstd gzip
+	reverse_proxy gateway:80
+}

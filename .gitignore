@@ -42,3 +42,9 @@ next-env.d.ts
 
 # claude code
 .claude/worktrees/
+
+# template configurazione self-hosting (senza segreti)
+!.env.example
+
+# backup database (scripts/backup.sh)
+/backups/

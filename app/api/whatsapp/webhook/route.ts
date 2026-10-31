@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient as createAdminClient, SupabaseClient } from "@supabase/supabase-js";
+import { supabaseServerUrl } from "@/lib/supabase/config";
 import { verificaFirmaWebhook, inviaBottoni, inviaLista, inviaTesto } from "@/lib/whatsapp";
 import type { TipoPagamento } from "@/types";
 
 function adminClient(): SupabaseClient {
   return createAdminClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    supabaseServerUrl(),
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 }

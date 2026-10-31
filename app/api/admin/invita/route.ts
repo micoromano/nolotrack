@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
+import { supabaseServerUrl } from "@/lib/supabase/config";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest) {
   }
 
   const adminClient = createAdminClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    supabaseServerUrl(),
     process.env.SUPABASE_SERVICE_ROLE_KEY,
   );
 
