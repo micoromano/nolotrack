@@ -68,7 +68,7 @@ export default async function TurniPage({
           <p className="text-xs text-on-surface-variant capitalize">{meseFmt}</p>
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
-        <MeseSelect mese={mese} mesiDisponibili={mesiDisponibili} />
+        <MeseSelect mese={mese} mesiDisponibili={mesiDisponibili} locale={locale} />
         <PdfTurniButton mese={mese} />
         <Link href="/dashboard/turni/nuovo" className={cn(buttonVariants({ size: "sm" }), "gap-1.5 text-xs font-bold uppercase tracking-wide shadow-lg shadow-primary/20")}>
           <Plus size={14} weight="bold" />
