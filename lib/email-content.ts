@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
+import { isoDataLocale } from "@/lib/utils";
 
 export type TipoDocumento = "rapportino" | "stipendio" | "carburante";
 
@@ -31,7 +32,7 @@ async function rapportinoRange(supabase: ReturnType<typeof createClient>, userId
   const cur = new Date(dataInizio + "T00:00:00");
   const end = new Date(dataFine + "T00:00:00");
   while (cur <= end) {
-    giorni.push(cur.toISOString().split("T")[0]);
+    giorni.push(isoDataLocale(cur));
     cur.setDate(cur.getDate() + 1);
   }
 

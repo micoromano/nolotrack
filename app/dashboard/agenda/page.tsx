@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { AgendaNav, IcalButton, GoogleCalendarButton } from "./client";
-import { cn } from "@/lib/utils";
+import { cn, isoDataLocale } from "@/lib/utils";
 import { getServerLocale } from "@/lib/locale";
 import { CalendarCheck } from "@phosphor-icons/react/dist/ssr";
 
@@ -81,7 +81,7 @@ export default async function AgendaPage({
     giorni.push(new Date(anno, mese - 1, g));
   }
 
-  const oggiStr = oggi.toISOString().split("T")[0];
+  const oggiStr = isoDataLocale(oggi);
 
   // Metriche derivate dal mese caricato
   const totServizi = corse.length;
@@ -112,7 +112,7 @@ export default async function AgendaPage({
 
       <div className="px-4 md:px-10 py-8 space-y-2 max-w-2xl">
         {giorni.map((giorno) => {
-          const dataStr = giorno.toISOString().split("T")[0];
+          const dataStr = isoDataLocale(giorno);
           const corseGiorno = corsePerGiorno.get(dataStr) ?? [];
           const isOggi = dataStr === oggiStr;
           const haServizi = corseGiorno.length > 0;

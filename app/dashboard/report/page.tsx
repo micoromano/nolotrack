@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import dynamic from "next/dynamic";
-import { cn } from "@/lib/utils";
+import { cn, isoDataLocale } from "@/lib/utils";
 import { eurEquivalent, contribuisceACassa } from "@/lib/valuta";
 import {
   Clock,
@@ -33,7 +33,7 @@ function formatImporto(c: { importo: number; valuta: string; tasso_cambio: numbe
 function prevDay(dateStr: string) {
   const d = new Date(dateStr + "T00:00:00");
   d.setDate(d.getDate() - 1);
-  return d.toISOString().split("T")[0];
+  return isoDataLocale(d);
 }
 
 interface Corsa {
@@ -71,7 +71,7 @@ interface Rapportino {
 }
 
 export default function ReportPage() {
-  const [data, setData] = useState(new Date().toISOString().split("T")[0]);
+  const [data, setData] = useState(isoDataLocale());
   const [rapportino, setRapportino] = useState<Rapportino | null>(null);
   const [caricamento, setCaricamento] = useState(false);
   const [nuovaSpesaDesc, setNuovaSpesaDesc] = useState("");

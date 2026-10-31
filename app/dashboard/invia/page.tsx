@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { generaContenutoEmail, type TipoDocumento } from "@/lib/email-content";
-import { cn } from "@/lib/utils";
+import { cn, isoDataLocale } from "@/lib/utils";
 import {
   PaperPlaneTilt,
   EnvelopeSimple,
@@ -41,14 +41,14 @@ const inputClass =
 // Helpers date
 // ─────────────────────────────────────────────────────
 function oggi() {
-  return new Date().toISOString().split("T")[0];
+  return isoDataLocale();
 }
 function inizioSettimana() {
   const d = new Date();
   const day = d.getDay();
   const diff = day === 0 ? -6 : 1 - day;
   d.setDate(d.getDate() + diff);
-  return d.toISOString().split("T")[0];
+  return isoDataLocale(d);
 }
 function inizioMese() {
   const d = new Date();

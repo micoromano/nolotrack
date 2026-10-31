@@ -6,7 +6,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 const CarburantePDFButton = dynamic(() => import("./pdf-button"), { ssr: false });
-import { cn } from "@/lib/utils";
+import { cn, isoDataLocale } from "@/lib/utils";
 import {
   GasPump,
   CurrencyEur,
@@ -58,7 +58,7 @@ export default function CarburantePage() {
   const [salvandoTarga, setSalvandoTarga] = useState(false);
 
   const [form, setForm] = useState({
-    data: new Date().toISOString().slice(0, 10),
+    data: isoDataLocale(),
     targa: "",
     km: "",
     litri: "",
@@ -151,7 +151,7 @@ export default function CarburantePage() {
     if (error) {
       setErrore(error.message);
     } else {
-      setForm(f => ({ data: new Date().toISOString().slice(0, 10), targa: f.targa, km: "", litri: "", prezzo_litro: "", importo: "" }));
+      setForm(f => ({ data: isoDataLocale(), targa: f.targa, km: "", litri: "", prezzo_litro: "", importo: "" }));
       await carica();
     }
     setSalvando(false);

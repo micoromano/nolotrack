@@ -185,7 +185,8 @@ app/
 │   ├── layout.tsx              — sm:pl-56 pt-12 sm:pt-0 pb-20 sm:pb-0
 │   ├── page.tsx                — riepilogo giornaliero (SERVER component)
 │   ├── turni/
-│   │   ├── page.tsx            — lista turni (tabella Azure)
+│   │   ├── page.tsx            — lista turni filtrata per mese (?mese=YYYY-MM | tutti) + export PDF mensile
+│   │   ├── client.tsx          — MeseSelect (drop-down mese) + PdfTurniButton
 │   │   └── nuovo/page.tsx      — form nuovo/modifica turno
 │   ├── corse/
 │   │   ├── page.tsx            — lista corse con badge pagamento
@@ -222,7 +223,7 @@ lib/
 ├── pdf-allegati.tsx            — generatori PDF base64 (rapportino/stipendio/carburante)
 ├── email-content.ts            — generatori testo email per anteprima
 ├── whatsapp.ts                 — client Meta Cloud API (invio testo/bottoni/lista, firma webhook, placeholder)
-└── utils.ts                    — cn()
+└── utils.ts                    — cn(), isoDataLocale(), rangeMese()
 
 types/index.ts                  — TipoPagamento, Corsa, Turno, Spesa, ConfigurazioneSalario, WhatsappTemplate, WhatsappLog
 ```
@@ -248,6 +249,7 @@ Home, Corse, Cassa, Stipendio, Invia
   - `generaPDFRapportino(userId, dataInizio, dataFine)` — multi-pagina, un giorno per pagina
   - `generaPDFStipendio(userId, dataInizio, dataFine)` — riepilogo mensile
   - `generaPDFCarburante(userId, dataInizio, dataFine)` — tabella rifornimenti
+  - `generaPDFTurni(userId, dataInizio, dataFine)` — registro turni del mese
 - Stile PDF: sfondo bianco, accento `#0078d4`, font Helvetica
 
 ---
@@ -323,6 +325,10 @@ Guscio nativo Capacitor (Android/iOS) che carica il deploy web esistente via
 architettura, build locale e requisiti di pubblicazione sugli store.
 
 ## Pattern da rispettare
+
+**Date**: MAI `d.toISOString().split("T")[0]` per ottenere una data `YYYY-MM-DD` lato client —
+converte in UTC e in Italia la mezzanotte locale diventa il giorno prima (bug "il 31 non conta").
+Usare `isoDataLocale(d)` e `rangeMese("YYYY-MM")` da `lib/utils.ts`.
 
 ```tsx
 // Link-button corretto (Button non ha asChild)

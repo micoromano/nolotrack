@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { cn } from "@/lib/utils";
+import { cn, isoDataLocale } from "@/lib/utils";
 import { Receipt, Plus, Trash, CalendarBlank, Tag, PencilSimple } from "@phosphor-icons/react";
 
 function euro(n: number) {
@@ -23,7 +23,7 @@ export default function SpesePage() {
   const [mese, setMese] = useState("");
 
   const [form, setForm] = useState({
-    data: new Date().toISOString().slice(0, 10),
+    data: isoDataLocale(),
     descrizione: "",
     importo: "",
   });
@@ -69,7 +69,7 @@ export default function SpesePage() {
     if (error) {
       setErrore(error.message);
     } else {
-      setForm({ data: new Date().toISOString().slice(0, 10), descrizione: "", importo: "" });
+      setForm({ data: isoDataLocale(), descrizione: "", importo: "" });
       await carica();
     }
     setSalvando(false);
