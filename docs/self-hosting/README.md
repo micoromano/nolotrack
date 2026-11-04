@@ -7,6 +7,7 @@ Vercel e senza Supabase cloud.
 |---|---|
 | [INSTALLAZIONE.md](INSTALLAZIONE.md) | **Inizia da qui**: requisiti, installazione passo-passo, HTTPS, primo admin |
 | [CONFIGURAZIONE.md](CONFIGURAZIONE.md) | Tutte le variabili di `.env`: email, Google, WhatsApp, notifiche |
+| [KUBERNETES.md](KUBERNETES.md) | Installazione su un cluster Kubernetes (Kustomize: ConfigMap, Secret, Ingress, backup) |
 | [ARCHITETTURA.md](ARCHITETTURA.md) | Cosa viene installato e come comunicano i servizi |
 | [DATABASE.md](DATABASE.md) | Script SQL DDL/DML, modello dati, sicurezza RLS, uso su altri PostgreSQL |
 | [MIGRAZIONE-DA-SUPABASE.md](MIGRAZIONE-DA-SUPABASE.md) | Portare utenti e dati dal cloud |

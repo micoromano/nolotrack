@@ -4,6 +4,8 @@
 // =============================================================================
 //   node scripts/genera-env.mjs            → compila solo i campi vuoti
 //   node scripts/genera-env.mjs --forza    → rigenera TUTTI i segreti
+//   node scripts/genera-env.mjs --file <f> --template <t>
+//        → altro file (es. i Secret Kubernetes: vedi docs/self-hosting/KUBERNETES.md)
 //
 // Segreti generati:
 //   POSTGRES_PASSWORD  password del database (solo caratteri sicuri per URL)
@@ -20,13 +22,18 @@ import { readFileSync, writeFileSync, existsSync, copyFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
-const envPath = resolve(root, ".env");
-const examplePath = resolve(root, ".env.example");
-const forza = process.argv.includes("--forza");
+const argv = process.argv.slice(2);
+const opzione = (nome) => {
+  const i = argv.indexOf(nome);
+  return i >= 0 ? argv[i + 1] : undefined;
+};
+const envPath = resolve(opzione("--file") ?? resolve(root, ".env"));
+const examplePath = resolve(opzione("--template") ?? resolve(root, ".env.example"));
+const forza = argv.includes("--forza");
 
 if (!existsSync(envPath)) {
   copyFileSync(examplePath, envPath);
-  console.log("Creato .env da .env.example");
+  console.log(`Creato ${envPath} da ${examplePath}`);
 }
 
 const b64url = (buf) => Buffer.from(buf).toString("base64url");
@@ -72,7 +79,7 @@ for (const [k, role] of [["ANON_KEY", "anon"], ["SERVICE_ROLE_KEY", "service_rol
   }
 }
 
-if (!leggi("META_WHATSAPP_VERIFY_TOKEN")) {
+if (/^META_WHATSAPP_VERIFY_TOKEN=/m.test(testo) && !leggi("META_WHATSAPP_VERIFY_TOKEN")) {
   scrivi("META_WHATSAPP_VERIFY_TOKEN", randomBytes(16).toString("hex"));
   generati.push("META_WHATSAPP_VERIFY_TOKEN");
 }
@@ -80,7 +87,7 @@ if (!leggi("META_WHATSAPP_VERIFY_TOKEN")) {
 writeFileSync(envPath, testo);
 
 if (generati.length) {
-  console.log(`Aggiornato .env → ${generati.join(", ")}`);
+  console.log(`Aggiornato ${envPath} → ${generati.join(", ")}`);
   if (jwtCambiato) {
     console.log("JWT_SECRET nuovo: ricostruisci l'app (docker compose up -d --build) — l'ANON_KEY è nel bundle.");
   }

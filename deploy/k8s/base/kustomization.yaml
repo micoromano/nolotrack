@@ -1,0 +1,41 @@
+# =============================================================================
+# NoloTrack su Kubernetes — base comune (Kustomize)
+# =============================================================================
+# Non applicare direttamente: usa un overlay (es. ../overlays/produzione), che
+# aggiunge configurazione (config.env), Secret (secrets.env), immagini e host.
+# Guida: docs/self-hosting/KUBERNETES.md
+# =============================================================================
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: nolotrack
+
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: nolotrack
+    includeSelectors: false
+
+resources:
+  - namespace.yaml
+  - db-init-configmap.yaml
+  - db.yaml
+  - auth.yaml
+  - rest.yaml
+  - app.yaml
+  - gateway.yaml
+  - ingress.yaml
+  - backup-cronjob.yaml
+  - networkpolicy.yaml
+
+configMapGenerator:
+  # Valori di default: l'overlay li sovrascrive con behavior: merge
+  - name: nolotrack-config
+    envs:
+      - config-default.env
+  # Configurazione nginx del gateway (stesso instradamento di docker/nginx/default.conf)
+  - name: gateway-nginx
+    files:
+      - default.conf=gateway-nginx.conf
+
+# Le immagini (nolotrack-app, nolotrack-migrate) NON si impostano qui ma
+# nell'overlay (blocco images:), con registry e tag dell'installazione.

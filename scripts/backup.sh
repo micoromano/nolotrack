@@ -4,6 +4,7 @@
 # =============================================================================
 #   ./scripts/backup.sh                 → backups/nolotrack_AAAAMMGG_HHMMSS.dump
 #   CONSERVA=14 ./scripts/backup.sh     → tiene solo gli ultimi 14 backup
+#   K8S_NAMESPACE=nolotrack ./scripts/backup.sh  → da un cluster Kubernetes
 # Formato custom di pg_dump (compresso), si ripristina con scripts/ripristina.sh
 # Contiene i DATI degli schemi public (app) e auth (utenti, password cifrate):
 # la struttura delle tabelle è nel codice (database/ddl) e la ricrea il migrate.
@@ -12,10 +13,11 @@
 # =============================================================================
 set -eu
 cd "$(dirname "$0")/.."
+. ./scripts/lib-db.sh
 mkdir -p backups
 
 FILE="backups/nolotrack_$(date +%Y%m%d_%H%M%S).dump"
-docker compose exec -T db pg_dump -U supabase_admin -d postgres \
+db_exec pg_dump -U supabase_admin -d postgres \
   --format=custom --data-only \
   --schema=public --schema=auth \
   --exclude-table-data=auth.schema_migrations \

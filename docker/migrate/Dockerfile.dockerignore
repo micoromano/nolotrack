@@ -1,0 +1,4 @@
+# .dockerignore dedicato (BuildKit): all'immagine migrate servono solo questi
+*
+!database/
+!docker/migrate/migrate.sh

@@ -1,0 +1,20 @@
+# Ingress pubblico → gateway. Host e TLS si impostano nell'overlay.
+# Presuppone ingress-nginx; con altri controller adatta ingressClassName/annotazioni.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nolotrack
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 20m   # allegati PDF dell'invio email
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: nolotrack.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway
+                port: { name: http }

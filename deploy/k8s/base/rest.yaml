@@ -1,0 +1,55 @@
+# PostgREST — API REST sui dati (protette da Row Level Security)
+apiVersion: v1
+kind: Service
+metadata:
+  name: rest
+  labels: { app.kubernetes.io/name: rest }
+spec:
+  selector: { app.kubernetes.io/name: rest }
+  ports:
+    - { name: http, port: 3000 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rest
+  labels: { app.kubernetes.io/name: rest }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app.kubernetes.io/name: rest }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: rest }
+    spec:
+      containers:
+        - name: postgrest
+          image: postgrest/postgrest:v12.2.12
+          ports:
+            - { name: http, containerPort: 3000 }
+            - { name: admin, containerPort: 3001 }
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom: { secretKeyRef: { name: nolotrack-secrets, key: POSTGRES_PASSWORD } }
+            - name: PGRST_JWT_SECRET
+              valueFrom: { secretKeyRef: { name: nolotrack-secrets, key: JWT_SECRET } }
+            - name: JWT_EXP
+              valueFrom: { configMapKeyRef: { name: nolotrack-config, key: JWT_EXP } }
+            - { name: PGRST_DB_URI, value: "postgres://authenticator:$(POSTGRES_PASSWORD)@db:5432/postgres" }
+            - { name: PGRST_DB_SCHEMAS, value: public }
+            - { name: PGRST_DB_ANON_ROLE, value: anon }
+            - { name: PGRST_DB_USE_LEGACY_GUCS, value: "false" }
+            - { name: PGRST_APP_SETTINGS_JWT_SECRET, value: $(PGRST_JWT_SECRET) }
+            - { name: PGRST_APP_SETTINGS_JWT_EXP, value: $(JWT_EXP) }
+            - { name: PGRST_DB_MAX_ROWS, value: "10000" }
+            - { name: PGRST_ADMIN_SERVER_PORT, value: "3001" }
+          readinessProbe:
+            httpGet: { path: /ready, port: admin }
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /live, port: admin }
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { memory: 256Mi }

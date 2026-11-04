@@ -1,0 +1,77 @@
+# GoTrue — login email/password, Google OAuth, inviti e reset via email
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth
+  labels: { app.kubernetes.io/name: auth }
+spec:
+  selector: { app.kubernetes.io/name: auth }
+  ports:
+    - { name: http, port: 9999 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth
+  labels: { app.kubernetes.io/name: auth }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app.kubernetes.io/name: auth }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: auth }
+    spec:
+      containers:
+        - name: gotrue
+          image: supabase/gotrue:v2.177.0
+          ports:
+            - { name: http, containerPort: 9999 }
+          envFrom:
+            - configMapRef: { name: nolotrack-config }
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom: { secretKeyRef: { name: nolotrack-secrets, key: POSTGRES_PASSWORD } }
+            - name: GOTRUE_JWT_SECRET
+              valueFrom: { secretKeyRef: { name: nolotrack-secrets, key: JWT_SECRET } }
+            - name: GOTRUE_SMTP_PASS
+              valueFrom: { secretKeyRef: { name: nolotrack-secrets, key: SMTP_PASS, optional: true } }
+            - name: GOTRUE_EXTERNAL_GOOGLE_SECRET
+              valueFrom: { secretKeyRef: { name: nolotrack-secrets, key: GOOGLE_LOGIN_CLIENT_SECRET, optional: true } }
+            # $(VAR) = valori della ConfigMap (envFrom) e delle variabili sopra
+            - { name: GOTRUE_API_HOST, value: 0.0.0.0 }
+            - { name: GOTRUE_API_PORT, value: "9999" }
+            - { name: API_EXTERNAL_URL, value: $(PUBLIC_URL) }
+            - { name: GOTRUE_SITE_URL, value: $(PUBLIC_URL) }
+            - { name: GOTRUE_URI_ALLOW_LIST, value: "$(PUBLIC_URL)/**" }
+            - { name: GOTRUE_DB_DRIVER, value: postgres }
+            - { name: GOTRUE_DB_DATABASE_URL, value: "postgres://supabase_auth_admin:$(POSTGRES_PASSWORD)@db:5432/postgres" }
+            - { name: GOTRUE_JWT_EXP, value: $(JWT_EXP) }
+            - { name: GOTRUE_JWT_AUD, value: authenticated }
+            - { name: GOTRUE_JWT_DEFAULT_GROUP_NAME, value: authenticated }
+            - { name: GOTRUE_JWT_ADMIN_ROLES, value: service_role }
+            - { name: GOTRUE_DISABLE_SIGNUP, value: $(DISABLE_SIGNUP) }
+            - { name: GOTRUE_EXTERNAL_EMAIL_ENABLED, value: "true" }
+            - { name: GOTRUE_MAILER_AUTOCONFIRM, value: $(MAILER_AUTOCONFIRM) }
+            - { name: GOTRUE_MAILER_URLPATHS_INVITE, value: /auth/v1/verify }
+            - { name: GOTRUE_MAILER_URLPATHS_CONFIRMATION, value: /auth/v1/verify }
+            - { name: GOTRUE_MAILER_URLPATHS_RECOVERY, value: /auth/v1/verify }
+            - { name: GOTRUE_MAILER_URLPATHS_EMAIL_CHANGE, value: /auth/v1/verify }
+            - { name: GOTRUE_SMTP_HOST, value: $(SMTP_HOST) }
+            - { name: GOTRUE_SMTP_PORT, value: $(SMTP_PORT) }
+            - { name: GOTRUE_SMTP_USER, value: $(SMTP_USER) }
+            - { name: GOTRUE_SMTP_ADMIN_EMAIL, value: $(SMTP_SENDER) }
+            - { name: GOTRUE_SMTP_SENDER_NAME, value: $(SMTP_SENDER_NAME) }
+            - { name: GOTRUE_EXTERNAL_GOOGLE_ENABLED, value: $(GOOGLE_LOGIN_ENABLED) }
+            - { name: GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID, value: $(GOOGLE_LOGIN_CLIENT_ID) }
+            - { name: GOTRUE_EXTERNAL_GOOGLE_REDIRECT_URI, value: "$(PUBLIC_URL)/auth/v1/callback" }
+          readinessProbe:
+            httpGet: { path: /health, port: http }
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /health, port: http }
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { memory: 256Mi }

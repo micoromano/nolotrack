@@ -48,3 +48,6 @@ next-env.d.ts
 
 # backup database (scripts/backup.sh)
 /backups/
+
+# segreti Kubernetes (generati da scripts/genera-env.mjs)
+deploy/k8s/overlays/*/secrets.env

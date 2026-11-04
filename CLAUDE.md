@@ -345,6 +345,22 @@ Branch `claude/docker-self-hosting`. Documentazione per l'utente in
   (gira nel container app), `backup.sh` / `ripristina.sh` (solo dati public+auth,
   ripristino transazionale), `importa-da-supabase.sh` (utenti + dati dal cloud).
 
+### Kubernetes (`deploy/k8s/`, guida in `docs/self-hosting/KUBERNETES.md`)
+
+- Kustomize: `base/` (manifest) + `overlays/produzione/` (`config.env` → ConfigMap
+  `nolotrack-config`, `secrets.env` → Secret `nolotrack-secrets` non committato,
+  `build.env` → `NEXT_PUBLIC_*` della build, immagini e host Ingress).
+- Lo schema NON è in una ConfigMap: viaggia nell'immagine `nolotrack-migrate`
+  (`docker/migrate/Dockerfile`), initContainer dell'app. `migrate.sh` esegue tutto in
+  una sessione con `pg_advisory_lock`, quindi è sicuro con più repliche.
+- `base/gateway-nginx.conf` è una copia di `docker/nginx/default.conf`: tenerle allineate.
+- Una nuova variabile d'ambiente va aggiunta in `config-default.env`/`config.env` (non
+  segreta) o `secrets.env.example` (segreta) e mappata nel Deployment che la usa.
+- L'overlay deve dichiarare `namespace: nolotrack`, altrimenti il Secret generato
+  finisce in `default` e i riferimenti non vengono collegati.
+- `scripts/backup.sh` / `ripristina.sh` con `K8S_NAMESPACE=nolotrack` usano kubectl
+  (`scripts/lib-db.sh`). Immagini: `scripts/k8s-build.sh <overlay> <registry> <tag> --push`.
+
 ## App mobile
 
 Guscio nativo Capacitor (Android/iOS) che carica il deploy web esistente via

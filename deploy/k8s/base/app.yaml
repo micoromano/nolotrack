@@ -1,0 +1,85 @@
+# App Next.js. L'initContainer "migrate" applica lo schema SQL (database/)
+# della STESSA versione prima che l'app parta: ogni aggiornamento dell'immagine
+# aggiorna anche il database. È sicuro con più repliche (advisory lock).
+apiVersion: v1
+kind: Service
+metadata:
+  name: app
+  labels: { app.kubernetes.io/name: app }
+spec:
+  selector: { app.kubernetes.io/name: app }
+  ports:
+    - { name: http, port: 3000 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+  labels: { app.kubernetes.io/name: app }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app.kubernetes.io/name: app }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: app }
+    spec:
+      initContainers:
+        - name: migrate
+          image: nolotrack-migrate
+          env:
+            - { name: PGHOST, value: db }
+            - name: POSTGRES_PASSWORD
+              valueFrom: { secretKeyRef: { name: nolotrack-secrets, key: POSTGRES_PASSWORD } }
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { memory: 256Mi }
+      containers:
+        - name: app
+          image: nolotrack-app
+          ports:
+            - { name: http, containerPort: 3000 }
+          env:
+            # Il server Next.js raggiunge auth/rest attraverso il gateway interno
+            - { name: SUPABASE_INTERNAL_URL, value: http://gateway }
+            - name: PUBLIC_URL
+              valueFrom: { configMapKeyRef: { name: nolotrack-config, key: PUBLIC_URL } }
+            - { name: NEXT_PUBLIC_APP_URL, value: $(PUBLIC_URL) }
+            - name: TZ
+              valueFrom: { configMapKeyRef: { name: nolotrack-config, key: TZ } }
+            - name: SUPABASE_SERVICE_ROLE_KEY
+              valueFrom: { secretKeyRef: { name: nolotrack-secrets, key: SERVICE_ROLE_KEY } }
+            # Integrazioni (tutte facoltative)
+            - name: GMAIL_USER
+              valueFrom: { configMapKeyRef: { name: nolotrack-config, key: GMAIL_USER, optional: true } }
+            - name: GMAIL_APP_PASSWORD
+              valueFrom: { secretKeyRef: { name: nolotrack-secrets, key: GMAIL_APP_PASSWORD, optional: true } }
+            - name: GOOGLE_CLIENT_ID
+              valueFrom: { configMapKeyRef: { name: nolotrack-config, key: GOOGLE_CLIENT_ID, optional: true } }
+            - name: GOOGLE_CLIENT_SECRET
+              valueFrom: { secretKeyRef: { name: nolotrack-secrets, key: GOOGLE_CLIENT_SECRET, optional: true } }
+            - name: VAPID_PRIVATE_KEY
+              valueFrom: { secretKeyRef: { name: nolotrack-secrets, key: VAPID_PRIVATE_KEY, optional: true } }
+            - name: META_WHATSAPP_TOKEN
+              valueFrom: { secretKeyRef: { name: nolotrack-secrets, key: META_WHATSAPP_TOKEN, optional: true } }
+            - name: META_WHATSAPP_PHONE_NUMBER_ID
+              valueFrom: { configMapKeyRef: { name: nolotrack-config, key: META_WHATSAPP_PHONE_NUMBER_ID, optional: true } }
+            - name: META_WHATSAPP_VERIFY_TOKEN
+              valueFrom: { secretKeyRef: { name: nolotrack-secrets, key: META_WHATSAPP_VERIFY_TOKEN, optional: true } }
+            - name: META_WHATSAPP_APP_SECRET
+              valueFrom: { secretKeyRef: { name: nolotrack-secrets, key: META_WHATSAPP_APP_SECRET, optional: true } }
+          readinessProbe:
+            httpGet: { path: /, port: http }
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /, port: http }
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits: { memory: 768Mi }
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+            allowPrivilegeEscalation: false
+            capabilities: { drop: ["ALL"] }

@@ -1,0 +1,15 @@
+# Eseguiti UNA volta, alla creazione del volume del DB (come docker/db/*.sql)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-init
+data:
+  99-roles.sql: |
+    \set pgpass `echo "$POSTGRES_PASSWORD"`
+    ALTER USER authenticator       WITH PASSWORD :'pgpass';
+    ALTER USER supabase_auth_admin WITH PASSWORD :'pgpass';
+  99-jwt.sql: |
+    \set jwt_secret `echo "$JWT_SECRET"`
+    \set jwt_exp `echo "$JWT_EXP"`
+    ALTER DATABASE postgres SET "app.settings.jwt_secret" TO :'jwt_secret';
+    ALTER DATABASE postgres SET "app.settings.jwt_exp" TO :'jwt_exp';

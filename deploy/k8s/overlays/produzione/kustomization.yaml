@@ -1,0 +1,62 @@
+# =============================================================================
+# Overlay "produzione" — copialo e personalizzalo per ogni installazione
+# =============================================================================
+#   1. config.env           → valori non segreti (PUBLIC_URL, SMTP, integrazioni)
+#   2. secrets.env          → segreti, generati con:
+#        node scripts/genera-env.mjs --file deploy/k8s/overlays/produzione/secrets.env \
+#          --template deploy/k8s/overlays/produzione/secrets.env.example
+#   3. immagini e host qui sotto
+#   4. kubectl apply -k deploy/k8s/overlays/produzione
+# Guida: docs/self-hosting/KUBERNETES.md
+# =============================================================================
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Deve coincidere con quello della base: le risorse generate qui (Secret)
+# altrimenti finirebbero in "default" e i riferimenti non verrebbero collegati.
+namespace: nolotrack
+
+resources:
+  - ../../base
+
+configMapGenerator:
+  - name: nolotrack-config
+    behavior: merge
+    envs:
+      - config.env
+
+secretGenerator:
+  - name: nolotrack-secrets
+    envs:
+      - secrets.env          # NON committare (è in .gitignore)
+
+# Immagini costruite con scripts/k8s-build.sh (tag = versione rilasciata)
+images:
+  - name: nolotrack-app
+    newName: ghcr.io/micoromano/nolotrack-app
+    newTag: "1.0.0"
+  - name: nolotrack-migrate
+    newName: ghcr.io/micoromano/nolotrack-migrate
+    newTag: "1.0.0"
+
+patches:
+  # Dominio pubblico + certificato TLS (cert-manager). Deve coincidere con PUBLIC_URL.
+  - target: { kind: Ingress, name: nolotrack }
+    patch: |
+      - op: replace
+        path: /spec/rules/0/host
+        value: nolotrack.miodominio.it
+      - op: add
+        path: /spec/tls
+        value:
+          - hosts: [nolotrack.miodominio.it]
+            secretName: nolotrack-tls
+      - op: add
+        path: /metadata/annotations/cert-manager.io~1cluster-issuer
+        value: letsencrypt
+  # Spazio disco del database
+  - target: { kind: StatefulSet, name: db }
+    patch: |
+      - op: replace
+        path: /spec/volumeClaimTemplates/0/spec/resources/requests/storage
+        value: 10Gi

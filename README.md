@@ -13,11 +13,14 @@ Stack: Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · Supabase
 |---|---|
 | 📘 **Uso dell'app** | [docs/MANUALE-UTENTE.md](docs/MANUALE-UTENTE.md) |
 | 🐳 **Installazione self-hosted (Docker)** | [docs/self-hosting/](docs/self-hosting/README.md) |
+| ☸️ **Kubernetes** | [docs/self-hosting/KUBERNETES.md](docs/self-hosting/KUBERNETES.md) · [`deploy/k8s/`](deploy/k8s) |
 | 🗄️ **Database (DDL/DML)** | [docs/self-hosting/DATABASE.md](docs/self-hosting/DATABASE.md) · [`database/`](database) |
 | 📱 **App mobile** | [docs/app-mobile.md](docs/app-mobile.md) |
 | 🤖 **Guida per sviluppatori / AI** | [CLAUDE.md](CLAUDE.md) |
 
-## Due modi di installarla
+## Modi di installarla
+
+Oltre ai due qui sotto c'è Kubernetes: [docs/self-hosting/KUBERNETES.md](docs/self-hosting/KUBERNETES.md).
 
 ### 1. Self-hosted con Docker (tutto sul proprio server)
 

@@ -1,0 +1,75 @@
+# PostgreSQL 15 (immagine Supabase: ruoli API e schema auth già pronti)
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  labels: { app.kubernetes.io/name: db }
+spec:
+  selector: { app.kubernetes.io/name: db }
+  ports:
+    - name: postgres
+      port: 5432
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db
+  labels: { app.kubernetes.io/name: db }
+spec:
+  serviceName: db
+  replicas: 1                     # PostgreSQL singolo: NON aumentare
+  selector:
+    matchLabels: { app.kubernetes.io/name: db }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: db }
+    spec:
+      containers:
+        - name: postgres
+          image: supabase/postgres:15.8.1.060
+          args: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf", "-c", "log_min_messages=fatal"]
+          ports:
+            - { name: postgres, containerPort: 5432 }
+          env:
+            - { name: POSTGRES_HOST, value: /var/run/postgresql }
+            - { name: POSTGRES_PORT, value: "5432" }
+            - { name: PGPORT, value: "5432" }
+            - { name: POSTGRES_DB, value: postgres }
+            - { name: PGDATABASE, value: postgres }
+            - name: POSTGRES_PASSWORD
+              valueFrom: { secretKeyRef: { name: nolotrack-secrets, key: POSTGRES_PASSWORD } }
+            - { name: PGPASSWORD, value: $(POSTGRES_PASSWORD) }
+            - name: JWT_SECRET
+              valueFrom: { secretKeyRef: { name: nolotrack-secrets, key: JWT_SECRET } }
+            - name: JWT_EXP
+              valueFrom: { configMapKeyRef: { name: nolotrack-config, key: JWT_EXP } }
+            - name: TZ
+              valueFrom: { configMapKeyRef: { name: nolotrack-config, key: TZ } }
+          volumeMounts:
+            # Volume montato sulla cartella PADRE: i dati stanno in .../data
+            # (fisso in postgresql.conf) e il lost+found del volume non disturba initdb.
+            - { name: data, mountPath: /var/lib/postgresql }
+            - { name: init, mountPath: /docker-entrypoint-initdb.d/init-scripts/99-roles.sql, subPath: 99-roles.sql }
+            - { name: init, mountPath: /docker-entrypoint-initdb.d/init-scripts/99-jwt.sql, subPath: 99-jwt.sql }
+          readinessProbe:
+            exec: { command: ["pg_isready", "-U", "postgres", "-h", "localhost"] }
+            periodSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            exec: { command: ["pg_isready", "-U", "postgres", "-h", "localhost"] }
+            initialDelaySeconds: 60
+            periodSeconds: 20
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits: { memory: 1Gi }
+      volumes:
+        - name: init
+          configMap: { name: db-init }
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 5Gi

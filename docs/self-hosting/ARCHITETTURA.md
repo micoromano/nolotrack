@@ -80,5 +80,7 @@ sessione. Su Vercel `SUPABASE_INTERNAL_URL` non è impostata e il comportamento
 | `docker/nginx/default.conf` | instradamento del gateway |
 | `docker/caddy/Caddyfile` | HTTPS automatico |
 | `database/ddl`, `database/dml` | schema e dati di base, vedi [DATABASE.md](DATABASE.md) |
-| `scripts/` | segreti, admin, backup, ripristino |
+| `scripts/` | segreti, admin, backup, ripristino (Docker e Kubernetes) |
+| `deploy/k8s/` | manifest Kubernetes (Kustomize), vedi [KUBERNETES.md](KUBERNETES.md) |
+| `docker/migrate/Dockerfile` | immagine con lo schema SQL, usata come initContainer su Kubernetes |
 | `lib/supabase/config.ts` | URL interno/pubblico e nome cookie |

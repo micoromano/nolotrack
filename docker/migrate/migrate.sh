@@ -21,14 +21,22 @@ until [ "$(psql -tAc "select to_regclass('auth.users') is not null")" = "t" ]; d
 # Nasconde i NOTICE "esiste già, salto" ma lascia passare warning ed errori
 export PGOPTIONS="-c client_min_messages=warning"
 
-for f in /database/ddl/*.sql /database/dml/[0-8]*.sql; do
-  [ -f "$f" ] || continue
-  echo "[migrate] → $(basename "$f")"
-  if ! psql -v ON_ERROR_STOP=1 --no-psqlrc -q -f "$f"; then
-    echo "[migrate] ERRORE in $(basename "$f") — installazione interrotta" >&2
-    exit 1
-  fi
-done
+DIR="${DATABASE_DIR:-/database}"
+
+# Tutti i file in UNA sessione, protetta da un advisory lock: se più istanze
+# partono insieme (es. più repliche in Kubernetes) la seconda aspetta la prima
+# invece di eseguire gli stessi DDL in parallelo.
+{
+  echo "SELECT pg_advisory_lock(727274);"
+  for f in "$DIR"/ddl/*.sql "$DIR"/dml/[0-8]*.sql; do
+    [ -f "$f" ] || continue
+    printf '%s\n' "\\echo [migrate] → $(basename "$f")"
+    cat "$f"
+    echo
+  done
+  echo "SELECT pg_advisory_unlock(727274);"
+} | psql -v ON_ERROR_STOP=1 --no-psqlrc -q -o /dev/null \
+  || { echo "[migrate] ERRORE — vedi il messaggio sopra (il file è l'ultimo '→' stampato)" >&2; exit 1; }
 
 # Verifica finale: le tabelle principali devono esistere
 psql -v ON_ERROR_STOP=1 -tAc "select 'public.autisti'::regclass, 'public.corse'::regclass, 'public.turni'::regclass" >/dev/null
