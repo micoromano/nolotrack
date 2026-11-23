@@ -25,6 +25,7 @@ resources:
   - gateway.yaml
   - ingress.yaml
   - backup-cronjob.yaml
+  - pulizia-allegati-cronjob.yaml
   - networkpolicy.yaml
 
 configMapGenerator:

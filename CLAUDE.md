@@ -47,7 +47,9 @@ NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=...   # Places Autocomplete
 GMAIL_USER=...                         # Gmail SMTP mittente
 GMAIL_APP_PASSWORD=...                 # App Password Gmail (no 2FA password)
 NEXT_PUBLIC_APP_URL=...                 # Origine pubblica, usata per link email/invito, callback URL WhatsApp e canonical/OG del sito vetrina
-SUPABASE_SERVICE_ROLE_KEY=...           # Usata dal webhook WhatsApp (route pubblica, nessuna sessione utente)
+SUPABASE_SERVICE_ROLE_KEY=...           # Usata dal webhook WhatsApp (route pubblica, nessuna sessione utente) e dalla pulizia allegati
+R2_ACCOUNT_ID=... R2_ACCESS_KEY_ID=... R2_SECRET_ACCESS_KEY=... R2_BUCKET=...  # Allegati su Cloudflare R2 (R2_ENDPOINT opzionale: MinIO/bucket EU)
+CRON_SECRET=...                         # Bearer per /api/allegati/pulizia (Vercel Cron lo invia da solo)
 META_WHATSAPP_TOKEN=...                 # Meta Cloud API — access token permanente
 META_WHATSAPP_PHONE_NUMBER_ID=...       # Meta Cloud API — Phone Number ID
 META_WHATSAPP_VERIFY_TOKEN=...          # Stringa a scelta, usata per la verifica webhook (hub.verify_token)
@@ -360,6 +362,25 @@ Branch `claude/docker-self-hosting`. Documentazione per l'utente in
   finisce in `default` e i riferimenti non vengono collegati.
 - `scripts/backup.sh` / `ripristina.sh` con `K8S_NAMESPACE=nolotrack` usano kubectl
   (`scripts/lib-db.sh`). Immagini: `scripts/k8s-build.sh <overlay> <registry> <tag> --push`.
+
+## Allegati (Cloudflare R2)
+
+Guida utente/setup: [`docs/R2.md`](docs/R2.md).
+
+- Tabella `allegati` (`database/ddl/095_allegati.sql`, cloud: `supabase/migrations/20261123_allegati_r2.sql`):
+  una riga per file, collegata a UNA voce tra `spesa_id` / `carburante_id` / `corsa_id`
+  (CHECK `num_nonnulls = 1`, ON DELETE CASCADE). La policy RLS verifica anche che la voce
+  sia dello stesso autista. Per una nuova entità: colonna FK + indice + clausola nella
+  policy + voce in `TABELLA_ENTITA` (`lib/allegati.ts`).
+- Upload diretto browser → R2 con URL firmato: `POST /api/allegati` (registra, `caricato=false`)
+  → `PUT` su R2 → `POST /api/allegati/[id]/conferma` (HEAD: dimensione e tipo devono coincidere).
+  `GET /api/allegati/[id]` reindirizza a un URL firmato (5 min); `?download=1` forza il download.
+- Il trigger `allegati_dopo_delete` accoda le chiavi in `allegati_da_eliminare` (solo
+  service_role); `/api/allegati/pulizia` (Bearer `CRON_SECRET`) svuota la coda e scarta gli
+  upload non confermati > 24h. Cron: `vercel.json`, CronJob `pulizia-allegati` in K8s.
+- `lib/r2.ts` è solo server (credenziali); `lib/allegati.ts` regole condivise client/server;
+  UI riutilizzabile `components/allegati.tsx` (`<Allegati entita="spesa" entitaId={id} />`),
+  nascosta se R2 non è configurato (API → 503).
 
 ## App mobile
 

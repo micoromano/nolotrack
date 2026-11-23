@@ -68,6 +68,19 @@ spec:
               valueFrom: { secretKeyRef: { name: nolotrack-secrets, key: META_WHATSAPP_VERIFY_TOKEN, optional: true } }
             - name: META_WHATSAPP_APP_SECRET
               valueFrom: { secretKeyRef: { name: nolotrack-secrets, key: META_WHATSAPP_APP_SECRET, optional: true } }
+            # Allegati (Cloudflare R2 o altro storage S3-compatibile)
+            - name: R2_ACCOUNT_ID
+              valueFrom: { configMapKeyRef: { name: nolotrack-config, key: R2_ACCOUNT_ID, optional: true } }
+            - name: R2_BUCKET
+              valueFrom: { configMapKeyRef: { name: nolotrack-config, key: R2_BUCKET, optional: true } }
+            - name: R2_ENDPOINT
+              valueFrom: { configMapKeyRef: { name: nolotrack-config, key: R2_ENDPOINT, optional: true } }
+            - name: R2_ACCESS_KEY_ID
+              valueFrom: { secretKeyRef: { name: nolotrack-secrets, key: R2_ACCESS_KEY_ID, optional: true } }
+            - name: R2_SECRET_ACCESS_KEY
+              valueFrom: { secretKeyRef: { name: nolotrack-secrets, key: R2_SECRET_ACCESS_KEY, optional: true } }
+            - name: CRON_SECRET
+              valueFrom: { secretKeyRef: { name: nolotrack-secrets, key: CRON_SECRET, optional: true } }
           readinessProbe:
             httpGet: { path: /, port: http }
             periodSeconds: 10

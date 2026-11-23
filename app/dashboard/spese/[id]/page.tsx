@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
+import Allegati from "@/components/allegati";
 import { useRouter, useParams } from "next/navigation";
 import { ArrowLeft, CheckCircle, Trash } from "@phosphor-icons/react";
 
@@ -93,6 +94,7 @@ export default function EditaSpesaPage() {
             </div>
           </form>
         </div>
+        <Allegati entita="spesa" entitaId={id} />
       </div>
     </div>
   );

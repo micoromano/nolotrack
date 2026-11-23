@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
+import Allegati from "@/components/allegati";
 import { useRouter, useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import type { TipoPagamento, Valuta } from "@/types";
@@ -264,6 +265,7 @@ export default function EditaCorsaPage() {
             </div>
           </form>
         </div>
+        <Allegati entita="corsa" entitaId={id} />
       </div>
     </div>
   );

@@ -39,6 +39,9 @@ Conserva anche una copia del file **`.env`** in un posto sicuro (password
 manager): senza `JWT_SECRET`/`POSTGRES_PASSWORD` originali il ripristino resta
 possibile, ma dovrai rigenerare le chiavi e ricostruire l'app.
 
+**Allegati**: il backup contiene solo i metadati (tabella `allegati`); i file
+stanno su Cloudflare R2. Per copiarli altrove vedi [docs/R2.md](../R2.md#backup).
+
 ## Ripristino
 
 ```bash

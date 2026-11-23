@@ -12,6 +12,7 @@
 //   JWT_SECRET         chiave HMAC che firma i token di sessione
 //   ANON_KEY           JWT {role: "anon"}          — pubblico, finisce nel browser
 //   SERVICE_ROLE_KEY   JWT {role: "service_role"}  — SEGRETO, bypassa la RLS
+//   META_WHATSAPP_VERIFY_TOKEN, CRON_SECRET          — se presenti nel file e vuoti
 //
 // ⚠ Se il database è già stato creato, cambiare POSTGRES_PASSWORD qui NON
 //   cambia la password nel DB: vedi docs/self-hosting/TROUBLESHOOTING.md.
@@ -79,9 +80,11 @@ for (const [k, role] of [["ANON_KEY", "anon"], ["SERVICE_ROLE_KEY", "service_rol
   }
 }
 
-if (/^META_WHATSAPP_VERIFY_TOKEN=/m.test(testo) && !leggi("META_WHATSAPP_VERIFY_TOKEN")) {
-  scrivi("META_WHATSAPP_VERIFY_TOKEN", randomBytes(16).toString("hex"));
-  generati.push("META_WHATSAPP_VERIFY_TOKEN");
+for (const k of ["META_WHATSAPP_VERIFY_TOKEN", "CRON_SECRET"]) {
+  if (new RegExp(`^${k}=`, "m").test(testo) && !leggi(k)) {
+    scrivi(k, randomBytes(k === "CRON_SECRET" ? 32 : 16).toString("hex"));
+    generati.push(k);
+  }
 }
 
 writeFileSync(envPath, testo);

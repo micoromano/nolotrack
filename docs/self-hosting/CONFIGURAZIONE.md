@@ -80,6 +80,8 @@ dall'admin con la stessa email.
 | `META_WHATSAPP_PHONE_NUMBER_ID` | ID del numero mittente | idem |
 | `META_WHATSAPP_VERIFY_TOKEN` | Token di verifica webhook | Generato da `genera-env.mjs`; va copiato su Meta |
 | `META_WHATSAPP_APP_SECRET` | Verifica firma dei webhook | Fortemente consigliato |
+| `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET` (`R2_ENDPOINT`) | **Allegati** (foto scontrini) su spese, carburante e corse | Bucket privato + CORS: vedi [docs/R2.md](../R2.md). Con `R2_ENDPOINT` va bene anche MinIO. |
+| `CRON_SECRET` | Protegge la pulizia notturna `/api/allegati/pulizia` | Generato da `genera-env.mjs`; vedi [docs/R2.md](../R2.md) per il cron |
 
 **Webhook WhatsApp**: su Meta for Developers → WhatsApp → Configuration →
 Callback URL = `PUBLIC_URL/api/whatsapp/webhook`, Verify token =
